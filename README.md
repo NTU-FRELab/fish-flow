@@ -25,20 +25,20 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 ##### Variables
 
-* Site:
-* Human_pop:
-* PP:
-* PAR:
-* SST:
-* SS:
-* US:
-* S4:
-* S32:
-* PROC4:
-* PLC4:
-* PROC32:
-* PLC32:
-* SC:
+* Site: Research site
+* Human_pop: Human population
+* PP: Primary production
+* PAR: Photosynthetically active radiation
+* SST: Sea surface temperature
+* SS: Stable substrate
+* US: Unstable substrate
+* S4: Fine scale slope
+* S32: Rough scale slope
+* PROC4: Fine scale profile curvature
+* PLC4: Fine scale planform curvature
+* PROC32: Rough scale profile curvature
+* PLC32: Rough scale planform curvature
+* SC: Surface complexity
 
 #### File: Biotic\_factor.csv
 
@@ -46,7 +46,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 ##### Variables
 
-* Transect:
+* Transect: Transect
 * AL_artcal:
 * AL_corfol:
 * AL_cormac:
