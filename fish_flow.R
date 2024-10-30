@@ -308,7 +308,6 @@ shapiro.test(transect.energy$Turn)
 levene_test(Turn ~ Region, data = transect.energy)
 
 ### Fig S2. QQ-plots and histograms of fish energy flows at transect level
-#png(filename = 'Figures\\Transect level normality.png', height = 8, width = 6, res = 300, units = 'in')
 pdf(file = 'Figures\\figS2.pdf', height = 8, width = 6)
 par(mfrow = c(3, 2))
 
@@ -465,9 +464,8 @@ region.turn <- transect.energy %>%
         title = element_text(size = 14),
         legend.position = 'none')
 
-### Figure 4. Regional comparison of energy flow metric in fish.
+### Figure 4. Regional comparison of energy flow metric.
 ggarrange(region.biomass, region.prod, region.turn, ncol = 2, nrow = 2)
-#ggsave('Figures\\region boxplot.png', height = 8, width = 10)
 ggsave('Figures\\Fig4.pdf', height = 8, width = 10)
 
 #### Compare energy flows among fish family (Fig S1) ###########################
@@ -532,20 +530,19 @@ fam.turn <- family.energy %>%
 
 ### Figure S1. Energy flows among observed fish families.
 ggarrange(fam.biomass, fam.prod, fam.turn, region.leg, ncol = 2, nrow = 2)
-#ggsave(filename = 'Figures\\family energy.png', width = 10, height = 12)
 ggsave(filename = 'Figures\\figS1.pdf', width = 10, height = 12)
 
 #### Energy flows of acanthurids, scarids, and pomacentrids (Fig 5) ############
 
 #Select target fish families
-family.energy.major <- family.energy %>%
+plkher.energy <- family.energy %>%
   filter(Family %in% c('Acanthuridae', 'Scaridae', 'Pomacentridae')) 
 
 #Check the number of transects observed with target families in the five regions 
 with(family.energy.major, table(Family, Region))
 
 #Standing biomass
-plkher.biomass <- family.energy.major %>%
+plkher.biomass <- plkher.energy %>%
   #Keep the order of family and region
   mutate(Family = factor(Family, levels = c('Acanthuridae', 'Scaridae', 'Pomacentridae'))) %>%
   ggplot(aes(x = Region, y = Biom, fill = Family)) +
@@ -565,7 +562,7 @@ diet.leg <- ggpubr::get_legend(plkher.biomass)
 plkher.biomass <- plkher.biomass + theme(legend.position = 'none')
 
 #Productivity
-plkher.prod <- family.energy.major %>%
+plkher.prod <- plkher.energy %>%
   mutate(Family = factor(Family, levels = c('Acanthuridae', 'Scaridae', 'Pomacentridae'))) %>%
   ggplot(aes(x = Region, y = Prod, fill = Family)) +
   geom_boxplot(outlier.alpha = 0.75, outlier.size = 1) +
@@ -587,7 +584,7 @@ family.energy.major %>%
   filter(Prod > 0.08)
 
 #Turnover
-plkher.turn <- family.energy.major %>%
+plkher.turn <- plkher.energy %>%
   mutate(Family = factor(Family, levels = c('Acanthuridae', 'Scaridae', 'Pomacentridae'))) %>%
   ggplot(aes(x = Region, y = Turn, fill = Family)) +
   geom_boxplot(outlier.alpha = 0.75, outlier.size = 1) +
@@ -610,7 +607,6 @@ family.energy.major %>%
 
 ### Figure 5. Energy flows of acanthurids, scarids and pomacentrids among the five regions.
 ggarrange(plkher.biomass, plkher.prod, plkher.turn, diet.leg, ncol = 2, nrow = 2)
-#ggsave(filename = 'Figures\\plkher.png', width = 10, height = 8)
 ggsave(filename = 'Figures\\fig5.pdf', width = 10, height = 8)
 
 #### Compare energy flows among dietary groups (Table S3 & Fig 6) ##############
@@ -701,7 +697,6 @@ diet.turn.box <- diet.energy %>%
 
 #Figure 6. Energy flow contribution of five dietary categories.
 ggarrange(diet.biomass.box, diet.prod.box, diet.turn.box, ncol = 1, nrow = 3)
-#ggsave('Figures\\diet boxplot.png', height = 10, width = 12)
 ggsave('Figures\\fig6.pdf', height = 10, width = 12)
 
 #### Identification of intrinsic drivers (Fig S4-6, Fig S10, Table S4, Table 1) ####
@@ -752,7 +747,6 @@ intrinsic %>%
   labs(y = expression('log10[Standing biomass ('~ g%.%m^-2~ ')]'), x = 'Cover (%)')
 
 #Fig S4. Relationship between standing biomass and selected biotic variables.
-#ggsave(filename = 'Figures\\Morphofunc biomass.png', width = 10, height = 7, units = 'in')
 ggsave(filename = 'Figures\\figS4.pdf', width = 10, height = 7, units = 'in')
 
 #Glmm: standing biomass as response variable, intrinsic factors as fix effect.
@@ -795,7 +789,6 @@ intrinsic %>%
   labs(y = expression(Productivity~ ~(g%.%m^-2~~day^-1)), x = 'Cover (%)')
 
 #Fig S5. Relationship between productivity and selected intrinsic variables.
-#ggsave(filename = 'Figures\\Morphofunc prod.png', width = 10, height = 7, units = 'in')
 ggsave(filename = 'Figures\\figS5.pdf', width = 10, height = 7, units = 'in')
 
 #Glmm: productivity as response variable, intrinsic factors as fix effect.
@@ -837,7 +830,6 @@ intrinsic %>%
   labs(y = expression(Turnover~('%'~~day^-1)), x = "Cover (%)")
 
 #Fig S6. Relationship turnover and selected biotic variables.
-#ggsave(filename = 'Figures\\Morphofunc turn.png', width = 10, height = 7, units = 'in')
 ggsave(filename = 'Figures\\figS6.pdf', width = 10, height = 7, units = 'in')
 
 #Glmm: turnover as response variable, intrinsic factors as fix effect.
@@ -874,20 +866,17 @@ write.csv(energy.intrinsic.sum.sig, file = 'Tables\\intrinsic glmm significant.c
 #Residual diagnostic
 
 #Fig S10. Residual diagnostics for GLMMs of biotic drivers.
-#Full glmm of standing biomass
-#png(filename = 'Figures\\intrinsic full res biomass.png', width = 8, height = 4, units = 'in', res = 300)
+#Standing biomass
 pdf(file = 'Figures\\figS10a.pdf', width = 8, height = 4)
 res.biomass <- plot(simulateResiduals(biomass.m.intrinsic))
 dev.off()
 
-#Full glmm of productivity
-#png(filename = 'Figures\\intrinsic full res prod.png', width = 8, height = 4, units = 'in', res = 300)
+#Productivity
 pdf(file = 'Figures\\figS10b.pdf', width = 8, height = 4)
 res.prod <- plot(simulateResiduals(prod.m.intrinsic))
 dev.off()
 
-#Full glmm of turnover
-#png(filename = 'Figures\\intrinsic full res turn.png', width = 8, height = 4, units = 'in', res = 300)
+#Turnover
 pdf(file = 'Figures\\figS10c.pdf', width = 8, height = 4)
 res.turn <- plot(simulateResiduals(turn.m.intrinsic))
 dev.off()
@@ -923,7 +912,6 @@ extrinsic %>%
         strip.text = element_text(size = 12))
 
 #Fig 2. Environmental conditions among the five regions.
-#ggsave(filename = 'Figures\\Env region.png', width = 8, height = 6, units = 'in')
 ggsave(filename = 'Figures\\fig2.pdf', width = 8, height = 6, units = 'in')
 
 #Manipulate raw extrinsic data
@@ -968,22 +956,9 @@ shapiro.test(energy.extrinsic$Biom)
 shapiro.test(energy.extrinsic$Prod)
 shapiro.test(energy.extrinsic$Turn)
 
-energy.extrinsic %>%
-  ggplot(aes(sample = Biom)) +
-  stat_qq() +
-  stat_qq_line() +
-  labs(x = 'Theoretical quantiles', y = 'Sample quantiles') +
-  theme_bw()
-
-energy.extrinsic %>%
-  ggplot(aes(x = Biom)) +
-  geom_histogram(binwidth = 0.09, colour = 'black', fill = 'grey75') +
-  geom_density(fill = 'grey75', alpha = 0.2) +
-  labs(x = 'Standing biomass', y = 'Frequency') +
-  theme_bw()
-
-#png(filename = 'Figures\\Site level normality.png', height = 8, width = 6, res = 300, units = 'in')
+#QQ plot and histogram
 pdf(file = 'Figures\\figS3.pdf', height = 8, width = 6)
+
 par(mfrow = c(3, 2))
 #Standing biomass
 qqnorm(energy.extrinsic$Biom, main = NA)
@@ -1000,6 +975,7 @@ qqnorm(energy.extrinsic$Turn, main = NA)
 qqline(energy.extrinsic$Turn)
 title(main = 'c', adj = 0)
 hist(energy.extrinsic$Turn, breaks = 10, main = NA, xlab = 'Turnover')
+
 dev.off()
 
 par(mfrow = c(1, 1))
@@ -1027,9 +1003,7 @@ extrinsic %>%
   labs(y = expression('log10[Standing biomass ('~ g%.%m^-2~ ')]'), x = NULL)
 
 #Fig S7. Relationship between standing biomass and selected abiotic variables.
-#ggsave(filename = 'Figures\\Abiotic biomass.png', width = 10, height = 6, units = 'in')
 ggsave(filename = 'Figures\\figS7.pdf', width = 10, height = 6, units = 'in')
-
 
 #Glmm: standing biomass as response variable, extrinsic factors as fix effect,
 #Region as random effect
@@ -1069,7 +1043,6 @@ extrinsic %>%
   labs(y = expression(Productivity~ ~(g%.%m^-2~~day^-1)), x = NULL)
 
 #Fig S8. Relationship between productivity and selected abiotic variables.
-#ggsave(filename = 'Figures\\Abiotic prod.png', width = 10, height = 6, units = 'in')
 ggsave(filename = 'Figures\\figS8.pdf', width = 10, height = 6, units = 'in')
 
 #Glmm: productivity as response variable, extrinsic factors as fix effect,
@@ -1110,7 +1083,6 @@ extrinsic %>%
   labs(y = expression(Turnover~('%'~~day^-1)), x = NULL)
 
 #Fig S9. Relationship between turnover and selected abiotic variables.
-#ggsave(filename = 'Figures\\Abiotic turn.png', width = 10, height = 6, units = 'in')
 ggsave(filename = 'Figures\\figS9.pdf', width = 10, height = 6, units = 'in')
 
 #Glmm: turnover as response variable, extrinsic factors as fix effect,
@@ -1143,21 +1115,18 @@ energy.extrinsic.sum.sig <- energy.extrinsic.sum %>%
 write.csv(energy.extrinsic.sum.sig, file = 'Tables\\extrinsic glmm significant.csv', row.names = F)
 
 #Residual diagnostic
-#Supplementary S11. Residual diagnostics for GLMMs of extrinsic drivers.
-#Full glmm of standing biomass
-#png(filename = 'Figures\\extrinsic full res biomass.png', width = 8, height = 4, units = 'in', res = 300)
+#Fig S11. Residual diagnostics for GLMMs of extrinsic drivers.
+#Standing biomass
 pdf(file = 'Figures\\figS11a.pdf', width = 8, height = 4)
 res.biomass <- plot(simulateResiduals(biomass.m.extrinsic))
 dev.off()
 
-#Full glmm of productivity
-#png(filename = 'Figures\\extrinsic full res prod.png', width = 8, height = 4, units = 'in', res = 300)
+#Productivity
 pdf(file = 'Figures\\figS11b.pdf', width = 8, height = 4)
 res.prod <- plot(simulateResiduals(prod.m.extrinsic))
 dev.off()
 
-#Full glmm of turnover
-#png(filename = 'Figures\\extrinsic full res turn.png', width = 8, height = 4, units = 'in', res = 300)
+#Turnover
 pdf(file = 'Figures\\figS11c.pdf', width = 8, height = 4)
 res.turn <- plot(simulateResiduals(turn.m.extrinsic))
 dev.off()
