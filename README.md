@@ -47,33 +47,33 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 ##### Variables
 
 * Transect: Transect
-* AL_artcal:
-* AL_corfol:
-* AL_cormac:
-* AN_encrusting:
-* AS_eresin:
-* CB_filamentous:
-* CCA:
-* HC_arborescent:
-* HC_bushy:
-* HC_column:
-* HC_encrusting:
-* HC_foliose:
-* HC_massive:
-* HC_tabular:
-* OC_arborescent:
-* OC_bushy:
-* OC_clustered:
-* OC_digitate:
-* OC_encrusting:
-* OC_lobate:
-* OC_massive:
-* SG_hemprichii:
-* SP_encrusting:
-* SP_massive:
-* SP_repbra:
-* Turf:
-* ZO_encrusting:
+* AL_artcal:Articulated calcareous algae
+* AL_corfol: Corticated foliose algae
+* AL_cormac: Corticated macrophyte algae
+* AN_encrusting: Encrusting anemone
+* AS_eresin: Erect single ascidian
+* CB_filamentous: Filamentous cyanobacteria
+* CCA: Crustose coralline algae
+* HC_arborescent:Arborescent hard coral
+* HC_bushy:Bushy hard coral
+* HC_column:Column hard coral
+* HC_encrusting: Encrusting hard coral
+* HC_foliose: Foliose hard coral
+* HC_massive: Massive hard coral
+* HC_tabular: Tabular hard coral
+* OC_arborescent: Arborescent octocoral
+* OC_bushy: Bushy octocoral
+* OC_clustered: Clustered octocoral
+* OC_digitate: Digitate octocoral
+* OC_encrusting: Encrusting octocoral
+* OC_lobate: Lobate octocoral
+* OC_massive: Massive octocoral
+* SG_hemprichii: _Thalassia hemprichii_ seagrass
+* SP_encrusting: Encrusting sponge
+* SP_massive: Massive sponge
+* SP_repbra: Repent branching sponge
+* Turf: Turf algae
+* ZO_encrusting: Encrusting zoantharian
 
 #### File: Seguin\_RLS\_transect\_info.txt
 
