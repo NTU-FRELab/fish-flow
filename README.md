@@ -81,7 +81,12 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 ##### Variables
 
-*
+* SurveyID:
+* SiteCode:
+* Country:
+* SiteLongitude
+* SiteLatitude
+* Depth
 
 #### File: Taiwan\_fish\_metric.csv
 
@@ -89,27 +94,27 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 ##### Variables
 
-* Region:
-* Site:
-* Transect:
-* Family:
-* Genus:
-* Species:
-* Length:
-* Comment:
-* a:
-* b:
-* MaxSizeTL:
-* Diet:
-* Position:
-* sstmean:
-* Biomass:
-* Kmax:
-* Kmax_lowq:
-* Kmax_uppq:
-* somatic_G:
-* Md:
-* Fate:
+* Region:Region
+* Site: Site
+* Transect: Transect
+* Family: Fish family
+* Genus: Fish genus
+* Species: Fish species
+* Length: Observed fish total length
+* Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind S indicates different fish schools in each transect, and the number will restart in new transect.
+* a: Fish bayesian length-weight growth coefficient
+* b: Fish bayesian length-weight growth coefficient
+* MaxSizeTL: Maximum recorded fish total length
+* Diet: Fsih diet
+* Position: Fish living position relative to reefs
+* sstmean: Mean sea surface temperature
+* Biomass: Fish biomass
+* Kmax: The standardized fish growth coefficient 
+* Kmax_lowq: The lower quantile of predicted fish growth coefficient
+* Kmax_uppq: The upper quantile of predicted fish growth coefficient
+* somatic_G: The somatic growth of fish biomass
+* Md: The predicted fish mortality rates
+* Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
 
 #### File: Seguin\_World\_fish\_metric.csv
 
