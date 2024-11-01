@@ -1,4 +1,4 @@
-#Contrasting energy flow associates with tropical and subtropical reef fish assemblages
+#Contrasting energy flow associated with tropical and subtropical reef fish assemblages
 #Liu et al. 2024
 
 #Set working directory to the code source

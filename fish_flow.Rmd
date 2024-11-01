@@ -1,5 +1,5 @@
 ---
-title: "Contrasting energy flow associates with tropical and subtropical reef fish"
+title: "Contrasting energy flow associated with tropical and subtropical reef fish assemblages"
 author: "Liu et al. 2024"
 date: "2024-10-30"
 output: html_document
