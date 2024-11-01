@@ -12,37 +12,11 @@ library(glmmTMB)
 library(DHARMa)
 library(gridExtra)
 library(usdm)#For VIF
-library(conflicted) #Deal with conflict of functions
+library(conflicted) #Deal with conflicted functions
 conflict_prefer("select", 'dplyr')
 conflict_prefer("filter", "dplyr")
 
 #### Loop function for regional statistical test ###############################
-
-#levene test
-levene.loop <- function(data, group, energy){
-  #Empty list to store the result of Kruskal-Wallis test
-  levene.result <- list()
-  #Define formula structure as a string
-  data.formula <- paste(energy, '~', group)
-  #Region vector
-  region.vec <- data %>%
-    distinct(Region) %>%
-    pull() %>%
-    as.character()
-  
-  #Levene's test for the five regions
-  for(i in 1:length(region.vec)){
-    levene.result[[i]] <- data %>%
-      #Filter target region in this loop
-      filter(Region == region.vec[i]) %>%
-      #levene test following defined formula
-      levene_test(as.formula(data.formula)) %>%
-      mutate(Region = region.vec[i]) %>%
-      relocate(Region)
-  }
-  #Return result with row binded data.frame 
-  bind_rows(levene.result)
-}
 
 #Kruskal-Wallis test
 kruskal.loop <- function(data, group, energy){
@@ -154,8 +128,7 @@ transect.energy <- fish.metric %>%
 
 ### Global comparison
 #Data from 'Towards process-oriented management of tropical reefs in the anthropocene'
-transect_info <- read.table('Data\\Seguin_RLS_transect_info.txt')
-world.energy <- read.csv(file = 'Data\\Seguin_World_fish_metric.csv')
+world.energy <- read.csv(file = 'Data\\Seguin_world_fish_metric.csv')
 
 #Mean energy flows in each sites
 taiwan.energy <- transect.energy %>%
@@ -174,7 +147,6 @@ sd(taiwan.energy$Turn)
 
 #Combine world and Taiwan data
 world.taiwan <- world.energy %>%
-  left_join(., transect_info, by = 'SurveyID') %>%
   #Select depth between 3 - 7 meters
   filter(Depth > 3 & Depth < 7) %>%
   group_by(SurveyID) %>%
