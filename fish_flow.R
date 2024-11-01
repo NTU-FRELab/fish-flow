@@ -129,6 +129,9 @@ transect.energy <- fish.metric %>%
 
 ### Global comparison
 #Data from 'Towards process-oriented management of tropical reefs in the anthropocene'
+#Unzip the csv files
+unzip(zipfile = 'Data/Seguin_world_fish_metric.zip', exdir = 'Data/')
+#Import the unzipped fish data
 world.energy <- read.csv(file = 'Data\\Seguin_world_fish_metric.csv')
 
 #Mean energy flows in each sites
