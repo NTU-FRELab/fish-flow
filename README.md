@@ -21,7 +21,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 #### File: Abiotic\_factor.csv
 
-**Description:** 
+**Description: The data were used to present the environmental conditions of each research site and analyze the extrinsic drivers of fish energy flows. The data of Human_pop, PP, PAR and SST were from different online database, while the data of remained variables were obtained from field survey.** 
 
 ##### Variables
 
@@ -42,7 +42,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 #### File: Biotic\_factor.csv
 
-**Description:** 
+**Description: The data were used to analyze the intrinsic drivers of fish energy flows. All the data were obtained from field surveys using photo-quadrat methods.** 
 
 ##### Variables
 
@@ -77,7 +77,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 #### File: Taiwan\_fish\_metric.csv
 
-**Description:** 
+**Description: The data were ** 
 
 ##### Variables
 
