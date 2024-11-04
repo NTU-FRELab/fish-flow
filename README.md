@@ -77,7 +77,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 #### File: Taiwan\_fish\_metric.csv
 
-**Description: The data were ** 
+**Description: The data were used to evaluate fish energy flow metrics. ** 
 
 ##### Variables
 
@@ -103,7 +103,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 #### File: Seguin\_world\_fish\_metric.csv
 
-**Description:** 
+**Description: The data were obtained from Reef Life Survey database in Seguin R. et al. (2023) Towards process-oriented management of tropical reefs in the anthropocene. (https://doi.org/10.1038/s41893-022-00981-x) and used as a global standard for comparison with our data. The variables were extracted from the RLS_transect_info.text and evaluated using the raw_data.Rdata, traits.RData and calc_prod_rfishprod.R script.** 
 
 ##### Variables
 
