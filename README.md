@@ -68,25 +68,12 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * OC_encrusting: Encrusting octocoral
 * OC_lobate: Lobate octocoral
 * OC_massive: Massive octocoral
-* SG_hemprichii: _Thalassia hemprichii_ seagrass
+* SG: Seagrass
 * SP_encrusting: Encrusting sponge
 * SP_massive: Massive sponge
-* SP_repbra: Repent branching sponge
+* SP_branching: Repent branching sponge
 * Turf: Turf algae
 * ZO_encrusting: Encrusting zoantharian
-
-#### File: Seguin\_RLS\_transect\_info.txt
-
-**Description:** 
-
-##### Variables
-
-* SurveyID:
-* SiteCode:
-* Country:
-* SiteLongitude
-* SiteLatitude
-* Depth
 
 #### File: Taiwan\_fish\_metric.csv
 
@@ -94,7 +81,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 ##### Variables
 
-* Region:Region
+* Region: Region
 * Site: Site
 * Transect: Transect
 * Family: Fish family
@@ -110,40 +97,34 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * sstmean: Mean sea surface temperature
 * Biomass: Fish biomass
 * Kmax: The standardized fish growth coefficient 
-* Kmax_lowq: The lower quantile of predicted fish growth coefficient
-* Kmax_uppq: The upper quantile of predicted fish growth coefficient
 * somatic_G: The somatic growth of fish biomass
 * Md: The predicted fish mortality rates
 * Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
 
-#### File: Seguin\_World\_fish\_metric.csv
+#### File: Seguin\_world\_fish\_metric.csv
 
 **Description:** 
 
 ##### Variables
 
-* SurveyID:
-* Num:
-* Family:
-* Genus:
-* Species:
-* Size:
-* sstmean:
-* a:
-* b:
-* MaxSizeTL:
-* Area:
-* Kmax:
-* Kmax_lowq:
-* Kmax_uppq:
-* Md:
-* Size_nextday:
-* somatic_growth:
-* mortality:
-* soma_loss:
-* W:
-* Biom:
-* Prod:
+* SurveyID: Transect ID in Reef Life Survey
+* SiteCode: Site code in Reef Life Survey
+* Country: Surveyed country
+* Depth: Surveyed depth
+* Family: Fish family
+* Genus: Fish genus
+* Species: Fish species
+* Size: Observed fish total length
+* sstmean: mean sea surface temperature
+* a: Fish bayesian length-weight growth coefficient
+* b: Fish bayesian length-weight growth coefficient
+* MaxSizeTL: Maximum recorded fish total length
+* Area: Surveyed area of each transect (500 m^2)
+* Kmax: The standardized fish growth coefficient 
+* Md: The predicted fish mortality rates
+* Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
+* Biom: Total fish biomass in each transect
+* Prod: Productivity (i.e. total fish somatic growth in each transect). If the fish species was predicted to be dead tomorrow, the productivity is zero.
 
 
 Code/software
