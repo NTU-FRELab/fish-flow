@@ -2,7 +2,7 @@
 
 ---
 
-This README file was generated on 2024/10/30 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit Data_Analysis_Script.Rmd to generate html and extract R code. (Latest update on 2024/10/30)
+This README file was generated on 2024/10/30 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code. (Latest update on 2024/10/30)
 
 1. Author Information
 
@@ -22,14 +22,14 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 ### File List
 #### File: Abiotic\_factor.csv
 
-**Description: The data were used to present the environmental conditions of each research site and analyze the extrinsic drivers of fish energy flows. The data of Human_pop, PP, PAR and SST were from different online database (see data sources), while the data of remained variables were obtained from field survey.** 
+**Description: The data were used to present the environmental conditions of each research site and analyze the extrinsic drivers of fish energy flows. The data of `Human_pop`, `PP`, `PAR` and `SST` were from different online database (see data sources), while the data of remained variables were obtained from field survey.** 
 
 ##### Variables
 
 * Site: Survey sites
 * Human_pop: Human population
 * PP: Primary production
-* PAR: Photosynthetically active radiation
+* PAR: Photosynthetically active radiation (the proxy for the light intensity)
 * SST: Sea surface temperature
 * SS: Stable substrate
 * US: Unstable substrate
@@ -89,7 +89,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * Genus: Fish genus
 * Species: Fish species
 * Length: Observed fish total length
-* Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind S indicates different fish schools in each transect, and the number will reorder from 1 in new transect.
+* Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
 * a: Fish bayesian length-weight growth coefficient
 * b: Fish bayesian length-weight growth coefficient
 * MaxSizeTL: Maximum recorded fish total length
@@ -131,7 +131,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 **Code/software**
 
-R software is required, and the packages `tidyverse`, `vegan`, `ggpubr`, `multcompView`, `rstatix`, `glmmTMB`, `DHARMa`, `gridExtra`, `usdm`, `conflicted` need to be installed to run the script.
+The R software is required, along with the following packages to run the script: `tidyverse`, `vegan`, `ggpubr`, `multcompView`, `rstatix`, `glmmTMB`, `DHARMa`, `gridExtra`, `usdm`, `conflicted`.
 
 **Data sources**
 
