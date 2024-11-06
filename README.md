@@ -47,16 +47,16 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 ##### Variables
 
 * Transect: Transect
-* AL_artcal:Articulated calcareous algae
+* AL_artcal: Articulated calcareous algae
 * AL_corfol: Corticated foliose algae
 * AL_cormac: Corticated macrophyte algae
 * AN_encrusting: Encrusting anemone
 * AS_eresin: Erect single ascidian
 * CB_filamentous: Filamentous cyanobacteria
 * CCA: Crustose coralline algae
-* HC_arborescent:Arborescent hard coral
-* HC_bushy:Bushy hard coral
-* HC_column:Column hard coral
+* HC_arborescent: Arborescent hard coral
+* HC_bushy: Bushy hard coral
+* HC_column: Column hard coral
 * HC_encrusting: Encrusting hard coral
 * HC_foliose: Foliose hard coral
 * HC_massive: Massive hard coral
@@ -101,9 +101,9 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * Md: The predicted fish mortality rates
 * Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
 
-#### File: Seguin\_world\_fish\_metric.csv
+#### File: Seguin\_world\_fish\_metric.zip
 
-**Description: The data were obtained from Reef Life Survey database in Seguin R. et al. (2023) Towards process-oriented management of tropical reefs in the anthropocene. (https://doi.org/10.1038/s41893-022-00981-x) and used as a global standard for comparison with our data. The variables were extracted from the RLS_transect_info.text and evaluated using the raw_data.Rdata, traits.RData and calc_prod_rfishprod.R script.** 
+**Description: The data were obtained from Reef Life Survey database in Seguin R. et al. (2022) and used as a global standard for comparison with our data. The data were compressed into a zip file in order to reduce the file size and could automatically unzipped in the R script. The variables were extracted from the `RLS_transect_info.text` and evaluated using the `raw_data.Rdata`, `traits.RData` and `calc_prod_rfishprod.R script`.** 
 
 ##### Variables
 
@@ -128,14 +128,13 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 
 Code/software
-What free or open software is needed to view your data? Describe the software, including versions and loaded packages that you used to run files, and the workflow that you used if the relationship of files to software is not clear. If code or scripts are included with your submission, describe them here.
-
-
-
-Other publicly accessible locations of the data:
-
-*
+R software is required, and the packages `tidyverse`, `vegan`, `ggpubr`, `multcompView`, `rstatix`, `glmmTMB`, `DHARMa`, `gridExtra`, `usdm`, `conflicted` need to be installed to run the script.
 
 Data was derived from the following sources:
 
-*
+* Seguin\_world\_fish\_metric.zip: Seguin, R., Mouillot, D., Cinner, J. E., Stuart Smith, R. D., Maire, E., Graham, N. A., McLean, M., Vigliola, L., & Loiseau, N. (2023). Towards process-oriented management of tropical reefs in the anthropocene. Nat SustainNature Sustainability, 6:148–1571-10. https://doi.org/10.1038/s41893-022-00981-x
+*  Abiotic\_factor.csv
+  * Human_pop (human population): Center for International Earth Science Information Network - CIESIN - Columbia University. (2018). Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 NASA Socioeconomic Data and Applications Center (SEDAC). https://doi.org/10.7927/H4PN93PB
+  * PP (primary production): European Union-Copernicus Marine Service. (2022). Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. Mercator Ocean International. https://doi.org/10.48670/MOI-00281
+  * PAR (photosynthetically active radiation): NASA Goddard Space Flight Center, O. E. L., Ocean Biology Processing Group. (2017). MODIS-Aqua Level 3 Mapped Photosynthetically Available Radiation Data Version R2018.0 [dataset]. NASA Ocean Biology Distributed Active Archive Center. https://doi.org/10.5067/AQUA/MODIS/L3M/PAR/2018
+  * SST (sea surface temperature): Liu, G., Heron, S. F., Eakin, C. M., Muller-Karger, F. E., Vega-Rodriguez, M., Guild, L. S., De La Cour, J. L., Geiger , E. F., Skirving, W. J., & Burgess, T. F. (2014). Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. Remote Sensing, 6:(11), 11579–-11606. https://doi.org/10.3390/rs61111579
