@@ -13,7 +13,6 @@ library(DHARMa)
 library(performance)
 
 #### Fish energy flows in Taiwan ###############################################
-
 #Import fish energy flow metric
 fish.metric <- read.csv('Data//Taiwan_fish_metric.csv')
 
