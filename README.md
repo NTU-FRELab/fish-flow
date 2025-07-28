@@ -2,7 +2,7 @@
 
 ---
 
-This README file was generated on 2024/10/30 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit Data_Analysis_Script.Rmd to generate html and extract R code. (Latest update on 2024/10/30)
+This README file was generated on 2024/10/30 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code. (Latest update on 2024/11/06)
 
 1. Author Information
 
@@ -17,18 +17,19 @@ Four author name: Prof. Yi-Jay Chang. Affiliation: Institute of Oceanography, Na
 Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan; Ocean Center, National Taiwan University, Taipei 10617, Taiwan. Email: vianneydenis@ntu.edu.tw
 
 [UNDER REVIEW]
+***
 
-
+### File List
 #### File: Abiotic\_factor.csv
 
-**Description:** 
+**Description: The data were used to present the environmental conditions of each research site and analyze the extrinsic drivers of fish energy flows. The data of `Human_pop`, `PP`, `PAR` and `SST` were from different online database (see data sources), while the data of remained variables were obtained from field survey.** 
 
 ##### Variables
 
-* Site: Research site
+* Site: Survey sites
 * Human_pop: Human population
 * PP: Primary production
-* PAR: Photosynthetically active radiation
+* PAR: Photosynthetically active radiation (the proxy for the light intensity)
 * SST: Sea surface temperature
 * SS: Stable substrate
 * US: Unstable substrate
@@ -42,21 +43,21 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 
 #### File: Biotic\_factor.csv
 
-**Description:** 
+**Description: The data were used to analyze the intrinsic drivers of fish energy flows. All the data were obtained from field surveys using photo-quadrat methods.** 
 
 ##### Variables
 
-* Transect: Transect
-* AL_artcal:Articulated calcareous algae
+* Transect: survey transects
+* AL_artcal: Articulated calcareous algae
 * AL_corfol: Corticated foliose algae
 * AL_cormac: Corticated macrophyte algae
 * AN_encrusting: Encrusting anemone
 * AS_eresin: Erect single ascidian
 * CB_filamentous: Filamentous cyanobacteria
 * CCA: Crustose coralline algae
-* HC_arborescent:Arborescent hard coral
-* HC_bushy:Bushy hard coral
-* HC_column:Column hard coral
+* HC_arborescent: Arborescent hard coral
+* HC_bushy: Bushy hard coral
+* HC_column: Column hard coral
 * HC_encrusting: Encrusting hard coral
 * HC_foliose: Foliose hard coral
 * HC_massive: Massive hard coral
@@ -68,40 +69,27 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * OC_encrusting: Encrusting octocoral
 * OC_lobate: Lobate octocoral
 * OC_massive: Massive octocoral
-* SG_hemprichii: _Thalassia hemprichii_ seagrass
+* SG: Seagrass
 * SP_encrusting: Encrusting sponge
 * SP_massive: Massive sponge
-* SP_repbra: Repent branching sponge
+* SP_branching: Repent branching sponge
 * Turf: Turf algae
 * ZO_encrusting: Encrusting zoantharian
 
-#### File: Seguin\_RLS\_transect\_info.txt
-
-**Description:** 
-
-##### Variables
-
-* SurveyID:
-* SiteCode:
-* Country:
-* SiteLongitude
-* SiteLatitude
-* Depth
-
 #### File: Taiwan\_fish\_metric.csv
 
-**Description:** 
+**Description: The data were used to evaluate fish energy flow metrics.** 
 
 ##### Variables
 
-* Region:Region
-* Site: Site
-* Transect: Transect
+* Region: Survey regions
+* Site: Survey sites
+* Transect: Survey transects
 * Family: Fish family
 * Genus: Fish genus
 * Species: Fish species
 * Length: Observed fish total length
-* Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind S indicates different fish schools in each transect, and the number will restart in new transect.
+* Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
 * a: Fish bayesian length-weight growth coefficient
 * b: Fish bayesian length-weight growth coefficient
 * MaxSizeTL: Maximum recorded fish total length
@@ -110,51 +98,46 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * sstmean: Mean sea surface temperature
 * Biomass: Fish biomass
 * Kmax: The standardized fish growth coefficient 
-* Kmax_lowq: The lower quantile of predicted fish growth coefficient
-* Kmax_uppq: The upper quantile of predicted fish growth coefficient
 * somatic_G: The somatic growth of fish biomass
 * Md: The predicted fish mortality rates
 * Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
 
-#### File: Seguin\_World\_fish\_metric.csv
+#### File: Seguin\_world\_fish\_metric.zip
 
-**Description:** 
+**Description: The data were obtained from Reef Life Survey database in Seguin R. et al. (2022) and used as a global standard for comparison with our data. The data were compressed into a zip file and would automatically unzipped in the R script. The variables were extracted from the `RLS_transect_info.text` and evaluated using the `raw_data.Rdata`, `traits.RData` and `calc_prod_rfishprod.R script`.** 
 
 ##### Variables
 
-* SurveyID:
-* Num:
-* Family:
-* Genus:
-* Species:
-* Size:
-* sstmean:
-* a:
-* b:
-* MaxSizeTL:
-* Area:
-* Kmax:
-* Kmax_lowq:
-* Kmax_uppq:
-* Md:
-* Size_nextday:
-* somatic_growth:
-* mortality:
-* soma_loss:
-* W:
-* Biom:
-* Prod:
+* SurveyID: Transect ID in Reef Life Survey
+* SiteCode: Site code in Reef Life Survey
+* Country: Survey countries
+* Depth: Survey depths
+* Family: Fish family
+* Genus: Fish genus
+* Species: Fish species
+* Size: Observed fish total length
+* sstmean: mean sea surface temperature
+* a: Fish bayesian length-weight growth coefficient
+* b: Fish bayesian length-weight growth coefficient
+* MaxSizeTL: Maximum recorded fish total length
+* Area: Surveyed area of each transect (500 m^2)
+* Kmax: The standardized fish growth coefficient 
+* Md: The predicted fish mortality rates
+* Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
+* Biom: Total fish biomass in each transect
+* Prod: Productivity (i.e. total fish somatic growth in each transect). If the fish species was predicted to be dead tomorrow, the productivity is zero.
 
+***
 
-Code/software
-What free or open software is needed to view your data? Describe the software, including versions and loaded packages that you used to run files, and the workflow that you used if the relationship of files to software is not clear. If code or scripts are included with your submission, describe them here.
+**Code/software**
 
+The R software is required, along with the following packages to run the script: `tidyverse`, `vegan`, `ggpubr`, `multcompView`, `rstatix`, `glmmTMB`, `DHARMa`, `gridExtra`, `usdm`, `conflicted`.
 
+**Data sources**
 
-Other publicly accessible locations of the data:
-
-*
-
-Data was derived from the following sources:
-
-*
+* Seguin\_world\_fish\_metric.zip: Seguin, R., Mouillot, D., Cinner, J. E., Stuart Smith, R. D., Maire, E., Graham, N. A., McLean, M., Vigliola, L., & Loiseau, N. (2023). Towards process-oriented management of tropical reefs in the anthropocene. *Nature Sustainability*, *6*(2), 148–1571. https://doi.org/10.1038/s41893-022-00981-x
+*  Abiotic\_factor.csv
+    + human_pop (human population): Center for International Earth Science Information Network - CIESIN - Columbia University. (2018). Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 *NASA Socioeconomic Data and Applications Center (SEDAC)*. https://doi.org/10.7927/H4PN93PB
+    + PP (primary production): European Union-Copernicus Marine Service. (2022). Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
+    + PAR (photosynthetically active radiation): NASA Goddard Space Flight Center, O. E. L., Ocean Biology Processing Group. (2017). MODIS-Aqua Level 3 Mapped Photosynthetically Available Radiation Data Version R2018.0 [dataset]. *NASA Ocean Biology Distributed Active Archive Center*. https://doi.org/10.5067/AQUA/MODIS/L3M/PAR/2018
+    + SST (sea surface temperature): Liu, G., Heron, S. F., Eakin, C. M., Muller-Karger, F. E., Vega-Rodriguez, M., Guild, L. S., De La Cour, J. L., Geiger , E. F., Skirving, W. J., & Burgess, T. F. (2014). Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. *Remote Sensing*, *6*(11), 11579–11606. https://doi.org/10.3390/rs61111579
