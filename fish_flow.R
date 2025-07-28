@@ -1,74 +1,17 @@
-#Contrasting energy flow associated with tropical and subtropical reef fish assemblages
-#Liu et al. 2024
+#Patterns of reef fish energy flow in a transitional zone
+#Liu et al. 2025
 
 #Set working directory to the code source
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 library(tidyverse)
 library(vegan)
-library(ggpubr)
-library(multcompView) #for grouping
-library(rstatix) #Levene's test & Games Howell test
 library(glmmTMB)
+library(emmeans)
+library(ggpubr)
 library(DHARMa)
-library(gridExtra)
-library(usdm)#For VIF
-library(conflicted) #Deal with conflicted functions
-conflict_prefer("select", 'dplyr')
-conflict_prefer("filter", "dplyr")
+library(performance)
 
-#### Loop function for regional statistical test ###############################
-
-#Kruskal-Wallis test
-kruskal.loop <- function(data, group, energy){
-  #Empty list to store the result of Kruskal-Wallis test
-  kruskal.result <- list()
-  #Define formula structure as a string
-  data.formula <- paste(energy, '~', group)
-  #Region vector
-  region.vec <- data %>%
-    distinct(Region) %>%
-    pull() %>%
-    as.character()
-  
-  #Kruskal-Wallis test for the five regions
-  for(i in 1:length(region.vec)){
-    kruskal.result[[i]] <- data %>%
-      #Filter target region in this loop
-      filter(Region == region.vec[i]) %>%
-      #Kruskal-Wallis test following defined formula
-      kruskal_test(as.formula(data.formula)) %>%
-      mutate(Region = region.vec[i]) %>%
-      relocate(Region)
-  }
-  #Return result with row binded data.frame 
-  bind_rows(kruskal.result)
-}
-
-#Pairwise wilcox test
-pairwise.wilcox.loop <- function(data, group, energy){
-  #Empty list to store the result of pairwise wilcoxon test
-  wilcox.result <- list()
-  #Define formula structure as a string
-  data.formula <- paste(energy, '~', group)
-  #Region vector
-  region.vec <- data %>%
-    distinct(Region) %>%
-    pull() %>%
-    as.character()
-  
-  for(i in 1:length(region.vec)){
-    wilcox.result[[i]] <- data %>%
-      #Filter target region in this loop
-      filter(Region == region.vec[i]) %>%
-      #Pairwise wilcoxon test following defined formula
-      wilcox_test(as.formula(data.formula), p.adjust.method = 'bonferroni') %>%
-      mutate(Region = region.vec[i]) %>%
-      relocate(Region)
-  }
-  #Return result with row binded data.frame 
-  bind_rows(wilcox.result)
-}
 #### Fish energy flows in Taiwan ###############################################
 
 #Import fish energy flow metric
