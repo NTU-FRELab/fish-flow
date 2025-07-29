@@ -13,16 +13,19 @@ library(DHARMa)
 library(performance)
 
 #### Fish energy flows in Taiwan ###############################################
+
 #Import fish energy flow metric
-fish.metric <- read.csv('Data//Taiwan_fish_metric.csv')
+fish.metric <- read.csv('Data//Taiwan fish metric.csv')
 
 #Summarize the fish metric
 fish.metric <- fish.metric %>%
   #Removed 5 percent of fish that is too small for identification
-  filter(Length >= 2.5) %>%
+  filter(Length >= 2.5) %>% 
+  #Remove cryptobenthic fish family defined by Brandl et al (2018)
+  filter(!Family %in% c('Pseudochromidae', 'Blenniidae')) %>%
   #Keep the order of region and sites
   mutate(Site = factor(Site, levels = unique(Site)),
-         Region = factor(Region, levels = c('Sub', 'Trans', 'Trop1', 'Trop2', 'Trop3')),
+         Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT')),
          Species = factor(Species, levels = unique(Species)),
          #Combine site and transect information
          Abr = str_sub(Site, start = 1, end = 4)) %>%
@@ -54,30 +57,40 @@ fish.metric %>%
   summarise(Number = mean(n),
             SD = sd(n))
 
-#Evaluate transect-level energy metrics
+#Richness of the five region
+fish.metric %>%
+  group_by(Region) %>%
+  distinct(Species) %>%
+  count()
+
+#Calculate transect-level energy metrics
 transect.energy <- fish.metric %>%
   group_by(Region, Site, Transect) %>%
   #100 is the detecting area of each transect
   #so the values are energy flows per m^2
   summarise(Biom = sum(Biomass)/100,
             #Sum of somatic growth of surviving fish
-            Prod = sum(somatic_G[Fate = T])/100, 
+            Prod = sum(Growth_iter)/100, 
             Turn = Prod/Biom * 100,
-            .groups = 'drop') %>%
-  #Standing biomass were log10 transformed
-  mutate(Biom = log10(Biom + 1))
+            .groups = 'drop')
 
-#### Management units (Fig 3)##################################################
-
-### Global comparison
+### Global comparison (Fig. 2) ####
 #Data from 'Towards process-oriented management of tropical reefs in the anthropocene'
-#Unzip the csv files
-unzip(zipfile = 'Data/Seguin_world_fish_metric.zip', exdir = 'Data/')
-#Import the unzipped fish data
-world.energy <- read.csv(file = 'Data\\Seguin_world_fish_metric.csv')
+global.energy <- read.csv(file = 'Data\\Seguin fish metric.csv')
 
 #Mean energy flows in each sites
-taiwan.energy <- transect.energy %>%
+taiwan.energy <- fish.metric %>%
+  group_by(Region, Site, Transect) %>%
+  #100 is the detecting area of each transect
+  #so the values are energy flows per m^2
+  summarise(Biom = sum(Biomass)/100,
+            #Sum of somatic growth of surviving fish
+            Prod = sum(Growth_iter)/100, 
+            Turn = Prod/Biom * 100,
+            .groups = 'drop') %>%
+  #Standing biomass were log transformed
+  mutate(Biom = log10(Biom + 1)) %>%
+  ungroup() %>%
   group_by(Site) %>%
   summarise(Biom = mean(Biom),
             Prod = mean(Prod),
@@ -87,19 +100,15 @@ taiwan.energy <- transect.energy %>%
   #Rename column name to fit Seguin's data
   rename('SiteCode' = 'Site')
 
-#Mean and standard deviation of fish energy metrics
-mean(taiwan.energy$Turn)
-sd(taiwan.energy$Turn)
-
-#Combine world and Taiwan data
-world.taiwan <- world.energy %>%
+#Combine global and Taiwan data
+global.taiwan <- global.energy %>%
   #Select depth between 3 - 7 meters
   filter(Depth > 3 & Depth < 7) %>%
   group_by(SurveyID) %>%
   #Sum of energy flows in each transect
   #500 m^2 are detecting areas in RLS
   reframe(Biom = sum(Biom)/500,
-          Prod = sum(Prod)/500,
+          Prod = sum(Growth_iter * Num)/500,
           Turn = (Prod/Biom)*100,
           Country = Country,
           SiteCode = SiteCode) %>%
@@ -123,46 +132,51 @@ world.taiwan <- world.energy %>%
   filter(is.na(Country) == F)
 
 #global standard of high turnover
-world.taiwan %>%
+global.taiwan %>%
   summarise(Quantile75 = quantile(Turn, 0.75),
             SD = sd(Turn))
 
 #Mean turnover in Taiwan
-world.taiwan %>%
+global.taiwan %>%
   filter(Country == 'Taiwan') %>%
   summarise(Mean = mean(Turn),
             SD = sd(Turn))
 
+#Number of sites other than Taiwan
+global.taiwan %>%
+  filter(Country != 'Taiwan') %>%
+  distinct(SiteCode) %>%
+  count()
+
 #Taiwan sites that are in high turnover units
-world.taiwan %>%
-  filter(Country == 'Taiwan' & Turn > quantile(world.taiwan$Turn, 0.75)) %>%
+global.taiwan %>%
+  filter(Country == 'Taiwan' & Turn > quantile(global.taiwan$Turn, 0.75)) %>%
   distinct(SiteCode)
 
 #Global management units
-manage.world <- world.taiwan %>%
+global.taiwan %>%
   ggplot(aes(x = Biom, y = Turn, col = Col)) +
   scale_colour_manual(values = c('#7fc97f', '#beaed4', '#fdc086', '#80b1d3'),
                       aesthetics = c('colour', 'fill'),
                       labels = c('Indonesia','Japan','Others','Taiwan')) +
   #Circle the dots of every country
   stat_ellipse(geom = 'polygon', alpha = 0.3, aes(fill = Col)) +
-  geom_jitter(data = world.taiwan[which(world.taiwan$Col != 'Others'), ], size = 2.5) +
+  geom_jitter(data = global.taiwan[which(global.taiwan$Col != 'Others'), ], size = 2.5, alpha = 0.75) +
   #Lines to distinguish high turnover, high biomass, and low biomass-turnover states
   geom_segment(aes(x = -0.7, y = quantile(Turn, 0.25),
                    xend = quantile(Biom, 0.25), yend = quantile(Turn, 0.25)),
-               linewidth = 0.5, col = 'black', linetype = 2)+
+               linewidth = 0.5, col = 'grey50', linetype = 2, alpha = 0.1)+
   geom_segment(aes(x = -0.7, y = quantile(Turn, 0.75),
                    xend = 4, yend = quantile(Turn, 0.75)),
-               linewidth = 0.5, col = 'black', linetype = 2)+
+               linewidth = 0.5, col = 'grey50', linetype = 2, alpha = 0.1)+
   geom_segment(aes(x = quantile(Biom, 0.25), y = -0.1,
                    xend = quantile(Biom, 0.25), yend = quantile(Turn, 0.25)),
-               linewidth = 0.5, col = 'black', linetype = 2)+
+               linewidth = 0.5, col = 'grey50', linetype = 2, alpha = 0.1)+
   geom_segment(aes(x = quantile(Biom, 0.95), y = -0.1,
                    xend = quantile(Biom, 0.95), yend = quantile(Turn, 0.75)),
-               linewidth = 0.5, col = 'black', linetype = 2) +
-  labs(x = expression('log10[standing biomass ('~ g%.%m^-2~ ')]'),
-       y = expression(Turnover~ ('%'~~day^-1)),
-       subtitle = 'a', fill = 'Country', colour = 'Country') +
+               linewidth = 0.5, col = 'grey50', linetype = 2, alpha = 0.1) +
+  labs(x = expression(log[10]*'[Biomass ('~ g%.%m^-2~ ')]'),
+       y = expression(Turnover~ ('%'~~day^-1)), fill = 'Country', colour = 'Country') +
   #Remove extreme outliers to improve visualization
   scale_x_continuous(limits=c(-0.7, 4), expand = c(0, 0)) +
   scale_y_continuous(limits=c(-0.1, 1), expand = c(0, 0)) +
@@ -172,632 +186,821 @@ manage.world <- world.taiwan %>%
         title = element_text(size = 14),
         legend.title = element_text(size = 14))
 
+#ggsave(filename = 'CR Figures\\Fig 2.svg', width = 8, height = 5, dpi = 1200)
+
 #Check which country were removed from the plot
-world.taiwan %>%
+global.taiwan %>%
   filter(Turn > 1)
 
-#Site level turnover vs. Standing biomass in Taiwan
-manage.taiwan <- transect.energy %>%
-  ggplot(aes(x = Biom, y = Turn, col = Region)) +
-  geom_jitter(size = 3) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  stat_ellipse(geom = 'polygon', aes(fill = Region), alpha = 0.2) +
-  scale_fill_brewer(palette = "Set2", direction = -1) +
-  labs(x = expression('log10[standing biomass ('~ g%.%m^-2~ ')]'),
-       y = expression(Turnover~('%'~~day^-1)),
-       subtitle = 'b') +
-  theme_bw(base_size = 12) +
+### QQ-plots and histograms of fish energy flows at transect level
+#Biomass
+trans.biom.qq <- transect.energy %>%
+  ggplot(aes(sample = Biom)) +
+  stat_qq(pch = 1, cex = 2) +
+  stat_qq_line() +
+  labs(x = 'Theoretical Quantiles', y = 'Sample Quantiles', subtitle = 'a') +
+  theme_bw() +
   theme(panel.grid = element_blank(),
-        axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14))
+        plot.subtitle = element_text(size = 16))
 
-#Figure 3. Relationship between turnover and standing biomass.
-ggarrange(manage.world, manage.taiwan, ncol = 1, nrow = 2)
-#ggsave(filename = 'Figures\\management units.pdf', width = 8, height = 10)
-ggsave(filename = 'Figures\\Fig3.pdf', width = 8, height = 10)
-
-#### Regional comparison of energy flows (Fig S2 & Fig 4) ######################
-
-#Mean and standard deviation of energy metrics in the five regions
-transect.energy %>%
-  group_by(Region) %>%
-  summarise(Biom.mean = mean(Biom),
-            Biom.sd = sd(Biom),
-            Prod.mean = mean(Prod),
-            Prod.sd = sd(Prod),
-            Turn.mean = mean(Turn),
-            Turn.sd = sd(Turn))
-
-### Normality test: shapiro test and levene test
-#standing biomass
-shapiro.test(transect.energy$Biom)
-#Test the homogeneity of variance between group
-levene_test(Biom ~ Region, data = transect.energy)
+trans.biom.density <- transect.energy %>%
+  ggplot(aes(x = Biom)) +
+  geom_histogram(aes(y = after_stat(density)), col = 'black', fill = 'grey75', bins = 15) +
+  geom_density() +
+  labs(x = expression(Biomass~ ~(g%.%m^-2)), y = 'Density', subtitle = ' ') +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 
 #Productivity
-shapiro.test(transect.energy$Prod)
-#Test the homogeneity of variance between group
-levene_test(Prod ~ Region, data = transect.energy)
+trans.prod.qq <- transect.energy %>%
+  ggplot(aes(sample = Prod)) +
+  stat_qq(pch = 1, cex = 2) +
+  stat_qq_line() +
+  labs(x = 'Theoretical Quantiles', y = 'Sample Quantiles', subtitle = 'b') +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        plot.subtitle = element_text(size = 16))
+
+trans.prod.density <- transect.energy %>%
+  ggplot(aes(x = Prod)) +
+  geom_histogram(aes(y = after_stat(density)), col = 'black', fill = 'grey75', bins = 15) +
+  geom_density() +
+  labs(x = expression(Productivity~ ~(g%.%m^-2~~day^-1)), y = 'Density', subtitle = ' ') +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 
 #Turnover
-shapiro.test(transect.energy$Turn)
-#Test the homogeneity of variance between group
-levene_test(Turn ~ Region, data = transect.energy)
+trans.turn.qq <- transect.energy %>%
+  ggplot(aes(sample = Turn)) +
+  stat_qq(pch = 1, cex = 2) +
+  stat_qq_line() +
+  labs(x = 'Theoretical Quantiles', y = 'Sample Quantiles', subtitle = 'c') +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        plot.subtitle = element_text(size = 16))
 
-### Fig S2. QQ-plots and histograms of fish energy flows at transect level
-pdf(file = 'Figures\\figS2.pdf', height = 8, width = 6)
-par(mfrow = c(3, 2))
+trans.turn.density <- transect.energy %>%
+  ggplot(aes(x = Turn)) +
+  geom_histogram(aes(y = after_stat(density)), col = 'black', fill = 'grey75', bins = 15) +
+  geom_density() +
+  labs(x = expression(Turnover~('%'~~day^-1)), y = 'Density', subtitle = ' ') +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 
-#Standing biomass
-qqnorm(transect.energy$Biom, main = NA)
-qqline(transect.energy$Biom)
-title(main = 'a', adj = 0)
-hist(transect.energy$Biom, breaks = 15, main = NA, xlab = 'Standing biomass')
+ggarrange(trans.biom.qq, trans.biom.density, trans.prod.qq, trans.prod.density, trans.turn.qq, trans.turn.density,
+          nrow = 3, ncol = 2, align = 'hv')
 
-#Productivty
-qqnorm(transect.energy$Prod, main = NA)
-qqline(transect.energy$Prod)
-title(main = 'b', adj = 0)
-hist(transect.energy$Prod, breaks = 15, main = NA, xlab = 'Productivity')
+#### Regional comparison of energy flows (Fig S2 & Fig 4) ####
+###Biomass
+#GLMM
+biom.m.reg <- glmmTMB(Biom ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
+
+#Save the glmm output
+biom.reg.ci <- confint(biom.m.reg) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(!Independent %in% c("Std.Dev.(Intercept)|Site"))
+
+biom.glmm.reg <- coef(summary(biom.m.reg))$cond %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  mutate(Dependent = 'Biomass') %>%
+  left_join(., biom.reg.ci, by = 'Independent') %>%
+  relocate(Dependent)
+
+### Productivity
+#GLMM
+prod.m.reg <- glmmTMB(Prod ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
+
+#Save the glmm output
+prod.reg.ci <- confint(prod.m.reg) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(!Independent %in% c("Std.Dev.(Intercept)|Site"))
+
+prod.glmm.reg <- coef(summary(prod.m.reg))$cond %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  mutate(Dependent = 'Productivity') %>%
+  left_join(., prod.reg.ci, by = 'Independent') %>%
+  relocate(Dependent)
+
+### Turnover
+#GLMM
+turn.m.reg <- glmmTMB(Turn ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
+
+#Combine the glmm output
+turn.reg.ci <- confint(turn.m.reg) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(!Independent %in% c("Std.Dev.(Intercept)|Site"))
+
+turn.glmm.reg <- coef(summary(turn.m.reg))$cond %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  mutate(Dependent = 'Turnover') %>%
+  left_join(., turn.reg.ci, by = 'Independent') %>%
+  relocate(Dependent)
+
+#Save the glmm output
+energy.reg.glmm <- bind_rows(biom.glmm.reg, prod.glmm.reg, turn.glmm.reg) %>%
+  mutate(across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
+         `Pr(>|z|)` = round(`Pr(>|z|)`, 3),
+         Independent = gsub("^Region", '', Independent)) %>%
+  mutate(Sig = ifelse(`Pr(>|z|)` < 0.05, '*', ' '),
+         `Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*',
+                             ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
+  relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
+
+#write.table(energy.reg.glmm, file = 'CR Tables//Table S3.txt', row.names = F, quote = T)
+
+### Estimated Marginal Means (EMMs)
+#Biomass
+biom.reg.em <- emmeans(biom.m.reg, pairwise ~ Region, type = 'response')
+
+#EMMs contrast
+biom.reg.contrast <- biom.reg.em$contrasts %>%
+  as.data.frame() %>%
+  mutate(Type = 'Biomass')
+
+#Productivity
+prod.reg.em <- emmeans(prod.m.reg, pairwise ~ Region, type = 'response')
+
+#EMMs contrast
+prod.reg.contrast <- prod.reg.em$contrasts %>%
+  as.data.frame() %>%
+  mutate(Type = 'Productivity')
 
 #Turnover
-qqnorm(transect.energy$Turn, main = NA)
-qqline(transect.energy$Turn)
-title(main = 'c', adj = 0)
-hist(transect.energy$Turn, breaks = 15, main = NA, xlab = 'Turnover')
+turn.reg.em <- emmeans(turn.m.reg, pairwise ~ Region, type = 'response')
 
-dev.off()
+#EMMs contrast
+turn.reg.contrast <- turn.reg.em$contrasts %>%
+  as.data.frame() %>%
+  mutate(Type = 'Turnover')
 
-par(mfrow = c(1, 1))
+#Save emmeans pairwise comparison output
+energy.reg.em <- bind_rows(biom.reg.contrast, prod.reg.contrast, turn.reg.contrast) %>%
+  select(-df, -null) %>%
+  mutate(across(where(is.numeric) & !p.value, ~ sprintf("%.2f", .x)),
+         p.value = round(p.value, 3)) %>%
+  mutate(p.value = ifelse(p.value == 0, '<0.001*', 
+                          ifelse(p.value >= 0.05, sprintf("%.3f", p.value), paste0(p.value, '*')))) %>%
+  relocate(Type) %>%
+  rename(Dependent = Type, Contrast = contrast, Ratio = ratio, `z-ratio` = z.ratio, `p-value` = p.value)
 
-#### Region comparison
+#write.table(energy.reg.em, file = 'CR Tables//Table S4.txt', row.names = F, quote = T)
 
-### Standing biomass
-
-#Welch's ANOVA test
-oneway.test(data = transect.energy, Biom ~ Region)
-
-#Games Howell test
-gamhow.biomass <- transect.energy %>%
-  games_howell_test(Biom ~ Region, detailed = T)
-
-#Names the p values by each group
-biomass.pval <- gamhow.biomass$p.adj
-names(biomass.pval) <- gamhow.biomass %>%
-  mutate(pval = str_c(group1, group2, sep = '-'), .keep = 'none')%>%
-  pull()
-
-#Assign each region to different group based on the pairwise result
-biomass.let <- multcompLetters(biomass.pval, Letters = c('a', 'b', 'c'))$Letters %>%
-  as.data.frame(responseName = 'grp') %>%
-  rownames_to_column(var = 'Region') %>%
-  rename('Letters' = '.')
-
-#Formulate group labels for the boxplot
-biomass.grp <- transect.energy %>%
+### Region comparison boxplot
+#Position of group labels
+position.reg <- transect.energy %>%
   group_by(Region) %>%
-  #y is where the group labels located in the boxplot
-  summarise(y = max(Biom) + 0.1) %>%
-  left_join(., biomass.let, by = 'Region')
+  summarise(y.biom = max(Biom) + 3,
+            y.prod = max(Prod) + 0.01,
+            y.turn = max(Turn) + 0.1)
+
+#### Biomass
+#Formulate group labels for the boxplot
+biom.reg.grp <- multcomp::cld(biom.reg.em, Letters = letters, decreasing = T) %>%
+  as.data.frame() %>%
+  select(Region, .group) %>%
+  rename(label = .group) %>%
+  left_join(., position.reg[ , c('Region', 'y.biom')], by = 'Region')
 
 #Boxplot
-region.biomass <- transect.energy %>%
-  ggplot(aes(x = reorder(Region, Biom), y = Biom)) +
+region.biom <- transect.energy %>%
+  ggplot(aes(x = Region, y = Biom)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(aes(col = Region), alpha = 0.75 ) +
-  labs(x = 'Region', y = expression('log10[biomass ('~ g%.%m^-2~ ')]'),
+  labs(x = 'Region', y = expression(Biomass~ ~(g%.%m^-2)),
        subtitle = 'a') +
   scale_colour_brewer(palette = "Set2", direction = -1) +
-  geom_text(data = biomass.grp, aes(x = Region, y = y, label = Letters)) +
+  geom_text(data = biom.reg.grp, aes(x = Region, y = y.biom, label = label), size = 5) +
   theme_bw() +
   theme(axis.title = element_text(size = 14),
         axis.text = element_text(size = 12),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14),
+        plot.subtitle = element_text(size = 20),
         legend.position = 'none')
 
 #### Productivity
-#Kruskal Wallis test
-kruskal.test(data = transect.energy, Prod ~ Region)
-
-#Pairwise Wilcoxon test
-wil.prod <- transect.energy %>%
-  wilcox_test(Prod ~ Region, p.adjust.method = 'bonferroni')
-
-#Names the p values by each group
-prod.pval <- wil.prod$p.adj
-names(prod.pval) <- wil.prod %>%
-  mutate(pval = str_c(group1, group2, sep = '-'), .keep = 'none')%>%
-  pull()
-
-#Assign each region to different group based on the pairwise result
-prod.let <- multcompLetters(prod.pval, Letters = c('a', 'b', 'c'))$Letters %>%
-  as.data.frame(responseName = 'grp') %>%
-  rownames_to_column(var = 'Region') %>%
-  rename('Letters' = '.')
-
 #Formulate group labels for the boxplot
-prod.grp <- transect.energy %>%
-  group_by(Region) %>%
-  #y is where the group labels located in the boxplot
-  summarise(y = max(Prod) + 0.01) %>%
-  left_join(., prod.let, by = 'Region')
+prod.reg.grp <- multcomp::cld(prod.reg.em, Letters = letters, decreasing = T) %>%
+  as.data.frame() %>%
+  select(Region, .group) %>%
+  rename(label = .group) %>%
+  left_join(., position.reg[ , c('Region', 'y.prod')], by = 'Region')
 
 #boxplot
 region.prod <- transect.energy %>%
-  ggplot(aes(x = reorder(Region, Prod), y = Prod)) +
+  ggplot(aes(x = Region, y = Prod)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(aes(col = Region), alpha = 0.75 ) +
   labs(x = 'Region', y = expression(Productivity~ ~(g%.%m^-2~~day^-1)),
        subtitle = 'b') +
-  geom_text(data = prod.grp, aes(x = Region, y = y, label = Letters)) +
+  geom_text(data = prod.reg.grp, aes(x = Region, y = y.prod, label = label), size = 5) +
   scale_colour_brewer(palette = "Set2", direction = -1) +
   theme_bw() +
   theme(axis.title = element_text(size = 14),
         axis.text = element_text(size = 12),
-        title = element_text(size = 14),
+        plot.subtitle = element_text(size = 20),
         legend.position = 'none')
 
 ### Turnover
-#Kruskal Wallis test
-kruskal.test(data = transect.energy, Turn ~ Region)
-
-#Pairwise wilcoxon test
-wil.turn <- transect.energy %>%
-  wilcox_test(Turn ~ Region, p.adjust.method = 'bonferroni')
-
-#Names the p values by each group
-turn.pval <- wil.turn$p.adj
-names(turn.pval) <- wil.turn %>%
-  mutate(pval = str_c(group1, group2, sep = '-'), .keep = 'none')%>%
-  pull()
-
-#Assign each region to different group based on the pairwise result
-turn.let <- multcompLetters(turn.pval, Letters = c('a', 'b', 'c'))$Letters %>%
-  as.data.frame(responseName = 'grp') %>%
-  rownames_to_column(var = 'Region') %>%
-  rename('Letters' = '.')
-
 #Formulate group labels for the boxplot
-turn.grp <- transect.energy %>%
-  group_by(Region) %>%
-  #y is where the group labels located in the boxplot
-  summarise(y = max(Turn) + 0.1) %>%
-  left_join(., turn.let, by = 'Region')
+turn.reg.grp <- multcomp::cld(turn.reg.em, Letters = letters, decreasing = T) %>%
+  as.data.frame() %>%
+  select(Region, .group) %>%
+  rename(label = .group) %>%
+  left_join(., position.reg[ , c('Region', 'y.turn')], by = 'Region')
 
 #Boxplot
 region.turn <- transect.energy %>%
-  ggplot(aes(x = reorder(Region, Turn), y = Turn)) +
+  ggplot(aes(x = Region, y = Turn)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(aes(col = Region), alpha = 0.75 ) +
   labs(x = 'Region', y = expression(Turnover~('%'~~day^-1)), 
        subtitle = 'c') +
-  geom_text(data = turn.grp, aes(x = Region, y = y, label = Letters)) +
+  geom_text(data = turn.reg.grp, aes(x = Region, y = y.turn, label = label), size = 5) +
   scale_colour_brewer(palette = "Set2", direction = -1) +
   theme_bw() +
   theme(axis.title = element_text(size = 14),
         axis.text = element_text(size = 12),
-        title = element_text(size = 14),
+        plot.subtitle = element_text(size = 20),
         legend.position = 'none')
 
-### Figure 4. Regional comparison of energy flow metric.
-ggarrange(region.biomass, region.prod, region.turn, ncol = 2, nrow = 2)
-ggsave('Figures\\Fig4.pdf', height = 8, width = 10)
+ggarrange(region.biom, region.prod, region.turn, nrow = 2, ncol = 2, align = 'hv')
 
-#### Compare energy flows among fish family (Fig S1) ###########################
+#ggsave(filename = 'CR Figures\\Fig 3.svg', width = 10, height = 8, dpi = 1200)
 
-#Summarize energy metrics of each fish species in every transects
-family.energy <- fish.metric %>%
-  group_by(Transect, Family) %>%
-  reframe(Region = Region,
-          Biom = sum(Biomass)/100,
-          Prod = sum(somatic_G[Fate = T])/100,
-          Turn = Prod/Biom * 100) %>%
-  distinct() %>%
-  mutate(Biom = log10(Biom + 1))
+### Residual diagnostics for GLMMs of region comparison.
+svg(filename = 'CR Figures//Fig S3.svg', width = 8, height = 9)
 
-#Standing biomass
-fam.biomass <- family.energy %>%
-  ggplot(aes(x = reorder(Family, Biom), y = Biom)) + #log transformation
-  geom_boxplot(outlier.shape = NA) +
-  geom_jitter(aes(col = Region), alpha = 0.5 ) +
-  labs(x = 'Family\n', subtitle = 'a',
-       y = expression('log10[biomass ('~ g%.%m^-2~ ')]')) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  coord_flip() +
-  theme_bw(base_size = 12) +
-  theme(axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14))
+layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
+       heights = c(1, 6, 1, 6, 1, 6), widths = c(2, 3))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'a', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(biom.m.reg))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'b', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(prod.m.reg))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'c', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(turn.m.reg))
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(biom.m.reg), form = transect.energy$Region)
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(prod.m.reg), form = transect.energy$Region)
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(turn.m.reg), form = transect.energy$Region)
 
-#Extract legend of boxplot
-region.leg <- ggpubr::get_legend(fam.biomass)
-fam.biomass <- fam.biomass + theme(legend.position = 'none')
+dev.off()
 
-#Productivity
-fam.prod <- family.energy %>%
-  ggplot(aes(x = reorder(Family, Prod), y = Prod))+
-  geom_boxplot(outlier.shape = NA) +
-  geom_jitter(aes(col = Region), alpha = 0.5 ) +
-  labs(x = 'Family\n', subtitle = 'b',
-       y = expression(Productivity~ ~(g%.%m^-2~~day^-1))) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  coord_flip() +
-  theme_bw(base_size = 14) +
-  theme(axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14),
-        legend.position = 'none')
-
-#Turnover
-fam.turn <- family.energy %>%
-  ggplot(aes(x = reorder(Family, Turn), y = Turn)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_jitter(aes(col = Region), alpha = 0.5) +
-  labs(x = 'Family\n', subtitle = 'c',
-       y = expression(Turnover~('%'~~day^-1))) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  coord_flip() +
-  theme_bw(base_size = 12) +
-  theme(axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14),
-        legend.position = 'none')
-
-### Figure S1. Energy flows among observed fish families.
-ggarrange(fam.biomass, fam.prod, fam.turn, region.leg, ncol = 2, nrow = 2)
-ggsave(filename = 'Figures\\figS1.pdf', width = 10, height = 12)
-
-#### Energy flows of acanthurids, scarids, and pomacentrids (Fig 5) ############
-
-#Select target fish families
-plkher.energy <- family.energy %>%
-  filter(Family %in% c('Acanthuridae', 'Scaridae', 'Pomacentridae')) 
-
-#Check the number of transects observed with target families in the five regions 
-with(family.energy.major, table(Family, Region))
-
-#Standing biomass
-plkher.biomass <- plkher.energy %>%
-  #Keep the order of family and region
-  mutate(Family = factor(Family, levels = c('Acanthuridae', 'Scaridae', 'Pomacentridae'))) %>%
-  ggplot(aes(x = Region, y = Biom, fill = Family)) +
-  geom_boxplot(outlier.alpha = 0.75, outlier.size = 1) +
-  labs(x = 'Region', subtitle = 'a',
-       y = expression('log10[biomass ('~ g%.%m^-2~ ')]')) +
-  scale_fill_brewer(palette = "Set2") +
-  theme_bw() +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14))
-
-#Extract legend of boxplot
-diet.leg <- ggpubr::get_legend(plkher.biomass)
-plkher.biomass <- plkher.biomass + theme(legend.position = 'none')
-
-#Productivity
-plkher.prod <- plkher.energy %>%
-  mutate(Family = factor(Family, levels = c('Acanthuridae', 'Scaridae', 'Pomacentridae'))) %>%
-  ggplot(aes(x = Region, y = Prod, fill = Family)) +
-  geom_boxplot(outlier.alpha = 0.75, outlier.size = 1) +
-  labs(x = 'Region', subtitle = 'b',
-       y = expression(Productivity~ ~(g%.%m^-2~~day^-1))) +
-  scale_fill_brewer(palette = "Set2") +
-  #To improve clarity, the limits of the y-axis were adjusted
-  lims(y = c(0, 0.08)) +
-  theme_bw() +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14),
-        legend.position = 'none')
-
-#Check which sites were removed from the plot
-family.energy.major %>%
-  filter(Prod > 0.08)
-
-#Turnover
-plkher.turn <- plkher.energy %>%
-  mutate(Family = factor(Family, levels = c('Acanthuridae', 'Scaridae', 'Pomacentridae'))) %>%
-  ggplot(aes(x = Region, y = Turn, fill = Family)) +
-  geom_boxplot(outlier.alpha = 0.75, outlier.size = 1) +
-  labs(x = 'Region', subtitle = 'c',
-       y = expression(Turnover~('%'~~day^-1))) +
-  #To improve clarity, the limits of the y-axis were adjusted
-  scale_y_continuous(breaks = seq(0, 3, 1), limits = c(0, 2.5)) +
-  scale_fill_brewer(palette = "Set2") +
-  theme_bw() +
-  theme(axis.title = element_text(size = 14),
-        axis.text = element_text(size = 12),
-        legend.text = element_text(size = 12),
-        legend.title = element_text(size = 14),
-        title = element_text(size = 14),
-        legend.position = 'none')
-
-#Check which sites were removed from the plot
-family.energy.major %>%
-  filter(Turn > 2.5)
-
-### Figure 5. Energy flows of acanthurids, scarids and pomacentrids among the five regions.
-ggarrange(plkher.biomass, plkher.prod, plkher.turn, diet.leg, ncol = 2, nrow = 2)
-ggsave(filename = 'Figures\\fig5.pdf', width = 10, height = 8)
-
-#### Compare energy flows among dietary groups (Table S3 & Fig 6) ##############
-
-### Trophic metrics at transect level
+#### Compare energy flows among dietary groups (Table S3 & Fig 6) ####
+#Diet Wide table
 diet.energy <- fish.metric %>%
-  #Categorize 7 trophic groups into 5 groups
+  #Categorize 7 dietary groups into 5 groups
   mutate(Diet = ifelse(Diet %in% c('HerMac', 'HerDet'), 'Herbivore',
                        ifelse(Diet %in% c('InvMob', 'InvSes'), 'Invertivore',
                               ifelse(Diet == 'Plktiv', 'Planktivore',
                                      ifelse(Diet == 'FisCep', 'Carnivore',
                                             ifelse(Diet == 'Omnivr', 'Omnivore', NA)))))) %>%
   group_by(Transect, Diet) %>%
+  #Calculate energy flows of dietary groups in each transect
   reframe(Region = Region,
+          Site = Site,
           Biom = sum(Biomass)/100,
-          Prod = sum(somatic_G[Fate = T])/100,
-          Turn = Prod/Biom * 100) %>%
+          Prod = sum(Growth_iter)/100,
+          Turn = Prod/Biom * 100
+  ) %>%
   distinct() %>%
-  mutate(Biom = log10(Biom + 1),
-         #Arrange the order of regions and diets
-         Region = factor(Region, levels = c('Sub', 'Trans', 'Trop1', 'Trop2', 'Trop3')),
-         Diet = factor(Diet, levels = c('Herbivore', 'Planktivore', 'Omnivore', 'Invertivore', 'Carnivore')))
+  #Arrange the order of diets
+  mutate(Diet = factor(Diet, levels = c('Herbivore', 'Planktivore', 'Omnivore', 'Invertivore', 'Carnivore'))
+  ) %>%
+  relocate(Region, Site)
 
-### Statistical test
+#The function takes a region as input and performs dietary GLMM, estimated marginal means (EMMs), and generate boxplots for the given region.
+Diet_glmm <- function(region_name) {
+  
+  #Select energy flow of the given region
+  region_data <- diet.energy %>% filter(Region == region_name)
+  
+  energy_metric <- c("Biom", "Prod", "Turn")
+  
+  #Y-labels of different energy flows
+  y_labels <- c(
+    Biom = expression(Biomass ~ (g %.% m^{-2})),
+    Prod = expression(Productivity ~ (g %.% m^{-2}~~day^{-1})),
+    Turn = expression(Turnover ~ ("% day"^{-1}))
+  )
+  
+  #Position offsets for group labels
+  y_offsets <- c(Biom = 3, Prod = 0.01, Turn = 0.2)
+  
+  result_list <- list()
+  summary_table_list <- list()
+  summary_emm_list <- list()
+  
+  #A loop was implemented for calculating GLMMs and EMMs for biomass, productivity, and turnover, and generating corresponding boxplots
+  for (energy in energy_metric) {
+    
+    #GLMMs
+    formula <- as.formula(paste0(energy, " ~ Diet + (1 | Site) - 1"))
+    model <- glmmTMB(formula,
+                     data = region_data,
+                     family = ziGamma(link = "log"))
+    
+    #EMMs
+    emm_result <- emmeans(model, pairwise ~ Diet, type = 'response')
+    group_letters <- multcomp::cld(emm_result, Letters = letters, decreasing = TRUE) %>%
+      as.data.frame() %>%
+      select(Diet, .group) %>%
+      rename(label = .group)
+    
+    
+    #Find the max value of energy flows
+    global_max <- diet.energy %>%
+      summarise(
+        Biom = sort(Biom, decreasing = TRUE)[2],
+        Prod = max(Prod, na.rm = TRUE),
+        Turn = max(Turn, na.rm = TRUE)
+      ) %>%
+      unlist()
+    
+    #Define y-limit
+    y_limit <- global_max[[energy]] + y_offsets[[energy]]
+    offset <- y_offsets[[energy]]
+    
+    #Position of group labels
+    pos_df <- region_data %>%
+      group_by(Diet) %>%
+      summarise(y.pos = max(.data[[energy]], na.rm = TRUE) + offset, .groups = "drop")
+    label_data <- left_join(group_letters, pos_df, by = "Diet")
+    
+    #Boxplot
+    p <- ggplot(region_data, aes(x = Diet, y = .data[[energy]], fill = Diet)) +
+      geom_boxplot(outlier.shape = NA) +
+      geom_jitter(alpha = 0.5, cex = 0.75) +
+      geom_text(data = label_data, aes(x = Diet, y = y.pos, label = label)) +
+      labs(x = NULL, y = y_labels[[energy]], subtitle = region_name) +
+      scale_fill_brewer(palette = "Set2") +
+      scale_y_continuous(limits = c(0, y_limit)) +
+      theme_bw() +
+      theme(legend.position = "none",
+            plot.margin = margin(2, 0.5, 1, 0.5),
+            axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+            axis.title = element_text(size = 14),
+            axis.text = element_text(size = 12),
+            title = element_text(size = 14))
+    
+    # Create model summary table
+    # GLMM output
+    ci_df <- confint(model) %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column("Independent") %>%
+      filter(!grepl("Std.Dev", Independent)) %>%
+      select(-Estimate) %>%
+      rename(Lower_limit = `2.5 %`, Upper_limit = `97.5 %`)
+    
+    coef_df <- coef(summary(model))$cond %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column("Independent") %>%
+      mutate(Dependent = energy) %>%
+      left_join(ci_df, by = "Independent") %>%
+      mutate(Region = region_name,
+             Independent = sub("^Diet", "", Independent),
+             across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
+             `Pr(>|z|)` = round(`Pr(>|z|)`, 3)) %>%
+      mutate(Sig = ifelse(`Pr(>|z|)` < 0.05, '*', ' '),
+             `Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*', 
+                                 ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
+      relocate(Region, Dependent, Independent, Estimate, `Std. Error`, Lower_limit, Upper_limit)
+    
+    #Store GLMM and EMM results
+    result_list[[energy]] <- list(
+      model = model,
+      emmeans = emm_result,
+      contrast = as.data.frame(emm_result$contrasts),
+      labels = label_data,
+      plot = p,
+      summary_df = coef_df
+    )
+    
+    summary_table_list[[energy]] <- coef_df
+    summary_emm_list[[energy]] <- as.data.frame(emm_result$contrasts)
+  }
+  
+  #Combine all summaries into one table
+  glmm_summary <- bind_rows(summary_table_list)
+  emm_summary <- bind_rows(summary_emm_list)
+  
+  #Return all results and combined summary
+  return(list(
+    results = result_list,
+    glmm_summary = glmm_summary,
+    emm_summary = emm_summary
+  ))
+}
 
-#Non-parametric methods were used to test the difference between groups due to small sample size
-#Kruskal-Wallis test between the five trophic groups for the three energy flow metrics across different regions
-diet.kruskal.result <- kruskal.loop(data = diet.energy, group = 'Diet', energy = 'Biom') %>%
-  bind_rows(kruskal.loop(data = diet.energy, group = 'Diet', energy = 'Prod'),
-            kruskal.loop(data = diet.energy, group = 'Diet', energy = 'Turn'))
+#Calculate the GLMMs, EMMs, and generate boxplots among the five regions using the function
+NT.glmm <- Diet_glmm('NT')
+ET.glmm <- Diet_glmm('ET')
+GI.glmm <- Diet_glmm('GI')
+OI.glmm <- Diet_glmm('OI')
+KT.glmm <- Diet_glmm('KT')
 
-
-#Pairwise Wilcoxon test between the five trophic groups for the three energy flow metrics across different regions
-diet.wilcox.result <- pairwise.wilcox.loop(data = diet.energy, group = 'Diet', energy = 'Biom') %>%
-  bind_rows(pairwise.wilcox.loop(data = diet.energy, group = 'Diet', energy = 'Prod'),
-            pairwise.wilcox.loop(data = diet.energy, group = 'Diet', energy = 'Turn')) %>%
-  select(-p) %>%
-  rename(Variable = .y., Group1 = group1, Group2 = group2, Statistic = statistic)%>%
-  #Transform abbreviation of energy flow variables into their full names
-  mutate(Variable = ifelse(Variable == 'Biom', 'Biomass',
-                           ifelse(Variable == 'Prod', 'Productivity',
-                                  ifelse(Variable == 'Turn', 'Turnover', Variable)))) %>%
-  arrange(Variable, Region)
-
-#Table S3.
-write.csv(diet.wilcox.result, file = 'Tables\\Diet wilcoxon result.csv', row.names = F)
-
-### Boxplot
-#Standing biomass
-diet.biomass.box <- diet.energy %>%
-  ggplot(aes(x = Diet, y = Biom)) +
-  geom_boxplot(aes(fill = Diet), outlier.shape = NA) +
-  geom_jitter(alpha = 0.5, size = 0.7, width = 0.2) +
-  facet_wrap(vars(Region), scales = 'free', ncol = 5) +
-  labs(x = 'Diet', subtitle = 'a',
-       y = expression('log10[biomass ('~ g%.%m^-2~ ')]')) +
-  scale_fill_brewer(palette = "Set2") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-        axis.title.x = element_blank(),
-        legend.position = 'none')
+#GLMM boxplot
+#Biomass
+NT.biom.plot <- NT.glmm$results$Biom$plot +
+  #Add the arrow for the extreme outlier
+  annotate("segment", x = 2, xend = 2, y = 24, yend = 26,
+           arrow = arrow(type = "closed", length = unit(0.1, 'cm'))) +
+  #Add the text for the extreme outlier
+  geom_text(aes(x = 2, y = 23, label = round(max(diet.energy$Biom), 2)), col = 'black', size = 3) +
+  annotate("text", x = 2, y = 18, label = 'a', col = 'black', fontface = 'plain') 
+ET.biom.plot <- ET.glmm$results$Biom$plot +
+  labs(y = NULL)
+GI.biom.plot <- GI.glmm$results$Biom$plot+
+  labs(y = NULL)
+OI.biom.plot <- OI.glmm$results$Biom$plot+
+  labs(y = NULL)
+KT.biom.plot <- KT.glmm$results$Biom$plot+
+  labs(y = NULL)
 
 #Productivity
-diet.prod.box <- diet.energy %>%
-  ggplot(aes(x = Diet, y = Prod)) +
-  geom_boxplot(aes(fill = Diet), outlier.shape = NA) +
-  geom_jitter(alpha = 0.5, size = 0.7, width = 0.2) +
-  facet_wrap(vars(Region), scales = 'free', ncol = 5) +
-  labs(x = 'Diet', y = expression(Productivity~ ~(g%.%m^-2~~day^-1)),
-       subtitle = 'b') +
-  scale_fill_brewer(palette = "Set2") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-        axis.title.x = element_blank(),
-        legend.position = 'none')
+NT.prod.plot <- NT.glmm$results$Prod$plot
+ET.prod.plot <- ET.glmm$results$Prod$plot +
+  labs(y = NULL)
+GI.prod.plot <- GI.glmm$results$Prod$plot+
+  labs(y = NULL)
+OI.prod.plot <- OI.glmm$results$Prod$plot+
+  labs(y = NULL)
+KT.prod.plot <- KT.glmm$results$Prod$plot+
+  labs(y = NULL)
 
 #Turnover
-diet.turn.box <- diet.energy %>%
-  ggplot(aes(x = Diet, y = Turn)) +
-  geom_boxplot(aes(fill = Diet), outlier.shape = NA) +
-  geom_jitter(alpha = 0.5, size = 0.7, width = 0.2) +
-  facet_wrap(vars(Region), scales = 'free', ncol = 5) +
-  labs(x = 'Diet', y = expression(Turnover~('%'~~day^-1)), subtitle = 'c') +
-  scale_fill_brewer(palette = "Set2") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-        legend.position = 'none')
+NT.turn.plot <- NT.glmm$results$Turn$plot
+ET.turn.plot <- ET.glmm$results$Turn$plot +
+  labs(y = NULL)
+GI.turn.plot <- GI.glmm$results$Turn$plot+
+  labs(y = NULL)
+OI.turn.plot <- OI.glmm$results$Turn$plot+
+  labs(y = NULL)
+KT.turn.plot <- KT.glmm$results$Turn$plot+
+  labs(y = NULL)
 
-#Figure 6. Energy flow contribution of five dietary categories.
-ggarrange(diet.biomass.box, diet.prod.box, diet.turn.box, ncol = 1, nrow = 3)
-ggsave('Figures\\fig6.pdf', height = 10, width = 12)
+#Combine all the boxplots
+diet.plot <- ggarrange(NT.biom.plot, ET.biom.plot, GI.biom.plot, OI.biom.plot, KT.biom.plot,
+                       NT.prod.plot, ET.prod.plot, GI.prod.plot, OI.prod.plot, KT.prod.plot,
+                       NT.turn.plot, ET.turn.plot, GI.turn.plot, OI.turn.plot, KT.turn.plot,
+                       nrow = 3, ncol = 5, align = 'v')
+#Add general x-label
+annotate_figure(diet.plot, bottom = text_grob("Dietary group", size = 16))
+#ggsave('CR Figures\\Fig 4.svg', height = 9.5, width = 14, dpi = 1200)
 
-#### Identification of intrinsic drivers (Fig S4-6, Fig S10, Table S4, Table 1) ####
+#Glmm output
+diet.glmm <- bind_rows(NT.glmm$glmm_summary, ET.glmm$glmm_summary, GI.glmm$glmm_summary, OI.glmm$glmm_summary, KT.glmm$glmm_summary) %>%
+  mutate(Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT')),
+         Dependent = ifelse(Dependent == 'Biom', 'Biomass',
+                            ifelse(Dependent == 'Prod', 'Productivity', 'Turnover'))) %>%
+  arrange(Dependent)
 
-#Intrinsic factor data
-intrinsic <- read.csv(file = 'Data\\Biotic_factor.csv') %>%
+#write.table(diet.glmm, file = 'CR Tables//Table S5.txt', row.names = F, quote = T)
+
+#Post-hoc test by EMMs
+diet.compare <- bind_rows(NT.glmm$results$Biom$contrast, ET.glmm$results$Biom$contrast, GI.glmm$results$Biom$contrast, OI.glmm$results$Biom$contrast, KT.glmm$results$Biom$contrast,
+                          NT.glmm$results$Prod$contrast, ET.glmm$results$Prod$contrast, GI.glmm$results$Prod$contrast, OI.glmm$results$Prod$contrast, KT.glmm$results$Prod$contrast,
+                          NT.glmm$results$Turn$contrast, ET.glmm$results$Turn$contrast, GI.glmm$results$Turn$contrast, OI.glmm$results$Turn$contrast, KT.glmm$results$Turn$contrast) %>%
+  select(-df, -null) %>%
+  mutate(Dependent = rep(c('Biomass', 'Productivity', 'Turnover'), each = 50),
+         Region = rep(c('NT', 'ET', 'GI', 'OI', 'KT'), each = 10, times = 3)
+  ) %>%
+  mutate(across(where(is.numeric) & !p.value, ~ sprintf("%.2f", .x)),
+         p.value = round(p.value, 3)) %>%
+  mutate(p.value = ifelse(p.value == 0, '<0.001*', 
+                          ifelse(p.value >= 0.05, sprintf("%.3f", p.value), paste0(p.value, '*')))) %>%
+  relocate(Dependent, Region) %>%
+  rename(Contrast = contrast, Ratio = ratio, `z-ratio` = z.ratio, `p-value` = p.value)
+
+#write.table(diet.compare, file = 'CR Tables//Table S6.txt', row.names = F, quote = T)
+
+#### Identification of biotic drivers ####
+
+#Import benthic composition data
+benthic <- read.csv(file = 'Data//Benthic composition.csv') %>%
   column_to_rownames(var = 'Transect') %>%
+  #Remove substrate type, other, other life as they are not biotic factors
+  select(-boulss, -limess, -rockss, -rubbus, -sandus, -siltus, -other_life, -Other) %>%
   #Remove rare species (defined as covers lower than 5% in all transect)
   select(-which(colSums(. > 0.05) == 0))
 
-#Arcsin transform by row (transects)
-intrinsic.arcsin <- apply(X = intrinsic, MARGIN = 1, FUN = function(X)asin(sqrt(X))) %>%
-  t()%>%
-  as.data.frame()
+#PCoA estimation
+#Bray-Curtis dissimilarity
+benthic.cap <- capscale(benthic ~ 1, distance = 'bray')
 
-#Variable selection
-#VIF
-intrinsic.vif <- vifstep(intrinsic.arcsin, th = 10)
+#PCoA plot
+#Percent explained by each axis
+benthic.pcoa.per.exp <- round(100 * benthic.cap$CA$eig / sum(benthic.cap$CA$eig), 1)
 
-#Extract VIF < 10 variables
-intrinsic.sel <- intrinsic.arcsin %>%
-  select(attributes(intrinsic.vif)$results[ , 1]) %>%
-  rownames_to_column(var = 'Transect')
-
-#Combine fish energy flows and selected intrinsic factors
-energy.intrinsic <- transect.energy %>%
-  #Combine the explanatory variables
-  left_join(., intrinsic.sel, by = 'Transect') %>%
-  mutate(Site = as.factor(Site))
-
-### Standing biomass
-#Select standing biomass and explanatory variables
-biomass.intrinsic <- select(energy.intrinsic, Site, Biom, AL_artcal:ZO_encrusting, Region)
-
-#Check the relationship between standing biomass and intrinsic factors
-intrinsic %>%
+#Extract PCoA 1 to 3 scores for GLMM
+benthic.score <- scores(benthic.cap, 1:3, 'sites') %>%
+  as.data.frame() %>%
   rownames_to_column(var = 'Transect') %>%
-  #Combine standing biomass and untransformed intrinsic factor values
-  left_join(., transect.energy[ , c('Region', 'Transect', 'Biom')], by = 'Transect') %>%
-  pivot_longer(cols = AL_artcal:ZO_encrusting, values_to = 'Values', names_to = 'Variables') %>%
-  mutate(Values = Values * 100) %>%
-  ggplot(aes(y = Biom, x = Values, col = Region)) +
-  geom_jitter(alpha = 0.7) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  facet_wrap(~ Variables, scales = 'free', ncol = 4) +
-  labs(y = expression('log10[Standing biomass ('~ g%.%m^-2~ ')]'), x = 'Cover (%)')
+  rename(Benthic_PCoA1 = MDS1, Benthic_PCoA2 = MDS2, Benthic_PCoA3 = MDS3)
 
-#Fig S4. Relationship between standing biomass and selected biotic variables.
-ggsave(filename = 'Figures\\figS4.pdf', width = 10, height = 7, units = 'in')
+#PCoA1-PCoA2
+benthic.cap.arrow12 <- wascores(scores(benthic.cap, 1:2, 'sites'), benthic, expand = TRUE) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Species')
 
-#Glmm: standing biomass as response variable, intrinsic factors as fix effect.
-#site nested with region as random effect
+benthic.pcoa12.plot <- benthic.score %>%
+  left_join(., fish.metric[ , c('Region', 'Transect')], by = 'Transect') %>%
+  distinct() %>%
+  ggplot(aes(x = Benthic_PCoA1, y = Benthic_PCoA2)) +
+  geom_jitter(aes(col = Region), size = 3, alpha = 0.7) +
+  scale_color_brewer(palette = "Set2", direction = -1) +
+  geom_segment(data = benthic.cap.arrow12,
+               aes(x = 0, xend = MDS1, y = 0, yend = MDS2),
+               arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
+  ggrepel::geom_text_repel(data = benthic.cap.arrow12, aes(x = MDS1, y = MDS2, label = Species), size = 3, max.overlaps = 15) +
+  labs(x = paste0('PCoA1 (', benthic.pcoa.per.exp[1], '%)'),
+       y = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)')) +
+  theme_bw()
 
+#PCoA2-PCoA3
+benthic.cap.arrow23 <- wascores(scores(benthic.cap, 2:3, 'sites'), benthic, expand = TRUE) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Species')
+
+benthic.pcoa23.plot <- benthic.score %>%
+  left_join(., fish.metric[ , c('Region', 'Transect')], by = 'Transect') %>%
+  distinct() %>%
+  ggplot(aes(x = Benthic_PCoA2, y = Benthic_PCoA3)) +
+  geom_jitter(aes(col = Region), size = 3, alpha = 0.7) +
+  scale_color_brewer(palette = "Set2", direction = -1) +
+  geom_segment(data = benthic.cap.arrow23,
+               aes(x = 0, xend = MDS2, y = 0, yend = MDS3),
+               arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
+  ggrepel::geom_text_repel(data = benthic.cap.arrow23, aes(x = MDS2, y = MDS3, label = Species), size = 3, max.overlaps = 15) +
+  labs(x = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)'),
+       y = paste0('PCoA3 (', benthic.pcoa.per.exp[3], '%)')) +
+  theme_bw()
+
+ggarrange(benthic.pcoa12.plot, benthic.pcoa23.plot, nrow = 2, ncol = 1, align = 'hv')
+
+#ggsave(filename = 'CR Figures\\Fig S6.svg', width = 8, height = 10, dpi = 1200)
+
+
+#### Biotic GLMM
+#Combine benthic and diet metrics
+biotic.energy <- transect.energy %>%
+  left_join(., benthic.score, by = 'Transect') %>%
+  relocate(Region, Site) 
+
+### Biomass
 #Glmm formula
-biomass.f.intrinsic <- Biom ~ AL_artcal + CCA + HC_arborescent + HC_bushy + HC_encrusting +
-  HC_foliose + HC_massive + HC_tabular + OC_bushy + OC_clustered + OC_digitate + OC_lobate +
-  Turf + ZO_encrusting + (1|Region/Site)
+biom.f.biotic <- Biom ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
 #GLMM
-biomass.m.intrinsic <- glmmTMB(biomass.f.intrinsic, data = biomass.intrinsic, family = gaussian())
-summary(biomass.m.intrinsic)
+biom.m.biotic <- glmmTMB(biom.f.biotic, data = biotic.energy, family = ziGamma(link = 'log'))
+summary(biom.m.biotic)
 
 #Save the glmm output
-biomass.intrinsic.sum <- coef(summary(biomass.m.intrinsic))$cond %>%
+biom.biotic.ci <- confint(biom.m.biotic) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(!Independent %in% c("Std.Dev.(Intercept)|Site:Region", "Std.Dev.(Intercept)|Region"))
+
+biom.biotic.glmm <- coef(summary(biom.m.biotic))$cond %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
   mutate(Dependent = 'Biomass') %>%
-  relocate(Dependent)
+  left_join(., biom.biotic.ci, by = 'Independent') %>%
+  relocate(Dependent) 
 
-### Productivity 
-#Select productivity and explanatory variables
-prod.intrinsic <- select(energy.intrinsic, Prod, AL_artcal:ZO_encrusting, Region, Site)
-
-#Check the relationship between productivity and intrinsic factors
-intrinsic %>%
-  rownames_to_column(var = 'Transect') %>%
-  #Combine productivity and untransformed intrinsic factor values
-  left_join(., transect.energy[ , c('Region', 'Transect', 'Prod')], by = 'Transect') %>%
-  pivot_longer(cols = AL_artcal:ZO_encrusting, values_to = 'Values', names_to = 'Variables') %>%
-  #Adjust to percentage
-  mutate(Values = Values * 100) %>%
-  ggplot(aes(y = Prod, x = Values, col = Region)) +
-  geom_jitter(alpha = 0.7) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  facet_wrap(~Variables, scales = 'free', ncol = 4) +
-  labs(y = expression(Productivity~ ~(g%.%m^-2~~day^-1)), x = 'Cover (%)')
-
-#Fig S5. Relationship between productivity and selected intrinsic variables.
-ggsave(filename = 'Figures\\figS5.pdf', width = 10, height = 7, units = 'in')
-
-#Glmm: productivity as response variable, intrinsic factors as fix effect.
-#site nested with region as random effect
-
+### Productivity
 #Glmm formula
-prod.f.intrinsic <- Prod ~ AL_artcal + CCA + HC_arborescent + HC_bushy + HC_encrusting +
-  HC_foliose + HC_massive + HC_tabular + OC_bushy + OC_clustered + OC_digitate + OC_lobate +
-  Turf + ZO_encrusting + (1|Region/Site)
+prod.f.biotic <- Prod ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
 #GLMM
-prod.m.intrinsic <- glmmTMB(prod.f.intrinsic, data = prod.intrinsic, family = ziGamma(link = 'log'))
-summary(prod.m.intrinsic)
+prod.m.biotic <- glmmTMB(prod.f.biotic, data = biotic.energy, family = ziGamma(link = 'log'))
+summary(prod.m.biotic)
 
 #Save the glmm output
-prod.intrinsic.sum <- coef(summary(prod.m.intrinsic))$cond %>%
+prod.biotic.ci <- confint(prod.m.biotic) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(!Independent %in% c("Std.Dev.(Intercept)|Site:Region", "Std.Dev.(Intercept)|Region"))
+
+prod.biotic.glmm <- coef(summary(prod.m.biotic))$cond %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
   mutate(Dependent = 'Productivity') %>%
+  left_join(., prod.biotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-#### Turnover 
-#Select turnover and explanatory variables
-turn.intrinsic <- select(energy.intrinsic, Site, Turn, AL_artcal:ZO_encrusting, Region)
-
-#Check the relationship between turnover and intrinsic factors
-intrinsic %>%
-  rownames_to_column(var = 'Transect') %>%
-  #Combine turnover and untransformed intrinsic factor values
-  left_join(., transect.energy[ , c('Region', 'Transect', 'Turn')], by = 'Transect') %>%
-  pivot_longer(cols = AL_artcal:ZO_encrusting, values_to = 'Values', names_to = 'Variables') %>%
-  mutate(Values = Values * 100) %>%
-  ggplot(aes(y = Turn, x = Values, col = Region)) +
-  geom_jitter(alpha = 0.7) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  facet_wrap(~Variables, scales = 'free', ncol = 4) +
-  labs(y = expression(Turnover~('%'~~day^-1)), x = "Cover (%)")
-
-#Fig S6. Relationship turnover and selected biotic variables.
-ggsave(filename = 'Figures\\figS6.pdf', width = 10, height = 7, units = 'in')
-
-#Glmm: turnover as response variable, intrinsic factors as fix effect.
-#site nested with region as random effect
-turn.f.intrinsic <- Turn ~ AL_artcal + CCA + HC_arborescent + HC_bushy + HC_encrusting +
-  HC_foliose + HC_massive + HC_tabular + OC_bushy + OC_clustered + OC_digitate + OC_lobate +
-  Turf + ZO_encrusting + (1|Region/Site)
+### Turnover
+#Glmm formula
+turn.f.biotic <- Turn ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
 #GLMM
-turn.m.intrinsic <- glmmTMB(turn.f.intrinsic, data = turn.intrinsic, family = ziGamma(link = 'log'))
-summary(turn.m.intrinsic)
+turn.m.biotic <- glmmTMB(turn.f.biotic, data = biotic.energy, family = ziGamma(link = 'log'))
+#summary(turn.m.biotic)
 
-#Save glmm output
-turn.intrinsic.sum <- coef(summary(turn.m.intrinsic))$cond %>%
+#Save the glmm output
+turn.biotic.ci <- confint(turn.m.biotic) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(!Independent %in% c("Std.Dev.(Intercept)|Site:Region", "Std.Dev.(Intercept)|Region"))
+
+turn.biotic.glmm <- coef(summary(turn.m.biotic))$cond %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
   mutate(Dependent = 'Turnover') %>%
+  left_join(., turn.biotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
 #Combine the glmm output
-energy.intrinsic.sum <- bind_rows(biomass.intrinsic.sum, prod.intrinsic.sum, turn.intrinsic.sum)
+energy.biotic.glmm <- bind_rows(biom.biotic.glmm, prod.biotic.glmm, turn.biotic.glmm) %>%
+  mutate(across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
+         `Pr(>|z|)` = round(`Pr(>|z|)`, 3)) %>%
+  mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*',
+                             ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
+  relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
 
-#Table S4. GLMM outputs of energy flow metrics to 14 selected intrinsic variables.
-write.csv(energy.intrinsic.sum, file = 'Tables\\intrinsic glmm.csv', row.names = F)
+#write.table(energy.biotic.glmm, file = 'CR Tables\\Table S7.txt', row.names = F, quote = T)
 
-#Significant independent variable only
-energy.intrinsic.sum.sig <- energy.intrinsic.sum %>%
-  filter(`Pr(>|z|)` < 0.05) %>%
-  mutate_if(is.numeric, round, 3)
+#Visualize glmm output
+energy.biotic.glmm %>%
+  mutate(Independent = factor(Independent, levels = c('Benthic_PCoA3', 'Benthic_PCoA2', 'Benthic_PCoA1', '(Intercept)'))) %>%
+  ggplot(aes(x = Estimate, y = Independent, col = Sig)) +
+  geom_pointrange(aes(xmin = Lower_limit, xmax = Upper_limit, y = Independent, col = Sig)) +
+  geom_vline(xintercept = 0, col = 'black', linetype = 2, alpha = 0.3) +
+  facet_wrap(vars(Dependent), ncol = 1) +
+  scale_color_manual(values = c('black', 'tomato', 'tomato')) +
+  labs(x = 'Estimated coefficient') +
+  theme_bw() +
+  theme(legend.position = 'none', axis.title.y = element_blank()) +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12),
+        title = element_text(size = 14),
+        strip.text = element_text(size = 14))
 
-#Table 1. GLMM output presenting the significant intrinsic variables to energy flows.
-write.csv(energy.intrinsic.sum.sig, file = 'Tables\\intrinsic glmm significant.csv', row.names = F)
+ggsave(filename = 'CR Figures\\Fig 5.svg', width = 8, height = 10, dpi = 1200)
 
-#Residual diagnostic
+### Residual diagnostics for biotic glmm
+#Fig S4
+svg(file = 'CR Figures//Residual diag biotic.svg', width = 6, height = 8)
 
-#Fig S10. Residual diagnostics for GLMMs of biotic drivers.
-#Standing biomass
-pdf(file = 'Figures\\figS10a.pdf', width = 8, height = 4)
-res.biomass <- plot(simulateResiduals(biomass.m.intrinsic))
+layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
+       heights = c(1, 6, 1, 6, 1, 6))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'a', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(biom.m.biotic))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'b', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(prod.m.biotic))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'c', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(turn.m.biotic))
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(biom.m.biotic))
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(prod.m.biotic))
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(turn.m.biotic))
+
 dev.off()
+
+### Emmeans
+#Biomass
+biom.biotic.em.pcoa2 <- emmeans(biom.m.biotic, ~ Benthic_PCoA2, type = 'response',
+                                at = list(Benthic_PCoA2 = seq(min(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
+                                                              max(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
+                                                              length.out = 250))) %>%
+  as.data.frame()
+
+biom.biotic.em.pcoa3 <- emmeans(biom.m.biotic, ~ Benthic_PCoA3, type = 'response',
+                                at = list(Benthic_PCoA3 = seq(min(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
+                                                              max(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
+                                                              length.out = 250))) %>%
+  as.data.frame()
+
+biom.biotic.em.plot <- biotic.energy %>%
+  select(-Benthic_PCoA1) %>%
+  pivot_longer(cols = Benthic_PCoA2:Benthic_PCoA3, names_to = 'Axis', values_to = 'Score') %>%
+  ggplot(aes(x = Score, y = Biom)) +
+  #PCoA2 EMMs
+  geom_line(aes(x = biom.biotic.em.pcoa2$Benthic_PCoA2, y = biom.biotic.em.pcoa2$response),
+            col = '#66c2a5', alpha = 0.5) +
+  geom_ribbon(aes(x = biom.biotic.em.pcoa2$Benthic_PCoA2, y = biom.biotic.em.pcoa2$response,
+                  ymin = biom.biotic.em.pcoa2$asymp.LCL, ymax = biom.biotic.em.pcoa2$asymp.UCL),
+              fill = '#66c2a5', alpha = 0.25) +
+  #PCoA3 EMMs
+  geom_line(aes(x = biom.biotic.em.pcoa3$Benthic_PCoA3, y = biom.biotic.em.pcoa3$response),
+            alpha = 0.5, col = "#fc8d62") +
+  geom_ribbon(aes(x = biom.biotic.em.pcoa3$Benthic_PCoA3, y = biom.biotic.em.pcoa3$response,
+                  ymin = biom.biotic.em.pcoa3$asymp.LCL, ymax = biom.biotic.em.pcoa3$asymp.UCL),
+              fill = "#fc8d62", alpha = 0.25) +
+  geom_jitter(aes(col = Axis), alpha = 0.5, cex = 2) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = 'PCoA scores', y = expression(Biomass~ ~(g%.%m^-2)), subtitle = 'a') +
+  theme_bw() +
+  theme(plot.subtitle = element_text(size = 16))
+
 
 #Productivity
-pdf(file = 'Figures\\figS10b.pdf', width = 8, height = 4)
-res.prod <- plot(simulateResiduals(prod.m.intrinsic))
-dev.off()
+prod.biotic.em.pcoa2 <- emmeans(prod.m.biotic, ~ Benthic_PCoA2, type = 'response',
+                                at = list(Benthic_PCoA2 = seq(min(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
+                                                              max(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
+                                                              length.out = 250))) %>%
+  as.data.frame()
+
+prod.biotic.em.pcoa3 <- emmeans(prod.m.biotic, ~ Benthic_PCoA3, type = 'response',
+                                at = list(Benthic_PCoA3 = seq(min(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
+                                                              max(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
+                                                              length.out = 250))) %>%
+  as.data.frame()
+
+prod.biotic.em.plot <- biotic.energy %>%
+  select(-Benthic_PCoA1) %>%
+  pivot_longer(cols = Benthic_PCoA2:Benthic_PCoA3, names_to = 'Axis', values_to = 'Score') %>%
+  ggplot(aes(x = Score, y = Prod)) +
+  #PCoA2 EMMs
+  geom_line(aes(x = prod.biotic.em.pcoa2$Benthic_PCoA2, y = prod.biotic.em.pcoa2$response),
+            col = '#66c2a5', alpha = 0.5) +
+  geom_ribbon(aes(x = prod.biotic.em.pcoa2$Benthic_PCoA2, y = prod.biotic.em.pcoa2$response,
+                  ymin = prod.biotic.em.pcoa2$asymp.LCL, ymax = prod.biotic.em.pcoa2$asymp.UCL),
+              fill = '#66c2a5', alpha = 0.25) +
+  #PCoA3 EMMs
+  geom_line(aes(x = prod.biotic.em.pcoa3$Benthic_PCoA3, y = prod.biotic.em.pcoa3$response),
+            alpha = 0.5, col = "#fc8d62") +
+  geom_ribbon(aes(x = prod.biotic.em.pcoa3$Benthic_PCoA3, y = prod.biotic.em.pcoa3$response,
+                  ymin = prod.biotic.em.pcoa3$asymp.LCL, ymax = prod.biotic.em.pcoa3$asymp.UCL),
+              fill = "#fc8d62", alpha = 0.25) +
+  geom_jitter(aes(col = Axis), alpha = 0.5, cex = 2) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = 'PCoA scores', y = expression(Productivity~ ~(g%.%m^-2~~day^-1)), subtitle = 'b') +
+  theme_bw() +
+  theme(plot.subtitle = element_text(size = 16))
 
 #Turnover
-pdf(file = 'Figures\\figS10c.pdf', width = 8, height = 4)
-res.turn <- plot(simulateResiduals(turn.m.intrinsic))
-dev.off()
+turn.biotic.em.pcoa2 <- emmeans(turn.m.biotic, ~ Benthic_PCoA2, type = 'response',
+                                at = list(Benthic_PCoA2 = seq(min(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
+                                                              max(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
+                                                              length.out = 125))) %>%
+  as.data.frame()
+
+turn.biotic.em.plot <- biotic.energy  %>%
+  select(-Benthic_PCoA1, -Benthic_PCoA3) %>%
+  pivot_longer(cols = Benthic_PCoA2, names_to = 'Axis', values_to = 'Score') %>%
+  ggplot(aes(x = Score, y = Turn)) +
+  #PCoA2 EMMs
+  geom_line(aes(x = turn.biotic.em.pcoa2$Benthic_PCoA2, y = turn.biotic.em.pcoa2$response),
+            col = '#66c2a5', alpha = 0.5) +
+  geom_ribbon(aes(x = turn.biotic.em.pcoa2$Benthic_PCoA2, y = turn.biotic.em.pcoa2$response,
+                  ymin = turn.biotic.em.pcoa2$asymp.LCL, ymax = turn.biotic.em.pcoa2$asymp.UCL),
+              fill = '#66c2a5', alpha = 0.25) +
+  geom_jitter(aes(col = Axis), alpha = 0.5, cex = 2) +
+  scale_color_brewer(palette = "Set2", direction = -1) +
+  labs(x = 'PCoA scores', y = expression(Turnover~ ~("%"~~day^-1)), subtitle = 'c') +
+  theme_bw() +
+  theme(plot.subtitle = element_text(size = 16))
+
+ggarrange(biom.biotic.em.plot, prod.biotic.em.plot, turn.biotic.em.plot,
+          nrow = 3, ncol = 1, align = 'hv')
+
+#ggsave('CR Figures\\biotic em.png', width = 6, height = 8)
+ggsave('CR Figures\\Fig S7.svg', width = 6, height = 8, dpi = 1200)
 
 #### Identification of extrinsic driver (Fig 2, Fig S3, Fig S7-9, Fig S11, Table S5, Table 2) #####
 #Import extrinsic factors
