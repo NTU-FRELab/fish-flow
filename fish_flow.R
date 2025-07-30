@@ -12,7 +12,7 @@ library(ggpubr)
 library(DHARMa)
 library(performance)
 
-#### Fish energy flows in Taiwan ###############################################
+#### Taiwan fish metric ####
 
 #Import fish energy flow metric
 fish.metric <- read.csv('Data//Taiwan fish metric.csv')
@@ -69,12 +69,13 @@ transect.energy <- fish.metric %>%
   #100 is the detecting area of each transect
   #so the values are energy flows per m^2
   summarise(Biom = sum(Biomass)/100,
-            #Sum of somatic growth of surviving fish
+            #Growth_iter represents the average somatic growth across 100 iterations following survival simulations
             Prod = sum(Growth_iter)/100, 
             Turn = Prod/Biom * 100,
             .groups = 'drop')
 
-### Global comparison (Fig. 2) ####
+### Global comparison of energy flows ####
+
 #Data from 'Towards process-oriented management of tropical reefs in the anthropocene'
 global.energy <- read.csv(file = 'Data\\Seguin fish metric.csv')
 
@@ -85,10 +86,11 @@ taiwan.energy <- fish.metric %>%
   #so the values are energy flows per m^2
   summarise(Biom = sum(Biomass)/100,
             #Sum of somatic growth of surviving fish
+            #Growth_iter represents the average somatic growth across 100 iterations following survival simulations
             Prod = sum(Growth_iter)/100, 
             Turn = Prod/Biom * 100,
             .groups = 'drop') %>%
-  #Standing biomass were log transformed
+  #Biomass were log transformed
   mutate(Biom = log10(Biom + 1)) %>%
   ungroup() %>%
   group_by(Site) %>%
@@ -108,6 +110,7 @@ global.taiwan <- global.energy %>%
   #Sum of energy flows in each transect
   #500 m^2 are detecting areas in RLS
   reframe(Biom = sum(Biom)/500,
+          #Growth_iter represents the average somatic growth across 100 iterations following survival simulations
           Prod = sum(Growth_iter * Num)/500,
           Turn = (Prod/Biom)*100,
           Country = Country,
@@ -131,10 +134,11 @@ global.taiwan <- global.energy %>%
   mutate(Text = ifelse(Country == 'Taiwan', SiteCode, '')) %>%
   filter(is.na(Country) == F)
 
-#global standard of high turnover
+#Number of sites other than Taiwan
 global.taiwan %>%
-  summarise(Quantile75 = quantile(Turn, 0.75),
-            SD = sd(Turn))
+  filter(Country != 'Taiwan') %>%
+  distinct(SiteCode) %>%
+  count()
 
 #Mean turnover in Taiwan
 global.taiwan %>%
@@ -142,11 +146,10 @@ global.taiwan %>%
   summarise(Mean = mean(Turn),
             SD = sd(Turn))
 
-#Number of sites other than Taiwan
+#Global standard of high turnover
 global.taiwan %>%
-  filter(Country != 'Taiwan') %>%
-  distinct(SiteCode) %>%
-  count()
+  summarise(Quantile75 = quantile(Turn, 0.75),
+            SD = sd(Turn))
 
 #Taiwan sites that are in high turnover units
 global.taiwan %>%
@@ -185,14 +188,14 @@ global.taiwan %>%
         axis.title = element_text(size = 14),
         title = element_text(size = 14),
         legend.title = element_text(size = 14))
-
-#ggsave(filename = 'CR Figures\\Fig 2.svg', width = 8, height = 5, dpi = 1200)
+#ggsave(filename = 'Fig 2.svg', width = 8, height = 5, dpi = 1200)
 
 #Check which country were removed from the plot
 global.taiwan %>%
   filter(Turn > 1)
 
-### QQ-plots and histograms of fish energy flows at transect level
+### QQ-plots and histograms of fish energy flows at transect level ###
+
 #Biomass
 trans.biom.qq <- transect.energy %>%
   ggplot(aes(sample = Biom)) +
@@ -249,13 +252,15 @@ trans.turn.density <- transect.energy %>%
 
 ggarrange(trans.biom.qq, trans.biom.density, trans.prod.qq, trans.prod.density, trans.turn.qq, trans.turn.density,
           nrow = 3, ncol = 2, align = 'hv')
+#ggsave(filename = 'Fig S1.svg', height = 8, width = 7, units = 'in', dpi = 1200)
 
-#### Regional comparison of energy flows (Fig S2 & Fig 4) ####
+#### Regional comparison of energy flows ####
+
 ###Biomass
 #GLMM
 biom.m.reg <- glmmTMB(Biom ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
 
-#Save the glmm output
+#Save the GLMM output
 biom.reg.ci <- confint(biom.m.reg) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
@@ -275,7 +280,7 @@ biom.glmm.reg <- coef(summary(biom.m.reg))$cond %>%
 #GLMM
 prod.m.reg <- glmmTMB(Prod ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
 
-#Save the glmm output
+#Save the GLMM output
 prod.reg.ci <- confint(prod.m.reg) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
@@ -295,7 +300,7 @@ prod.glmm.reg <- coef(summary(prod.m.reg))$cond %>%
 #GLMM
 turn.m.reg <- glmmTMB(Turn ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
 
-#Combine the glmm output
+#Combine the GLMM output
 turn.reg.ci <- confint(turn.m.reg) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
@@ -311,7 +316,7 @@ turn.glmm.reg <- coef(summary(turn.m.reg))$cond %>%
   left_join(., turn.reg.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-#Save the glmm output
+#Save the GLMM output
 energy.reg.glmm <- bind_rows(biom.glmm.reg, prod.glmm.reg, turn.glmm.reg) %>%
   mutate(across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
          `Pr(>|z|)` = round(`Pr(>|z|)`, 3),
@@ -321,9 +326,9 @@ energy.reg.glmm <- bind_rows(biom.glmm.reg, prod.glmm.reg, turn.glmm.reg) %>%
                              ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
   relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
 
-#write.table(energy.reg.glmm, file = 'CR Tables//Table S3.txt', row.names = F, quote = T)
+#write.table(energy.reg.glmm, file = 'Table S3.txt', row.names = F, quote = T)
 
-### Estimated Marginal Means (EMMs)
+### Estimated Marginal Means (EMMs) ###
 #Biomass
 biom.reg.em <- emmeans(biom.m.reg, pairwise ~ Region, type = 'response')
 
@@ -357,10 +362,10 @@ energy.reg.em <- bind_rows(biom.reg.contrast, prod.reg.contrast, turn.reg.contra
                           ifelse(p.value >= 0.05, sprintf("%.3f", p.value), paste0(p.value, '*')))) %>%
   relocate(Type) %>%
   rename(Dependent = Type, Contrast = contrast, Ratio = ratio, `z-ratio` = z.ratio, `p-value` = p.value)
+#write.table(energy.reg.em, file = 'Table S4.txt', row.names = F, quote = T)
 
-#write.table(energy.reg.em, file = 'CR Tables//Table S4.txt', row.names = F, quote = T)
+### Region comparison boxplot ###
 
-### Region comparison boxplot
 #Position of group labels
 position.reg <- transect.energy %>%
   group_by(Region) %>%
@@ -368,7 +373,7 @@ position.reg <- transect.energy %>%
             y.prod = max(Prod) + 0.01,
             y.turn = max(Turn) + 0.1)
 
-#### Biomass
+### Biomass
 #Formulate group labels for the boxplot
 biom.reg.grp <- multcomp::cld(biom.reg.em, Letters = letters, decreasing = T) %>%
   as.data.frame() %>%
@@ -391,7 +396,7 @@ region.biom <- transect.energy %>%
         plot.subtitle = element_text(size = 20),
         legend.position = 'none')
 
-#### Productivity
+### Productivity
 #Formulate group labels for the boxplot
 prod.reg.grp <- multcomp::cld(prod.reg.em, Letters = letters, decreasing = T) %>%
   as.data.frame() %>%
@@ -438,12 +443,11 @@ region.turn <- transect.energy %>%
         legend.position = 'none')
 
 ggarrange(region.biom, region.prod, region.turn, nrow = 2, ncol = 2, align = 'hv')
+#ggsave(filename = 'Fig 3.svg', width = 10, height = 8, dpi = 1200)
 
-#ggsave(filename = 'CR Figures\\Fig 3.svg', width = 10, height = 8, dpi = 1200)
+### Residual diagnostics for GLMMs of region comparison ###
 
-### Residual diagnostics for GLMMs of region comparison.
-svg(filename = 'CR Figures//Fig S3.svg', width = 8, height = 9)
-
+#svg(filename = 'Fig S3.svg', width = 8, height = 9)
 layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
        heights = c(1, 6, 1, 6, 1, 6), widths = c(2, 3))
 par(mar = c(0, 0, 0, 0))
@@ -467,10 +471,10 @@ par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(prod.m.reg), form = transect.energy$Region)
 par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(turn.m.reg), form = transect.energy$Region)
+#dev.off()
 
-dev.off()
+#### Compare energy flows among dietary groups ####
 
-#### Compare energy flows among dietary groups (Table S3 & Fig 6) ####
 #Diet Wide table
 diet.energy <- fish.metric %>%
   #Categorize 7 dietary groups into 5 groups
@@ -484,6 +488,7 @@ diet.energy <- fish.metric %>%
   reframe(Region = Region,
           Site = Site,
           Biom = sum(Biomass)/100,
+          #Growth_iter represents the average somatic growth across 100 iterations following survival simulations
           Prod = sum(Growth_iter)/100,
           Turn = Prod/Biom * 100
   ) %>%
@@ -623,7 +628,8 @@ GI.glmm <- Diet_glmm('GI')
 OI.glmm <- Diet_glmm('OI')
 KT.glmm <- Diet_glmm('KT')
 
-#GLMM boxplot
+### GLMM boxplot ###
+
 #Biomass
 NT.biom.plot <- NT.glmm$results$Biom$plot +
   #Add the arrow for the extreme outlier
@@ -668,24 +674,25 @@ diet.plot <- ggarrange(NT.biom.plot, ET.biom.plot, GI.biom.plot, OI.biom.plot, K
                        NT.prod.plot, ET.prod.plot, GI.prod.plot, OI.prod.plot, KT.prod.plot,
                        NT.turn.plot, ET.turn.plot, GI.turn.plot, OI.turn.plot, KT.turn.plot,
                        nrow = 3, ncol = 5, align = 'v')
-#Add general x-label
+#Add a general x-label
 annotate_figure(diet.plot, bottom = text_grob("Dietary group", size = 16))
-#ggsave('CR Figures\\Fig 4.svg', height = 9.5, width = 14, dpi = 1200)
+#ggsave('Fig 4.svg', height = 9.5, width = 14, dpi = 1200)
 
-#Glmm output
+### GLMM output ###
+
 diet.glmm <- bind_rows(NT.glmm$glmm_summary, ET.glmm$glmm_summary, GI.glmm$glmm_summary, OI.glmm$glmm_summary, KT.glmm$glmm_summary) %>%
   mutate(Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT')),
          Dependent = ifelse(Dependent == 'Biom', 'Biomass',
                             ifelse(Dependent == 'Prod', 'Productivity', 'Turnover'))) %>%
   arrange(Dependent)
+#write.table(diet.glmm, file = 'Table S5.txt', row.names = F, quote = T)
 
-#write.table(diet.glmm, file = 'CR Tables//Table S5.txt', row.names = F, quote = T)
-
-#Post-hoc test by EMMs
+### Post-hoc test by EMMs ###
 diet.compare <- bind_rows(NT.glmm$results$Biom$contrast, ET.glmm$results$Biom$contrast, GI.glmm$results$Biom$contrast, OI.glmm$results$Biom$contrast, KT.glmm$results$Biom$contrast,
                           NT.glmm$results$Prod$contrast, ET.glmm$results$Prod$contrast, GI.glmm$results$Prod$contrast, OI.glmm$results$Prod$contrast, KT.glmm$results$Prod$contrast,
                           NT.glmm$results$Turn$contrast, ET.glmm$results$Turn$contrast, GI.glmm$results$Turn$contrast, OI.glmm$results$Turn$contrast, KT.glmm$results$Turn$contrast) %>%
   select(-df, -null) %>%
+  #Add corresponding energy flows and regions
   mutate(Dependent = rep(c('Biomass', 'Productivity', 'Turnover'), each = 50),
          Region = rep(c('NT', 'ET', 'GI', 'OI', 'KT'), each = 10, times = 3)
   ) %>%
@@ -695,8 +702,7 @@ diet.compare <- bind_rows(NT.glmm$results$Biom$contrast, ET.glmm$results$Biom$co
                           ifelse(p.value >= 0.05, sprintf("%.3f", p.value), paste0(p.value, '*')))) %>%
   relocate(Dependent, Region) %>%
   rename(Contrast = contrast, Ratio = ratio, `z-ratio` = z.ratio, `p-value` = p.value)
-
-#write.table(diet.compare, file = 'CR Tables//Table S6.txt', row.names = F, quote = T)
+#write.table(diet.compare, file = 'Table S6.txt', row.names = F, quote = T)
 
 #### Identification of biotic drivers ####
 
@@ -708,7 +714,8 @@ benthic <- read.csv(file = 'Data//Benthic composition.csv') %>%
   #Remove rare species (defined as covers lower than 5% in all transect)
   select(-which(colSums(. > 0.05) == 0))
 
-#PCoA estimation
+### Benthic composition PCoA ###
+
 #Bray-Curtis dissimilarity
 benthic.cap <- capscale(benthic ~ 1, distance = 'bray')
 
@@ -716,13 +723,13 @@ benthic.cap <- capscale(benthic ~ 1, distance = 'bray')
 #Percent explained by each axis
 benthic.pcoa.per.exp <- round(100 * benthic.cap$CA$eig / sum(benthic.cap$CA$eig), 1)
 
-#Extract PCoA 1 to 3 scores for GLMM
+#Extract PCoA 1 to 3 scores
 benthic.score <- scores(benthic.cap, 1:3, 'sites') %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Transect') %>%
   rename(Benthic_PCoA1 = MDS1, Benthic_PCoA2 = MDS2, Benthic_PCoA3 = MDS3)
 
-#PCoA1-PCoA2
+#PCoA1-PCoA2 biplot
 benthic.cap.arrow12 <- wascores(scores(benthic.cap, 1:2, 'sites'), benthic, expand = TRUE) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Species')
@@ -741,7 +748,7 @@ benthic.pcoa12.plot <- benthic.score %>%
        y = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)')) +
   theme_bw()
 
-#PCoA2-PCoA3
+#PCoA2-PCoA3 biplot
 benthic.cap.arrow23 <- wascores(scores(benthic.cap, 2:3, 'sites'), benthic, expand = TRUE) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Species')
@@ -760,26 +767,25 @@ benthic.pcoa23.plot <- benthic.score %>%
        y = paste0('PCoA3 (', benthic.pcoa.per.exp[3], '%)')) +
   theme_bw()
 
+#Combine the PCoA1-PCoA2 biplot and the PCoA2-PCoA3 biplot
 ggarrange(benthic.pcoa12.plot, benthic.pcoa23.plot, nrow = 2, ncol = 1, align = 'hv')
+#ggsave(filename = 'Fig S6.svg', width = 8, height = 10, dpi = 1200)
 
-#ggsave(filename = 'CR Figures\\Fig S6.svg', width = 8, height = 10, dpi = 1200)
+### Biotic GLMM ###
 
-
-#### Biotic GLMM
-#Combine benthic and diet metrics
+#Add region and site information to each transect
 biotic.energy <- transect.energy %>%
   left_join(., benthic.score, by = 'Transect') %>%
   relocate(Region, Site) 
 
 ### Biomass
-#Glmm formula
+#GLMM formula
 biom.f.biotic <- Biom ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
 #GLMM
 biom.m.biotic <- glmmTMB(biom.f.biotic, data = biotic.energy, family = ziGamma(link = 'log'))
-summary(biom.m.biotic)
 
-#Save the glmm output
+#Save the GLMM output
 biom.biotic.ci <- confint(biom.m.biotic) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
@@ -796,14 +802,13 @@ biom.biotic.glmm <- coef(summary(biom.m.biotic))$cond %>%
   relocate(Dependent) 
 
 ### Productivity
-#Glmm formula
+#GLMM formula
 prod.f.biotic <- Prod ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
 #GLMM
 prod.m.biotic <- glmmTMB(prod.f.biotic, data = biotic.energy, family = ziGamma(link = 'log'))
-summary(prod.m.biotic)
 
-#Save the glmm output
+#Save the GLMM output
 prod.biotic.ci <- confint(prod.m.biotic) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
@@ -820,14 +825,13 @@ prod.biotic.glmm <- coef(summary(prod.m.biotic))$cond %>%
   relocate(Dependent)
 
 ### Turnover
-#Glmm formula
+#GLMM formula
 turn.f.biotic <- Turn ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
 #GLMM
 turn.m.biotic <- glmmTMB(turn.f.biotic, data = biotic.energy, family = ziGamma(link = 'log'))
-#summary(turn.m.biotic)
 
-#Save the glmm output
+#Save the GLMM output
 turn.biotic.ci <- confint(turn.m.biotic) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
@@ -843,18 +847,14 @@ turn.biotic.glmm <- coef(summary(turn.m.biotic))$cond %>%
   left_join(., turn.biotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-#Combine the glmm output
-energy.biotic.glmm <- bind_rows(biom.biotic.glmm, prod.biotic.glmm, turn.biotic.glmm) %>%
-  mutate(across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
-         `Pr(>|z|)` = round(`Pr(>|z|)`, 3)) %>%
-  mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*',
-                             ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
-  relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
+#Combine the GLMM output
+energy.biotic.glmm <- bind_rows(biom.biotic.glmm, prod.biotic.glmm, turn.biotic.glmm)
 
-#write.table(energy.biotic.glmm, file = 'CR Tables\\Table S7.txt', row.names = F, quote = T)
-
-#Visualize glmm output
+#Visualize GLMM output
 energy.biotic.glmm %>%
+  #Label whether the variable is significant or not
+  mutate(Sig = ifelse(`Pr(>|z|)` < 0.05, '*', '')) %>%
+  #Arrange the order of y-axis labels
   mutate(Independent = factor(Independent, levels = c('Benthic_PCoA3', 'Benthic_PCoA2', 'Benthic_PCoA1', '(Intercept)'))) %>%
   ggplot(aes(x = Estimate, y = Independent, col = Sig)) +
   geom_pointrange(aes(xmin = Lower_limit, xmax = Upper_limit, y = Independent, col = Sig)) +
@@ -868,13 +868,20 @@ energy.biotic.glmm %>%
         axis.text = element_text(size = 12),
         title = element_text(size = 14),
         strip.text = element_text(size = 14))
+#ggsave(filename = 'Fig 5.svg', width = 8, height = 10, dpi = 1200)
 
-ggsave(filename = 'CR Figures\\Fig 5.svg', width = 8, height = 10, dpi = 1200)
+#Export GLMM output
+energy.biotic.glmm <- energy.biotic.glmm %>%
+  mutate(across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
+       `Pr(>|z|)` = round(`Pr(>|z|)`, 3)) %>%
+  mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*',
+                             ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
+  relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
+#write.table(energy.biotic.glmm, file = 'Table S7.txt', row.names = F, quote = T)
 
-### Residual diagnostics for biotic glmm
-#Fig S4
-svg(file = 'CR Figures//Residual diag biotic.svg', width = 6, height = 8)
+### Residual diagnostics for biotic GLMMs ###
 
+#svg(file = 'Fig S4.svg', width = 6, height = 8)
 layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
        heights = c(1, 6, 1, 6, 1, 6))
 par(mar = c(0, 0, 0, 0))
@@ -898,25 +905,28 @@ par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(prod.m.biotic))
 par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(turn.m.biotic))
+#dev.off()
 
-dev.off()
+### Relationships between energy flows and significant variables in GLMMs ###
 
-### Emmeans
-#Biomass
+#Biomass EMMs - PCoA2 scores
 biom.biotic.em.pcoa2 <- emmeans(biom.m.biotic, ~ Benthic_PCoA2, type = 'response',
                                 at = list(Benthic_PCoA2 = seq(min(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
                                                               max(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
                                                               length.out = 250))) %>%
   as.data.frame()
 
+#Biomass EMMs - PCoA3 scores
 biom.biotic.em.pcoa3 <- emmeans(biom.m.biotic, ~ Benthic_PCoA3, type = 'response',
                                 at = list(Benthic_PCoA3 = seq(min(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
                                                               max(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
                                                               length.out = 250))) %>%
   as.data.frame()
 
+#Combine the PCoA2 and PCoA3 scores scores and present the results by jitter and line plot
 biom.biotic.em.plot <- biotic.energy %>%
   select(-Benthic_PCoA1) %>%
+  #Wide table to long table
   pivot_longer(cols = Benthic_PCoA2:Benthic_PCoA3, names_to = 'Axis', values_to = 'Score') %>%
   ggplot(aes(x = Score, y = Biom)) +
   #PCoA2 EMMs
@@ -937,22 +947,24 @@ biom.biotic.em.plot <- biotic.energy %>%
   theme_bw() +
   theme(plot.subtitle = element_text(size = 16))
 
-
-#Productivity
+#Productivity EMMs - PCoA2 scores
 prod.biotic.em.pcoa2 <- emmeans(prod.m.biotic, ~ Benthic_PCoA2, type = 'response',
                                 at = list(Benthic_PCoA2 = seq(min(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
                                                               max(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
                                                               length.out = 250))) %>%
   as.data.frame()
 
+#Productivity EMMs - PCoA3 scores
 prod.biotic.em.pcoa3 <- emmeans(prod.m.biotic, ~ Benthic_PCoA3, type = 'response',
                                 at = list(Benthic_PCoA3 = seq(min(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
                                                               max(biotic.energy$Benthic_PCoA3, na.rm = TRUE),
                                                               length.out = 250))) %>%
   as.data.frame()
 
+#Combine the PCoA2 and PCoA3 scores and present the results by jitter and line plot
 prod.biotic.em.plot <- biotic.energy %>%
   select(-Benthic_PCoA1) %>%
+  #Wide table to long table
   pivot_longer(cols = Benthic_PCoA2:Benthic_PCoA3, names_to = 'Axis', values_to = 'Score') %>%
   ggplot(aes(x = Score, y = Prod)) +
   #PCoA2 EMMs
@@ -973,13 +985,14 @@ prod.biotic.em.plot <- biotic.energy %>%
   theme_bw() +
   theme(plot.subtitle = element_text(size = 16))
 
-#Turnover
+#Turnover - PCoA2 scores 
 turn.biotic.em.pcoa2 <- emmeans(turn.m.biotic, ~ Benthic_PCoA2, type = 'response',
                                 at = list(Benthic_PCoA2 = seq(min(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
                                                               max(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
                                                               length.out = 125))) %>%
   as.data.frame()
 
+#Present the output by jitter and line plot
 turn.biotic.em.plot <- biotic.energy  %>%
   select(-Benthic_PCoA1, -Benthic_PCoA3) %>%
   pivot_longer(cols = Benthic_PCoA2, names_to = 'Axis', values_to = 'Score') %>%
@@ -996,258 +1009,384 @@ turn.biotic.em.plot <- biotic.energy  %>%
   theme_bw() +
   theme(plot.subtitle = element_text(size = 16))
 
+#Combine the three energy flows to the significant biotic variables plots 
 ggarrange(biom.biotic.em.plot, prod.biotic.em.plot, turn.biotic.em.plot,
           nrow = 3, ncol = 1, align = 'hv')
+#ggsave(filename = 'Fig S7.svg', width = 6, height = 8, dpi = 1200)
 
-#ggsave('CR Figures\\biotic em.png', width = 6, height = 8)
-ggsave('CR Figures\\Fig S7.svg', width = 6, height = 8, dpi = 1200)
+#### Identification of abiotic drivers #####
 
-#### Identification of extrinsic driver (Fig 2, Fig S3, Fig S7-9, Fig S11, Table S5, Table 2) #####
-#Import extrinsic factors
-extrinsic <- read.csv(file = 'Data//Abiotic_factor.csv')
+#Import abiotic data
+abiotic <- read.csv(file = 'Data//Abiotic variable.csv')
 
-#Environmental condition among the five region
-extrinsic %>%
-  #Combine SST, PP, PAR, and human population data
-  left_join(., transect.energy[ , c('Region', 'Site')], by = 'Site') %>%
-  select(Region, SST, PP, PAR, Human_pop) %>%
-  mutate(Human_pop = log(Human_pop + 1)) %>%
-  #Transform to long table
-  pivot_longer(cols = Human_pop:SST, values_to = 'Values', names_to = 'Variables') %>%
-  mutate(Variables = factor(Variables, levels = c('SST', 'PP', 'PAR', 'Human_pop'))) %>%
-  ggplot(aes(x = Region, y = Values, fill = Region)) +
-  geom_boxplot(alpha = 0.75, outlier.size = 0.75) +
-  labs(y = NULL) +
-  scale_fill_brewer(palette = "Set2", direction = -1) +
-  facet_wrap(~ Variables, scale = 'free',
-             #Rename each facet title
-             labeller = labeller(Variables =
-                                   c('SST' = 'Sea surface temperature',
-                                     'PP' = 'Primary production',
-                                     'PAR' = 'Light intensity',
-                                     'Human_pop' = 'Human population'
-                                   ))) +
-  theme_bw() +
-  theme(legend.position = 'none',
-        panel.grid.minor = element_blank(),
-        strip.text = element_text(size = 12))
+### structural complexity PCA ###
+#Select structural complexity variables
+complexity <- abiotic %>%
+  select(Site, S4:SC) %>%
+  column_to_rownames(var = 'Site')
 
-#Fig 2. Environmental conditions among the five regions.
-ggsave(filename = 'Figures\\fig2.pdf', width = 8, height = 6, units = 'in')
+#PCA estimation
+complexity.stand <- decostand(complexity, method = 'stand')
+complexity.cap <- capscale(complexity.stand ~ 1, distance = 'euc')
 
-#Manipulate raw extrinsic data
-extrinsic.transform <- extrinsic %>%
-  mutate(#Log transform human population
-    Human_pop = log(Human_pop + 1),
-    #Normalize SST, PP, substrate type, and structural complexity
-    across(.cols = PP:SC, ~ decostand(.x, 2, method = 'norm')))
+#Percent explained
+complexity.pcoa.per.exp <- round(100 * complexity.cap$CA$eig / sum(complexity.cap$CA$eig), 1)
 
-### Variable selection
+#Extract PCA 1 to 3 scores
+complexity.score <- scores(complexity.cap, 1:3, 'sites') %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Site') %>%
+  rename(Complexity_PCA1 = MDS1, Complexity_PCA2 = MDS2, Complexity_PCA3 = MDS3)
 
-#VIF
-extrinsic.vif <- vifstep(extrinsic.transform[ , 2:ncol(extrinsic.transform)], th = 10) #Stepwise excluded vif > 10
+#PCA1-PCA2
+complexity.cap.arrow12 <- wascores(scores(complexity.cap, 1:2, 'sites'), complexity, expand = TRUE) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Species')
 
-#Extract VIF < 10 variables
-extrinsic.sel <- extrinsic.transform %>%
-  select(Site, attributes(extrinsic.vif)$results[ , 1])
+#The PCA plot of structural complexity
+complexity.score %>%
+  left_join(., fish.metric[ , c('Region', 'Site')], by = 'Site') %>%
+  distinct() %>%
+  ggplot(aes(x = Complexity_PCA1, y = Complexity_PCA2)) +
+  geom_jitter(aes(col = Region), size = 3, alpha = 0.7) +
+  scale_color_brewer(palette = "Set2", direction = -1) +
+  geom_segment(data = complexity.cap.arrow12,
+               aes(x = 0, xend = MDS1, y = 0, yend = MDS2),
+               arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
+  ggrepel::geom_text_repel(data = complexity.cap.arrow12, aes(x = MDS1, y = MDS2, label = Species), size = 3, max.overlaps = 15) +
+  labs(x = sprintf('PCA1 ( %.1f%%)', complexity.pcoa.per.exp[1]),
+       y = paste0('PCA2 (', complexity.pcoa.per.exp[2], '%)')) +
+  theme_bw()
+#ggsave(filename = 'Fig S8.svg', width = 8, height = 6, dpi = 1200)
 
-#Combine energy flow metrics with extrinsic factors
-energy.extrinsic <- fish.metric %>%
-  #Energy flows of every transect
+### Site-level energy flow metric ###
+abiotic.energy <- fish.metric %>%
+  #Energy flows in each transect
   group_by(Region, Site, Transect) %>%
   summarise(Biom = sum(Biomass)/100,
-            Prod = sum(somatic_G[Fate = T])/100,
+            #Growth_iter represents the average somatic growth across 100 iterations following survival simulations
+            Prod = sum(Growth_iter)/100,
             .groups = 'drop') %>%
-  #Site level energy metrics (to incorporate with complexity and other variables)
+  #Site level energy metrics (to incorporate with complexity and other abiotic variables)
   group_by(Region, Site) %>%
   summarise(Biom = mean(Biom),
             Prod = mean(Prod),
             Turn = Prod/Biom * 100,
-            .groups = 'drop') %>%
-  mutate(#log10 transform standing biomass 
-    Biom = log10(Biom + 1)) %>%
-  #Combine the explanatory variables
-  left_join(., extrinsic.sel, by = 'Site') %>%
-  mutate(Site = as.factor(Site))
+            .groups = 'drop')  %>%
+  #Combine energy flows with the explanatory variables
+  left_join(., complexity.score, by = 'Site') %>%
+  left_join(., abiotic, by = 'Site') %>%
+  mutate(Site = as.character(Site),
+         Region = as.character(Region),
+         #log transform human population
+         Human_pop = log10(Human_pop),
+         #Standardize all the variables
+         across(.cols = Complexity_PCA1:SC, ~ decostand(.x, 2, method = 'stand'))
+  )
 
-#Fig S3. QQ-plots and histograms of fish energy flows at site level.
-
-#Check data distribution
-shapiro.test(energy.extrinsic$Biom)
-shapiro.test(energy.extrinsic$Prod)
-shapiro.test(energy.extrinsic$Turn)
-
-#QQ plot and histogram
-pdf(file = 'Figures\\figS3.pdf', height = 8, width = 6)
-
-par(mfrow = c(3, 2))
-#Standing biomass
-qqnorm(energy.extrinsic$Biom, main = NA)
-qqline(energy.extrinsic$Biom)
-title(main = 'a', adj = 0)
-hist(energy.extrinsic$Biom, breaks = 10, main = NA, xlab = 'Standing biomass')
-#Productivty
-qqnorm(energy.extrinsic$Prod, main = NA)
-qqline(energy.extrinsic$Prod)
-title(main = 'b', adj = 0)
-hist(energy.extrinsic$Prod, breaks = 10, main = NA, xlab = 'Productivity')
-#Turnover
-qqnorm(energy.extrinsic$Turn, main = NA)
-qqline(energy.extrinsic$Turn)
-title(main = 'c', adj = 0)
-hist(energy.extrinsic$Turn, breaks = 10, main = NA, xlab = 'Turnover')
-
-dev.off()
-
-par(mfrow = c(1, 1))
-
-### Standing biomass
-#Select standing biomass and explanatory variables
-biomass.extrinsic <- select(energy.extrinsic, Biom, Human_pop:SC, Region, Site)
-
-#Check the relationship between standing biomass and extrinsic factors
-extrinsic %>%
-  #Remove variables having VIF > 10
-  select(-S4, -S32, -SST) %>%
-  #Combine selected extinsic factors with biomass
-  left_join(., energy.extrinsic[ , c('Region', 'Site', 'Biom')], by = 'Site') %>%
-  mutate(Human_pop = log10(Human_pop + 1),
-         US = US * 100,
-         SS = SS * 100) %>%
-  pivot_longer(cols = Human_pop:SC, values_to = 'Values', names_to = 'Variables') %>%
-  ggplot(aes(y = Biom, x = Values)) +
-  geom_jitter(aes(col = Region), alpha = 0.7) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
+### QQ-plots and histograms of fish energy flows at site level ###
+#Biomass
+site.biom.qq <- abiotic.energy %>%
+  ggplot(aes(sample = Biom)) +
+  stat_qq(pch = 1, cex = 2) +
+  stat_qq_line() +
+  labs(x = 'Theoretical Quantiles', y = 'Sample Quantiles', subtitle = 'a') +
   theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  facet_wrap(~Variables, scales = 'free') +
-  labs(y = expression('log10[Standing biomass ('~ g%.%m^-2~ ')]'), x = NULL)
+  theme(panel.grid = element_blank(),
+        plot.subtitle = element_text(size = 16))
 
-#Fig S7. Relationship between standing biomass and selected abiotic variables.
-ggsave(filename = 'Figures\\figS7.pdf', width = 10, height = 6, units = 'in')
+site.biom.density <- abiotic.energy %>%
+  ggplot(aes(x = Biom)) +
+  geom_histogram(aes(y = after_stat(density)), col = 'black', fill = 'grey75', bins = 15) +
+  geom_density() +
+  labs(x = expression(Biomass~ ~(g%.%m^-2)), y = 'Density', subtitle = ' ') +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 
-#Glmm: standing biomass as response variable, extrinsic factors as fix effect,
-#Region as random effect
-biomass.f.extrinsic <- Biom ~ Human_pop + PP + PAR + SS + US + PROC4 + PROC32 + PLC4 + PLC32 + SC + (1|Region)
+#Productivity
+site.prod.qq <- abiotic.energy %>%
+  ggplot(aes(sample = Prod)) +
+  stat_qq(pch = 1, cex = 2) +
+  stat_qq_line() +
+  labs(x = 'Theoretical Quantiles', y = 'Sample Quantiles', subtitle = 'b') +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        plot.subtitle = element_text(size = 16))
+
+site.prod.density <- abiotic.energy %>%
+  ggplot(aes(x = Prod)) +
+  geom_histogram(aes(y = after_stat(density)), col = 'black', fill = 'grey75', bins = 15) +
+  geom_density() +
+  labs(x = expression(Productivity~ ~(g%.%m^-2~~day^-1)), y = 'Density', subtitle = ' ') +
+  scale_x_continuous(breaks = seq(0, 0.06, 0.02)) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+#Turnover
+site.turn.qq <- abiotic.energy %>%
+  ggplot(aes(sample = Turn)) +
+  stat_qq(pch = 1, cex = 2) +
+  stat_qq_line() +
+  labs(x = 'Theoretical Quantiles', y = 'Sample Quantiles', subtitle = 'c') +
+  theme_bw() +
+  theme(panel.grid = element_blank(),
+        plot.subtitle = element_text(size = 16))
+
+site.turn.density <- abiotic.energy %>%
+  ggplot(aes(x = Turn)) +
+  geom_histogram(aes(y = after_stat(density)), col = 'black', fill = 'grey75', bins = 15) +
+  geom_density() +
+  labs(x = expression(Turnover~('%'~~day^-1)), y = 'Density', subtitle = ' ') +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+#Combine all the plots
+ggarrange(site.biom.qq, site.biom.density, site.prod.qq, site.prod.density, site.turn.qq, site.turn.density,
+          nrow = 3, ncol = 2, align = 'hv')
+#ggsave(filename = 'Fig S2.svg', height = 8, width = 7, units = 'in', dpi = 1200)
+
+### Abiotic GLMMs ###
+
+### Biomass 
+#GLMM formula
+biom.f.abiotic <- Biom ~ Human_pop + PP + SST + SS + US + Complexity_PCA1 + Complexity_PCA2 + Complexity_PCA3 + (1|Region)
 
 #GLMM
-biomass.m.extrinsic <- glmmTMB(biomass.f.extrinsic, data = biomass.extrinsic, family = gaussian())
-summary(biomass.m.extrinsic)
+biom.m.abiotic <- glmmTMB(biom.f.abiotic, data = abiotic.energy, family = ziGamma(link = 'log'))
 
-#Save glmm output
-biomass.extrinsic.sum <-coef(summary(biomass.m.extrinsic))$cond %>%
+#Save the GLMM output
+biom.abiotic.ci <- confint(biom.m.abiotic) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
-  mutate(Dependent = 'Biom') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(Independent != "Std.Dev.(Intercept)|Region")
+
+biom.abiotic.glmm <- coef(summary(biom.m.abiotic))$cond %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  mutate(Dependent = 'Biomass') %>%
+  left_join(., biom.abiotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-#### Productivity
-#Select productivity and explanatory variables
-prod.extrinsic <- select(energy.extrinsic, Prod, Human_pop:SC, Region, Site)
-
-#Check the relationship between productivity and extrinsic factors
-extrinsic %>%
-  #Remove variables having VIF > 10 
-  select(-S4, -S32, -SST) %>%
-  #Combine selected extrinsic factors with productivity
-  left_join(., energy.extrinsic[ , c('Region', 'Site', 'Prod')], by = 'Site') %>%
-  mutate(Human_pop = log10(Human_pop + 1),
-         US = US * 100,
-         SS = SS * 100) %>%
-  pivot_longer(cols = Human_pop:SC, values_to = 'Values', names_to = 'Variables') %>%
-  ggplot(aes(y = Prod, x = Values)) +
-  geom_jitter(aes(col = Region), alpha = 0.7) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  facet_wrap(~Variables, scales = 'free') +
-  labs(y = expression(Productivity~ ~(g%.%m^-2~~day^-1)), x = NULL)
-
-#Fig S8. Relationship between productivity and selected abiotic variables.
-ggsave(filename = 'Figures\\figS8.pdf', width = 10, height = 6, units = 'in')
-
-#Glmm: productivity as response variable, extrinsic factors as fix effect,
-#Region as random effect
-prod.f.extrinsic <- Prod ~ Human_pop + PP + PAR + SS + US + PROC4 + PROC32 + PLC4 + PLC32 + SC + (1|Region)
+### Productivity 
+#GLMM formula
+prod.f.abiotic <- Prod ~ Human_pop + PP + SST + SS + US + Complexity_PCA1 + Complexity_PCA2 + Complexity_PCA3 + (1|Region)
 
 #GLMM
-prod.m.extrinsic <- glmmTMB(prod.f.extrinsic, data = prod.extrinsic, family = ziGamma(link = 'log'))
-summary(prod.m.extrinsic)
+prod.m.abiotic <- glmmTMB(prod.f.abiotic, data = abiotic.energy, family = ziGamma(link = 'log'))
 
-#Save glmm output
-prod.extrinsic.sum <- coef(summary(prod.m.extrinsic))$cond %>%
+#Save the GLMM output
+prod.abiotic.ci <- confint(prod.m.abiotic) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(Independent != "Std.Dev.(Intercept)|Region")
+
+prod.abiotic.glmm <- coef(summary(prod.m.abiotic))$cond %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
   mutate(Dependent = 'Productivity') %>%
+  left_join(., prod.abiotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-#### Turnover
-#Select turnover and explanatory variables
-turn.extrinsic <- select(energy.extrinsic, Turn, Human_pop:SC, Region, Site)
-
-#Check the relationship between turnover and variables
-extrinsic %>%
-  #Remove variables having VIF > 10
-  select(-S4, -S32, -SST) %>%
-  #Combine selected extrinsic factors with turnover
-  left_join(., energy.extrinsic[ , c('Region', 'Site', 'Turn')], by = 'Site') %>%
-  mutate(Human_pop = log10(Human_pop + 1),
-         SS = SS * 100,
-         US = US * 100) %>%
-  pivot_longer(cols = Human_pop:SC, values_to = 'Values', names_to = 'Variables') %>%
-  ggplot(aes(y = Turn, x = Values)) +
-  geom_jitter(aes(col = Region), alpha = 0.7) +
-  scale_colour_brewer(palette = "Set2", direction = -1) +
-  theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-  facet_wrap(~Variables, scales = 'free') +
-  labs(y = expression(Turnover~('%'~~day^-1)), x = NULL)
-
-#Fig S9. Relationship between turnover and selected abiotic variables.
-ggsave(filename = 'Figures\\figS9.pdf', width = 10, height = 6, units = 'in')
-
-#Glmm: turnover as response variable, extrinsic factors as fix effect,
-#Region as random effect
-turn.f.extrinsic <- Turn ~ Human_pop + PP + PAR + SS + US + PROC4 + PROC32 + PLC4 + PLC32 + SC + (1|Region)
+### Turnover 
+#GLMM formula
+turn.f.abiotic <- Turn ~ Human_pop + PP + SST + SS + US + Complexity_PCA1 + Complexity_PCA2 + Complexity_PCA3 + (1|Region)
 
 #GLMM
-turn.m.extrinsic <- glmmTMB(turn.f.extrinsic, data = turn.extrinsic, family = Gamma(link = 'log'))
-summary(turn.m.extrinsic)
+turn.m.abiotic <- glmmTMB(turn.f.abiotic, data = abiotic.energy, family = ziGamma(link = 'log'))
 
-#Save glmm output
-turn.extrinsic.sum <- coef(summary(turn.m.extrinsic))$cond %>%
+#Save the GLMM output
+turn.abiotic.ci <- confint(turn.m.abiotic) %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Independent') %>%
-  mutate(Dependent = 'Turn') %>%
+  select(-Estimate) %>%
+  rename('Lower_limit' = `2.5 %`,
+         'Upper_limit' = `97.5 %`) %>%
+  filter(Independent != "Std.Dev.(Intercept)|Region")
+
+turn.abiotic.glmm <- coef(summary(turn.m.abiotic))$cond %>%
+  as.data.frame() %>%
+  rownames_to_column(var = 'Independent') %>%
+  mutate(Dependent = 'Turnover') %>%
+  left_join(., turn.abiotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-#Combine glmm result
-energy.extrinsic.sum <- bind_rows(biomass.extrinsic.sum, prod.extrinsic.sum, turn.extrinsic.sum)
+#Summarize the GLMM output
+energy.abiotic.glmm <- bind_rows(biom.abiotic.glmm, prod.abiotic.glmm, turn.abiotic.glmm) 
 
-#Table S5. GLMM outputs of energy flow metrics to 10 selected extrinsic variables.
-write.csv(energy.extrinsic.sum, file = 'Tables\\extrinsic glmm.csv', row.names = F)
+#Visualize GLMM output
+energy.abiotic.glmm %>%
+  #Label whether the variable is significant or not
+  mutate(Sig = ifelse(`Pr(>|z|)` < 0.05, '*', '')) %>%
+  #Arrange the order of y-axis labels
+  mutate(Independent = factor(Independent, levels = c('Complexity_PCA3', 'Complexity_PCA2', 'Complexity_PCA1', 'SS', 'US', 'SST', 'PP', 'Human_pop', '(Intercept)'))) %>%
+  ggplot(aes(x = Estimate, y = Independent, col = Sig)) +
+  geom_pointrange(aes(xmin = Lower_limit, xmax = Upper_limit, y = Independent, col = Sig)) +
+  geom_vline(xintercept = 0, col = 'black', linetype = 2, alpha = 0.3) +
+  facet_wrap(vars(Dependent), ncol = 1) +
+  scale_color_manual(values = c('black', 'tomato')) +
+  labs(x = 'Estimated coefficient') +
+  theme_bw() +
+  theme(legend.position = 'none', axis.title.y = element_blank()) +
+  theme(axis.title = element_text(size = 14),
+        axis.text = element_text(size = 12),
+        title = element_text(size = 14),
+        strip.text = element_text(size = 14))
+#ggsave(filename = 'Fig 6.svg', width = 8, height = 10, dpi = 1200)
 
-#Significant independent variables only
-energy.extrinsic.sum.sig <- energy.extrinsic.sum %>%
-  filter(`Pr(>|z|)` < 0.05) %>%
-  mutate_if(is.numeric, round, 3)
+#Export the GLMM output
+energy.abiotic.glmm <- energy.abiotic.glmm %>%
+  mutate(across(where(is.numeric) & !`Pr(>|z|)`, ~ round(.x, 2)),
+         `Pr(>|z|)` = round(`Pr(>|z|)`, 3)) %>%
+  mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*', 
+                             ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
+  relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
+#write.table(energy.abiotic.glmm, file = 'Table S8.txt', row.names = F, quote = T)
 
-#Table 2. GLMM output presenting the significant extrinsic variables to energy flows.
-write.csv(energy.extrinsic.sum.sig, file = 'Tables\\extrinsic glmm significant.csv', row.names = F)
+### Residual diagnostics for abiotic GLMMs ###
 
-#Residual diagnostic
-#Fig S11. Residual diagnostics for GLMMs of extrinsic drivers.
-#Standing biomass
-pdf(file = 'Figures\\figS11a.pdf', width = 8, height = 4)
-res.biomass <- plot(simulateResiduals(biomass.m.extrinsic))
-dev.off()
+#svg(file = 'Fig S5.svg', width = 6, height = 8)
+layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
+       heights = c(1, 6, 1, 6, 1, 6))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'a', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(biom.m.abiotic))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'b', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(prod.m.abiotic))
+par(mar = c(0, 0, 0, 0))
+plot.new()
+text(0, 0.3, 'c', cex = 2, font = 2)
+par(mar = c(5, 5, 2, 1))
+plotQQunif(simulateResiduals(turn.m.abiotic))
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(biom.m.abiotic))
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(prod.m.abiotic))
+par(mar = c(5, 5, 2, 1))
+plotResiduals(simulateResiduals(turn.m.abiotic))
+#dev.off()
+
+### Check collinearity in abiotic GLMM ###
+
+abiotic.glmm.vif <- bind_rows(check_collinearity(biom.m.abiotic), check_collinearity(prod.m.abiotic), check_collinearity(turn.m.abiotic)) %>%
+  mutate(Independent = rep(c('Biomass', 'Productivity', 'Turnover'), each = 8),
+         across(where(is.numeric), ~ sprintf("%.2f", .x))) %>%
+  select(Independent, Term, VIF, VIF_CI_low, VIF_CI_high) %>%
+  rename(`Fix effect` = Term, `Lower limit` = VIF_CI_low , `Upper limit` = VIF_CI_high)
+#write.table(abiotic.glmm.vif, file = 'Table S9.txt', row.names = F, quote = T)
+
+### Relationships between energy flows and significant variables in GLMMs ###
+
+#Biomass - Stable Substrate
+biom.abiotic.em.ss <- emmeans(biom.m.abiotic, ~ SS, type = 'response',
+                              at = list(SS = seq(min(abiotic.energy$SS, na.rm = TRUE),
+                                                 max(abiotic.energy$SS, na.rm = TRUE),
+                                                 length.out = 50))) %>%
+  as.data.frame()
+
+#Biomass - structural complexity PCA1
+biom.abiotic.em.comp1 <- emmeans(biom.m.abiotic, ~ Complexity_PCA1, type = 'response',
+                                 at = list(Complexity_PCA1 = seq(min(abiotic.energy$Complexity_PCA1, na.rm = TRUE),
+                                                                 max(abiotic.energy$Complexity_PCA1, na.rm = TRUE),
+                                                                 length.out = 50))) %>%
+  as.data.frame()
+
+#Combine the SS and PCA1 values and present the results by jitter and line plot
+biom.abiotic.em.plot <- abiotic.energy %>%
+  select(Biom, SS, Complexity_PCA1) %>%
+  pivot_longer(cols = SS:Complexity_PCA1, names_to = 'Variable', values_to = 'Score') %>%
+  mutate(Variable = factor(Variable, levels = c('SS', 'Complexity_PCA1'))) %>%
+  ggplot(aes(x = Score, y = Biom)) +
+  #SS EMMs
+  geom_line(aes(x = biom.abiotic.em.ss$SS, y = biom.abiotic.em.ss$response),
+            col = '#66c2a5', alpha = 0.5) +
+  geom_ribbon(aes(x = biom.abiotic.em.ss$SS, y = biom.abiotic.em.ss$response,
+                  ymin = biom.abiotic.em.ss$asymp.LCL, ymax = biom.abiotic.em.ss$asymp.UCL),
+              fill = '#66c2a5', alpha = 0.25) +
+  #Complexity PCA1 EMMs
+  geom_line(aes(x = biom.abiotic.em.comp1$Complexity_PCA1, y = biom.abiotic.em.comp1$response),
+            alpha = 0.5, col = "#fc8d62") +
+  geom_ribbon(aes(x = biom.abiotic.em.comp1$Complexity_PCA1, y = biom.abiotic.em.comp1$response,
+                  ymin = biom.abiotic.em.comp1$asymp.LCL, ymax = biom.abiotic.em.comp1$asymp.UCL),
+              fill = "#fc8d62", alpha = 0.25) +
+  geom_jitter(aes(col = Variable), alpha = 0.5, cex = 2) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = 'Standardized values', y = expression(Biomass~ ~(g%.%m^-2)), subtitle = 'a') +
+  theme_bw() +
+  theme(plot.subtitle = element_text(size = 14))
 
 #Productivity
-pdf(file = 'Figures\\figS11b.pdf', width = 8, height = 4)
-res.prod <- plot(simulateResiduals(prod.m.extrinsic))
-dev.off()
+prod.abiotic.em.ss <- emmeans(prod.m.abiotic, ~ SS, type = 'response',
+                              at = list(SS = seq(min(abiotic.energy$SS, na.rm = TRUE),
+                                                 max(abiotic.energy$SS, na.rm = TRUE),
+                                                 length.out = 50))) %>%
+  as.data.frame()
 
-#Turnover
-pdf(file = 'Figures\\figS11c.pdf', width = 8, height = 4)
-res.turn <- plot(simulateResiduals(turn.m.extrinsic))
-dev.off()
+prod.abiotic.em.comp1 <- emmeans(prod.m.abiotic, ~ Complexity_PCA1, type = 'response',
+                                 at = list(Complexity_PCA1 = seq(min(abiotic.energy$Complexity_PCA1, na.rm = TRUE),
+                                                                 max(abiotic.energy$Complexity_PCA1, na.rm = TRUE),
+                                                                 length.out = 50))) %>%
+  as.data.frame()
+
+#Combine the SS and PCA1 values and present the results by jitter and line plot
+prod.abiotic.em.plot <- abiotic.energy %>%
+  select(Prod, SS, Complexity_PCA1) %>%
+  pivot_longer(cols = SS:Complexity_PCA1, names_to = 'Variable', values_to = 'Score') %>%
+  mutate(Variable = factor(Variable, levels = c('SS', 'Complexity_PCA1'))) %>%
+  ggplot(aes(x = Score, y = Prod)) +
+  #SS EMMs
+  geom_line(aes(x = prod.abiotic.em.ss$SS, y = prod.abiotic.em.ss$response),
+            col = '#66c2a5', alpha = 0.5) +
+  geom_ribbon(aes(x = prod.abiotic.em.ss$SS, y = prod.abiotic.em.ss$response,
+                  ymin = prod.abiotic.em.ss$asymp.LCL, ymax = prod.abiotic.em.ss$asymp.UCL),
+              fill = '#66c2a5', alpha = 0.25) +
+  #Complexity PCA1 EMMs
+  geom_line(aes(x = prod.abiotic.em.comp1$Complexity_PCA1, y = prod.abiotic.em.comp1$response),
+            alpha = 0.5, col = "#fc8d62") +
+  geom_ribbon(aes(x = prod.abiotic.em.comp1$Complexity_PCA1, y = prod.abiotic.em.comp1$response,
+                  ymin = prod.abiotic.em.comp1$asymp.LCL, ymax = prod.abiotic.em.comp1$asymp.UCL),
+              fill = "#fc8d62", alpha = 0.25) +
+  geom_jitter(aes(col = Variable), alpha = 0.5, cex = 2) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = 'Standardized values', y = expression(Productivity~ ~(g%.%m^-2~~day^-1)), subtitle = 'b') +
+  theme_bw()+
+  theme(plot.subtitle = element_text(size = 14))
+
+#Turnover - Stable substrate
+turn.abiotic.em.ss <- emmeans(turn.m.abiotic, ~ SS, type = 'response',
+                              at = list(SS = seq(min(abiotic.energy$SS, na.rm = TRUE),
+                                                 max(abiotic.energy$SS, na.rm = TRUE),
+                                                 length.out = 25))) %>%
+  as.data.frame()
+
+#Present the output by jitter and line plot
+turn.abiotic.em.plot <- abiotic.energy %>%
+  select(Turn, SS) %>%
+  pivot_longer(cols = SS, names_to = 'Variable', values_to = 'Score') %>%
+  ggplot(aes(x = Score, y = Turn)) +
+  #SS EMMs
+  geom_line(aes(x = turn.abiotic.em.ss$SS, y = turn.abiotic.em.ss$response),
+            col = '#66c2a5', alpha = 0.5) +
+  geom_ribbon(aes(x = turn.abiotic.em.ss$SS, y = turn.abiotic.em.ss$response,
+                  ymin = turn.abiotic.em.ss$asymp.LCL, ymax = turn.abiotic.em.ss$asymp.UCL),
+              fill = '#66c2a5', alpha = 0.25) +
+  geom_jitter(aes(col = Variable), alpha = 0.5, cex = 2) +
+  scale_color_brewer(palette = "Set2") +
+  labs(x = 'Standardized values', y = expression(Turnover~ ~("%"~~day^-1)), subtitle = 'c') +
+  theme_bw() +
+  theme(plot.subtitle = element_text(size = 14))
+
+#Combine the three energy flows to the significant abiotic variables plots 
+ggarrange(biom.abiotic.em.plot, prod.abiotic.em.plot, turn.abiotic.em.plot,
+          nrow = 3, ncol = 1, align = 'hv')
+#ggsave('Fig S9.svg', width = 6, height = 8, dpi = 1200)
