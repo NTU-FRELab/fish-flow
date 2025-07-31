@@ -1,4 +1,4 @@
-# Data from: Patterns of reef energy flow in a transitional zone
+# Data from: Patterns of reef fish energy flow in a transitional zone
 
 ---
 
