@@ -1,8 +1,8 @@
-# Data from: Contrasting energy flow associated with tropical and subtropical reef fish assemblages
+# Data from: Patterns of reef energy flow in a transitional zone
 
 ---
 
-This README file was generated on 2024/10/30 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code. (Latest update on 2024/11/06)
+This README file was generated on 2025/07/31 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code. (Latest update on 2025/07/31)
 
 1. Author Information
 
@@ -20,30 +20,29 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 ***
 
 ### File List
-#### File: Abiotic\_factor.csv
+#### File: Abiotic variable.csv
 
-**Description: The data were used to present the environmental conditions of each research site and analyze the extrinsic drivers of fish energy flows. The data of `Human_pop`, `PP`, `PAR` and `SST` were from different online database (see data sources), while the data of remained variables were obtained from field survey.** 
+**Description: The data were used to present the environmental conditions of each research site and analyze the abiotic drivers of fish energy flows. The data of `Human_pop`, `PP`, and `SST` were from different online database (see data sources), while the data of remained variables were obtained from field survey.** 
 
 ##### Variables
 
 * Site: Survey sites
 * Human_pop: Human population
 * PP: Primary production
-* PAR: Photosynthetically active radiation (the proxy for the light intensity)
 * SST: Sea surface temperature
 * SS: Stable substrate
 * US: Unstable substrate
 * S4: Fine scale slope
-* S32: Rough scale slope
+* S32: Coarse scale slope
 * PROC4: Fine scale profile curvature
 * PLC4: Fine scale planform curvature
-* PROC32: Rough scale profile curvature
-* PLC32: Rough scale planform curvature
+* PROC32: Coarse scale profile curvature
+* PLC32: Coarse scale planform curvature
 * SC: Surface complexity
 
-#### File: Biotic\_factor.csv
+#### File: Benthic composition.csv
 
-**Description: The data were used to analyze the intrinsic drivers of fish energy flows. All the data were obtained from field surveys using photo-quadrat methods.** 
+**Description: The data were used to analyze the biotic drivers of fish energy flows. All the data were obtained from field surveys using photo-quadrat methods.** 
 
 ##### Variables
 
@@ -72,11 +71,44 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * SG: Seagrass
 * SP_encrusting: Encrusting sponge
 * SP_massive: Massive sponge
-* SP_branching: Repent branching sponge
+* SP_branching: branching sponge
 * Turf: Turf algae
 * ZO_encrusting: Encrusting zoantharian
+* boulss: Boulder (stable substrate)
+* limess: Limestone (stable substrate)
+* rockss: Rock (stable substrate)
+* rubbus: Rubble (unstable substrate)
+* sandus: Sand (unstable substrate)
+* siltus: Silt (unstable substrate)
+* other_life: Other life
+* other: Other non-living things
 
-#### File: Taiwan\_fish\_metric.csv
+#### File: Global fish metric.csv
+
+**Description: The data were obtained from Reef Life Survey database in Seguin R. et al. (2022) and used as a global standard for comparison with our data. The variables were extracted from the `RLS_transect_info.text` and evaluated using the `raw_data.Rdata`, `traits.RData` and `calc_prod_rfishprod.R script`.** 
+
+##### Variables
+
+* SurveyID: Transect ID in Reef Life Survey
+* SiteCode: Site code in Reef Life Survey
+* Country: Survey countries
+* Depth: Survey depths
+* Family: Fish family
+* Genus: Fish genus
+* Species: Fish species
+* Size: Observed fish total length
+* sstmean: Mean sea surface temperature
+* a: Fish bayesian length-weight growth coefficient
+* b: Fish bayesian length-weight growth coefficient
+* MaxSizeTL: Maximum recorded fish total length
+* Area: Surveyed area of each transect (500 m^2)
+* Biomass: Total fish biomass in each transect 
+* Kmax: The standardized fish growth coefficient
+* somatic_G: The somatic growth of fish biomass
+* Md: The predicted fish mortality rates
+* Growth_iter: the average somatic growth across 100 iterations following survival simulations
+
+#### File: Taiwan fish metric.csv
 
 **Description: The data were used to evaluate fish energy flow metrics.** 
 
@@ -93,51 +125,25 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * a: Fish bayesian length-weight growth coefficient
 * b: Fish bayesian length-weight growth coefficient
 * MaxSizeTL: Maximum recorded fish total length
-* Diet: Fsih diet
-* Position: Fish living position relative to reefs
+* Diet: Fish diet. HerDet: herbivorous detritivore; HerMac: macroalgae feeder; Plktiv: planktivore; Omnivr: omnivore; InvSes: sessile invertebrate feeder; InvMob: mobile invertebrate feeder; FisCep: piscivore. 
+* Position: Fish living position relative to reefs. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
 * sstmean: Mean sea surface temperature
 * Biomass: Fish biomass
 * Kmax: The standardized fish growth coefficient 
 * somatic_G: The somatic growth of fish biomass
 * Md: The predicted fish mortality rates
-* Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
-
-#### File: Seguin\_world\_fish\_metric.zip
-
-**Description: The data were obtained from Reef Life Survey database in Seguin R. et al. (2022) and used as a global standard for comparison with our data. The data were compressed into a zip file and would automatically unzipped in the R script. The variables were extracted from the `RLS_transect_info.text` and evaluated using the `raw_data.Rdata`, `traits.RData` and `calc_prod_rfishprod.R script`.** 
-
-##### Variables
-
-* SurveyID: Transect ID in Reef Life Survey
-* SiteCode: Site code in Reef Life Survey
-* Country: Survey countries
-* Depth: Survey depths
-* Family: Fish family
-* Genus: Fish genus
-* Species: Fish species
-* Size: Observed fish total length
-* sstmean: mean sea surface temperature
-* a: Fish bayesian length-weight growth coefficient
-* b: Fish bayesian length-weight growth coefficient
-* MaxSizeTL: Maximum recorded fish total length
-* Area: Surveyed area of each transect (500 m^2)
-* Kmax: The standardized fish growth coefficient 
-* Md: The predicted fish mortality rates
-* Fate: The predicted tomorrow's destiny of the fish. True indicates the fish will survive, while false indicates the fish will die. 
-* Biom: Total fish biomass in each transect
-* Prod: Productivity (i.e. total fish somatic growth in each transect). If the fish species was predicted to be dead tomorrow, the productivity is zero.
+* Growth_iter: The average somatic growth across 100 iterations following survival simulations
 
 ***
 
 **Code/software**
 
-The R software is required, along with the following packages to run the script: `tidyverse`, `vegan`, `ggpubr`, `multcompView`, `rstatix`, `glmmTMB`, `DHARMa`, `gridExtra`, `usdm`, `conflicted`.
+The R software is required, along with the following packages to run the script: `tidyverse`, `vegan`, `glmmTMB`, `emmeans`, `ggpubr`, `DHARMa`, `performance`.
 
 **Data sources**
 
-* Seguin\_world\_fish\_metric.zip: Seguin, R., Mouillot, D., Cinner, J. E., Stuart Smith, R. D., Maire, E., Graham, N. A., McLean, M., Vigliola, L., & Loiseau, N. (2023). Towards process-oriented management of tropical reefs in the anthropocene. *Nature Sustainability*, *6*(2), 148–1571. https://doi.org/10.1038/s41893-022-00981-x
-*  Abiotic\_factor.csv
+*  Global fish metric.csv: Seguin, R., Mouillot, D., Cinner, J. E., Stuart Smith, R. D., Maire, E., Graham, N. A., McLean, M., Vigliola, L., & Loiseau, N. (2022). Towards process-oriented management of tropical reefs in the anthropocene. *Nature Sustainability*, *6*(2), 148–1571. https://doi.org/10.1038/s41893-022-00981-x
+*  Abiotic variable.csv
     + human_pop (human population): Center for International Earth Science Information Network - CIESIN - Columbia University. (2018). Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 *NASA Socioeconomic Data and Applications Center (SEDAC)*. https://doi.org/10.7927/H4PN93PB
     + PP (primary production): European Union-Copernicus Marine Service. (2022). Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
-    + PAR (photosynthetically active radiation): NASA Goddard Space Flight Center, O. E. L., Ocean Biology Processing Group. (2017). MODIS-Aqua Level 3 Mapped Photosynthetically Available Radiation Data Version R2018.0 [dataset]. *NASA Ocean Biology Distributed Active Archive Center*. https://doi.org/10.5067/AQUA/MODIS/L3M/PAR/2018
     + SST (sea surface temperature): Liu, G., Heron, S. F., Eakin, C. M., Muller-Karger, F. E., Vega-Rodriguez, M., Guild, L. S., De La Cour, J. L., Geiger , E. F., Skirving, W. J., & Burgess, T. F. (2014). Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. *Remote Sensing*, *6*(11), 11579–11606. https://doi.org/10.3390/rs61111579
