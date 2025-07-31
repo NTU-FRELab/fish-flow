@@ -1,4 +1,4 @@
-# Data from: Patterns of reef energy flow in a transitional zone
+# Data from: Patterns of reef fish energy flow in a transitional zone
 
 ---
 
@@ -32,12 +32,12 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * SST: Sea surface temperature
 * SS: Stable substrate
 * US: Unstable substrate
-* S4: Fine scale slope
-* S32: Coarse scale slope
-* PROC4: Fine scale profile curvature
-* PLC4: Fine scale planform curvature
-* PROC32: Coarse scale profile curvature
-* PLC32: Coarse scale planform curvature
+* S4: Fine-scale slope
+* S32: Coarse-scale slope
+* PROC4: Fine-scale profile curvature
+* PLC4: Fine-scale planform curvature
+* PROC32: Coarse-scale profile curvature
+* PLC32: Coarse-scale planform curvature
 * SC: Surface complexity
 
 #### File: Benthic composition.csv
@@ -97,16 +97,17 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * Genus: Fish genus
 * Species: Fish species
 * Size: Observed fish total length
+* Num: The number of fish
 * sstmean: Mean sea surface temperature
 * a: Fish bayesian length-weight growth coefficient
 * b: Fish bayesian length-weight growth coefficient
 * MaxSizeTL: Maximum recorded fish total length
 * Area: Surveyed area of each transect (500 m^2)
-* Biomass: Total fish biomass in each transect 
+* Biomass: Fish biomass of one corresponding individual 
 * Kmax: The standardized fish growth coefficient
-* somatic_G: The somatic growth of fish biomass
+* somatic_G: The somatic biomass growth of one corresponding individual
 * Md: The predicted fish mortality rates
-* Growth_iter: the average somatic growth across 100 iterations following survival simulations
+* Growth_iter: The average somatic growth of one corresponding individual across 100 iterations following survival simulations
 
 #### File: Taiwan fish metric.csv
 
@@ -144,6 +145,6 @@ The R software is required, along with the following packages to run the script:
 
 *  Global fish metric.csv: Seguin, R., Mouillot, D., Cinner, J. E., Stuart Smith, R. D., Maire, E., Graham, N. A., McLean, M., Vigliola, L., & Loiseau, N. (2022). Towards process-oriented management of tropical reefs in the anthropocene. *Nature Sustainability*, *6*(2), 148–1571. https://doi.org/10.1038/s41893-022-00981-x
 *  Abiotic variable.csv
-    + human_pop (human population): Center for International Earth Science Information Network - CIESIN - Columbia University. (2018). Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 *NASA Socioeconomic Data and Applications Center (SEDAC)*. https://doi.org/10.7927/H4PN93PB
+    + Human_pop (human population): Center for International Earth Science Information Network - CIESIN - Columbia University. (2018). Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 *NASA Socioeconomic Data and Applications Center (SEDAC)*. https://doi.org/10.7927/H4PN93PB
     + PP (primary production): European Union-Copernicus Marine Service. (2022). Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
     + SST (sea surface temperature): Liu, G., Heron, S. F., Eakin, C. M., Muller-Karger, F. E., Vega-Rodriguez, M., Guild, L. S., De La Cour, J. L., Geiger , E. F., Skirving, W. J., & Burgess, T. F. (2014). Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. *Remote Sensing*, *6*(11), 11579–11606. https://doi.org/10.3390/rs61111579
