@@ -32,12 +32,12 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * SST: Sea surface temperature
 * SS: Stable substrate
 * US: Unstable substrate
-* S4: Fine scale slope
-* S32: Coarse scale slope
-* PROC4: Fine scale profile curvature
-* PLC4: Fine scale planform curvature
-* PROC32: Coarse scale profile curvature
-* PLC32: Coarse scale planform curvature
+* S4: Fine-scale slope
+* S32: Coarse-scale slope
+* PROC4: Fine-scale profile curvature
+* PLC4: Fine-scale planform curvature
+* PROC32: Coarse-scale profile curvature
+* PLC32: Coarse-scale planform curvature
 * SC: Surface complexity
 
 #### File: Benthic composition.csv
