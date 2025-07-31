@@ -76,8 +76,8 @@ transect.energy <- fish.metric %>%
 
 ### Global comparison of energy flows ####
 
-#Data from 'Towards process-oriented management of tropical reefs in the anthropocene'
-global.energy <- read.csv(file = 'Data/Seguin fish metric.csv')
+#Data from 'Seguin et al. (2023) Towards process-oriented management of tropical reefs in the anthropocene'
+global.energy <- read.csv(file = 'Data/Global fish metric.csv')
 
 #Mean energy flows in each sites
 taiwan.energy <- fish.metric %>%

@@ -53,7 +53,6 @@ fish.metric <- fish.metric %>%
   unite('Transect', c(Abr, Transect), sep = '', remove = T) %>%
   mutate(Transect = factor(Transect, levels = unique(Transect)))
 
-
 head(fish.metric, 3)
 ```
 
@@ -528,10 +527,10 @@ par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(turn.m.reg), form = transect.energy$Region)
 #dev.off()
 
-#This plot was subsequently edited in `Inkscape` to adjust font size, text positioning, and the number of decimal digits.
+#This plot was subsequently edited in `Inkscape` to adjust font size, text positioning, label names and the number of decimal digits.
 ```
 
-### Energy flow contributions of different dietary groups
+### Energy flow by dietary groups
 
 1.  Summarize transect-level energy flow metrics of each trophic group
 
@@ -730,10 +729,10 @@ KT.glmm <- Diet_glmm('KT')
 
 #Biomass
 NT.biom.plot <- NT.glmm$results$Biom$plot +
-  #Add the arrow for the extreme outlier
+  #Add an arrow to label the extreme outlier
   annotate("segment", x = 2, xend = 2, y = 24, yend = 26,
            arrow = arrow(type = "closed", length = unit(0.1, 'cm'))) +
-  #Add the text for the extreme outlier
+  #Add a text to label the extreme outlier
   geom_text(aes(x = 2, y = 23, label = round(max(diet.energy$Biom), 2)), col = 'black', size = 3) +
   annotate("text", x = 2, y = 18, label = 'a', col = 'black', fontface = 'plain') 
 ET.biom.plot <- ET.glmm$results$Biom$plot +
@@ -858,7 +857,9 @@ benthic.pcoa12.plot <- benthic.score %>%
   geom_segment(data = benthic.cap.arrow12,
                aes(x = 0, xend = MDS1, y = 0, yend = MDS2),
                arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
-  ggrepel::geom_text_repel(data = benthic.cap.arrow12, aes(x = MDS1, y = MDS2, label = Species), size = 3, max.overlaps = 15) +
+  ggrepel::geom_text_repel(data = benthic.cap.arrow12, 
+                           aes(x = MDS1, y = MDS2, label = Species),
+                           size = 3, max.overlaps = 15) +
   labs(x = paste0('PCoA1 (', benthic.pcoa.per.exp[1], '%)'),
        y = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)')) +
   theme_bw()
@@ -877,7 +878,9 @@ benthic.pcoa23.plot <- benthic.score %>%
   geom_segment(data = benthic.cap.arrow23,
                aes(x = 0, xend = MDS2, y = 0, yend = MDS3),
                arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
-  ggrepel::geom_text_repel(data = benthic.cap.arrow23, aes(x = MDS2, y = MDS3, label = Species), size = 3, max.overlaps = 15) +
+  ggrepel::geom_text_repel(data = benthic.cap.arrow23, 
+                           aes(x = MDS2, y = MDS3, label = Species),
+                           size = 3, max.overlaps = 15) +
   labs(x = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)'),
        y = paste0('PCoA3 (', benthic.pcoa.per.exp[3], '%)')) +
   theme_bw()
