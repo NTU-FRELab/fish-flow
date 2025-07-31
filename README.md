@@ -97,16 +97,17 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * Genus: Fish genus
 * Species: Fish species
 * Size: Observed fish total length
+* Num: The number of fish
 * sstmean: Mean sea surface temperature
 * a: Fish bayesian length-weight growth coefficient
 * b: Fish bayesian length-weight growth coefficient
 * MaxSizeTL: Maximum recorded fish total length
 * Area: Surveyed area of each transect (500 m^2)
-* Biomass: Total fish biomass in each transect 
+* Biomass: Fish biomass of one corresponding individual 
 * Kmax: The standardized fish growth coefficient
-* somatic_G: The somatic growth of fish biomass
+* somatic_G: The somatic growing biomass of one corresponding individual
 * Md: The predicted fish mortality rates
-* Growth_iter: the average somatic growth across 100 iterations following survival simulations
+* Growth_iter: The average somatic growth of one corresponding individual across 100 iterations following survival simulations
 
 #### File: Taiwan fish metric.csv
 
