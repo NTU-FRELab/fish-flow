@@ -105,7 +105,7 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 * Area: Surveyed area of each transect (500 m^2)
 * Biomass: Fish biomass of one corresponding individual 
 * Kmax: The standardized fish growth coefficient
-* somatic_G: The somatic growing biomass of one corresponding individual
+* somatic_G: The somatic biomass growth of one corresponding individual
 * Md: The predicted fish mortality rates
 * Growth_iter: The average somatic growth of one corresponding individual across 100 iterations following survival simulations
 
