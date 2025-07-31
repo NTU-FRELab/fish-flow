@@ -76,7 +76,7 @@ transect.energy <- fish.metric %>%
 
 ### Global comparison of energy flows ####
 
-#Data from 'Seguin et al. (2023) Towards process-oriented management of tropical reefs in the anthropocene'
+#Data from 'Seguin et al. (2022) Towards process-oriented management of tropical reefs in the anthropocene'
 global.energy <- read.csv(file = 'Data/Global fish metric.csv')
 
 #Mean energy flows in each sites
@@ -109,7 +109,7 @@ global.taiwan <- global.energy %>%
   group_by(SurveyID) %>%
   #Sum of energy flows in each transect
   #500 m^2 are detecting areas in RLS
-  reframe(Biom = sum(Biom)/500,
+  reframe(Biom = sum(Biomass * Num)/500,
           #Growth_iter represents the average somatic growth across 100 iterations following survival simulations
           Prod = sum(Growth_iter * Num)/500,
           Turn = (Prod/Biom)*100,
@@ -730,7 +730,7 @@ diet.compare <- bind_rows(NT.glmm$emm_contrast_summary,
 benthic <- read.csv(file = 'Data/Benthic composition.csv') %>%
   column_to_rownames(var = 'Transect') %>%
   #Remove substrate type, other, other life as they are not biotic factors
-  select(-boulss, -limess, -rockss, -rubbus, -sandus, -siltus, -other_life, -Other) %>%
+  select(-boulss, -limess, -rockss, -rubbus, -sandus, -siltus, -other_life, -other) %>%
   #Remove rare species (defined as covers lower than 5% in all transect)
   select(-which(colSums(. > 0.05) == 0))
 
