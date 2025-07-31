@@ -15,7 +15,7 @@ library(performance)
 #### Taiwan fish metric ####
 
 #Import fish energy flow metric
-fish.metric <- read.csv('Data//Taiwan fish metric.csv')
+fish.metric <- read.csv('Data/Taiwan fish metric.csv')
 
 #Summarize the fish metric
 fish.metric <- fish.metric %>%
@@ -77,7 +77,7 @@ transect.energy <- fish.metric %>%
 ### Global comparison of energy flows ####
 
 #Data from 'Towards process-oriented management of tropical reefs in the anthropocene'
-global.energy <- read.csv(file = 'Data\\Seguin fish metric.csv')
+global.energy <- read.csv(file = 'Data/Seguin fish metric.csv')
 
 #Mean energy flows in each sites
 taiwan.energy <- fish.metric %>%
@@ -321,8 +321,7 @@ energy.reg.glmm <- bind_rows(biom.glmm.reg, prod.glmm.reg, turn.glmm.reg) %>%
   mutate(across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
          `Pr(>|z|)` = round(`Pr(>|z|)`, 3),
          Independent = gsub("^Region", '', Independent)) %>%
-  mutate(Sig = ifelse(`Pr(>|z|)` < 0.05, '*', ' '),
-         `Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*',
+  mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*',
                              ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
   relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
 
@@ -517,8 +516,8 @@ Diet_glmm <- function(region_name) {
   y_offsets <- c(Biom = 3, Prod = 0.01, Turn = 0.2)
   
   result_list <- list()
-  summary_table_list <- list()
-  summary_emm_list <- list()
+  summary_glmm_coef_list <- list()
+  summary_emm_contrast_list <- list()
   
   #A loop was implemented for calculating GLMMs and EMMs for biomass, productivity, and turnover, and generating corresponding boxplots
   for (energy in energy_metric) {
@@ -572,8 +571,10 @@ Diet_glmm <- function(region_name) {
             axis.text = element_text(size = 12),
             title = element_text(size = 14))
     
-    # Create model summary table
-    # GLMM output
+    #Create model summary table
+    
+    #GLMM output
+    #Confidence interval
     ci_df <- confint(model) %>%
       as.data.frame() %>%
       tibble::rownames_to_column("Independent") %>%
@@ -581,17 +582,18 @@ Diet_glmm <- function(region_name) {
       select(-Estimate) %>%
       rename(Lower_limit = `2.5 %`, Upper_limit = `97.5 %`)
     
+    #Combine the GLMM coef and the confidence interval
     coef_df <- coef(summary(model))$cond %>%
       as.data.frame() %>%
       tibble::rownames_to_column("Independent") %>%
       mutate(Dependent = energy) %>%
       left_join(ci_df, by = "Independent") %>%
+      #Format the table
       mutate(Region = region_name,
              Independent = sub("^Diet", "", Independent),
              across(where(is.numeric) & !`Pr(>|z|)`, ~ sprintf("%.2f", .x)),
              `Pr(>|z|)` = round(`Pr(>|z|)`, 3)) %>%
-      mutate(Sig = ifelse(`Pr(>|z|)` < 0.05, '*', ' '),
-             `Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*', 
+      mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*', 
                                  ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
       relocate(Region, Dependent, Independent, Estimate, `Std. Error`, Lower_limit, Upper_limit)
     
@@ -599,25 +601,43 @@ Diet_glmm <- function(region_name) {
     result_list[[energy]] <- list(
       model = model,
       emmeans = emm_result,
-      contrast = as.data.frame(emm_result$contrasts),
-      labels = label_data,
-      plot = p,
-      summary_df = coef_df
+      plot = p
     )
     
-    summary_table_list[[energy]] <- coef_df
-    summary_emm_list[[energy]] <- as.data.frame(emm_result$contrasts)
+    #Store the GLMM and EMM results of energy flow models into lists
+    
+    #GLMMs
+    summary_glmm_coef_list[[energy]] <- coef_df
+    
+    #EMMs
+    summary_emm_contrast_list[[energy]] <- emm_result$contrasts %>%
+      as.data.frame() %>%
+      #Add the corresponding energy flow and region in the loop
+      mutate(Dependent = energy,
+             Region = region_name) %>%
+      relocate(Dependent, Region) %>%
+      #Remove unused arguments
+      select(-df, -null) %>%
+      mutate(across(where(is.numeric) & !p.value, ~ sprintf("%.2f", .x)),
+           p.value = round(p.value, 3)) %>%
+      mutate(p.value = ifelse(p.value == 0, '<0.001*', 
+                            ifelse(p.value >= 0.05, sprintf("%.3f", p.value), paste0(p.value, '*')))) %>%
+      rename(Contrast = contrast, Ratio = ratio, `z-ratio` = z.ratio, `p-value` = p.value)
   }
   
   #Combine all summaries into one table
-  glmm_summary <- bind_rows(summary_table_list)
-  emm_summary <- bind_rows(summary_emm_list)
+  glmm_summary <- bind_rows(summary_glmm_coef_list) %>%
+    mutate(Dependent = ifelse(Dependent == 'Biom', 'Biomass',
+                              ifelse(Dependent == 'Prod', 'Productivity', 'Turnover')))
+  emm_contrast_summary <- bind_rows(summary_emm_contrast_list) %>%
+    mutate(Dependent = ifelse(Dependent == 'Biom', 'Biomass',
+                              ifelse(Dependent == 'Prod', 'Productivity', 'Turnover')))
   
   #Return all results and combined summary
   return(list(
     results = result_list,
     glmm_summary = glmm_summary,
-    emm_summary = emm_summary
+    emm_contrast_summary = emm_contrast_summary
   ))
 }
 
@@ -679,35 +699,35 @@ annotate_figure(diet.plot, bottom = text_grob("Dietary group", size = 16))
 #ggsave('Fig 4.svg', height = 9.5, width = 14, dpi = 1200)
 
 ### GLMM output ###
-
-diet.glmm <- bind_rows(NT.glmm$glmm_summary, ET.glmm$glmm_summary, GI.glmm$glmm_summary, OI.glmm$glmm_summary, KT.glmm$glmm_summary) %>%
-  mutate(Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT')),
-         Dependent = ifelse(Dependent == 'Biom', 'Biomass',
-                            ifelse(Dependent == 'Prod', 'Productivity', 'Turnover'))) %>%
+#Combine the results from the five regions
+diet.glmm <- bind_rows(NT.glmm$glmm_summary,
+                       ET.glmm$glmm_summary,
+                       GI.glmm$glmm_summary,
+                       OI.glmm$glmm_summary,
+                       KT.glmm$glmm_summary) %>%
+  #Assign the order of regions
+  mutate(Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT'))) %>%
+  #Reorder the table following energy flows
   arrange(Dependent)
 #write.table(diet.glmm, file = 'Table S5.txt', row.names = F, quote = T)
 
 ### Post-hoc test by EMMs ###
-diet.compare <- bind_rows(NT.glmm$results$Biom$contrast, ET.glmm$results$Biom$contrast, GI.glmm$results$Biom$contrast, OI.glmm$results$Biom$contrast, KT.glmm$results$Biom$contrast,
-                          NT.glmm$results$Prod$contrast, ET.glmm$results$Prod$contrast, GI.glmm$results$Prod$contrast, OI.glmm$results$Prod$contrast, KT.glmm$results$Prod$contrast,
-                          NT.glmm$results$Turn$contrast, ET.glmm$results$Turn$contrast, GI.glmm$results$Turn$contrast, OI.glmm$results$Turn$contrast, KT.glmm$results$Turn$contrast) %>%
-  select(-df, -null) %>%
-  #Add corresponding energy flows and regions
-  mutate(Dependent = rep(c('Biomass', 'Productivity', 'Turnover'), each = 50),
-         Region = rep(c('NT', 'ET', 'GI', 'OI', 'KT'), each = 10, times = 3)
-  ) %>%
-  mutate(across(where(is.numeric) & !p.value, ~ sprintf("%.2f", .x)),
-         p.value = round(p.value, 3)) %>%
-  mutate(p.value = ifelse(p.value == 0, '<0.001*', 
-                          ifelse(p.value >= 0.05, sprintf("%.3f", p.value), paste0(p.value, '*')))) %>%
-  relocate(Dependent, Region) %>%
-  rename(Contrast = contrast, Ratio = ratio, `z-ratio` = z.ratio, `p-value` = p.value)
+#Combine the results from the five regions
+diet.compare <- bind_rows(NT.glmm$emm_contrast_summary,
+                          ET.glmm$emm_contrast_summary,
+                          GI.glmm$emm_contrast_summary,
+                          OI.glmm$emm_contrast_summary,
+                          KT.glmm$emm_contrast_summary) %>%
+  #Assign the order of regions
+  mutate(Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT'))) %>%
+  #Reorder the table following energy flows
+  arrange(Dependent)
 #write.table(diet.compare, file = 'Table S6.txt', row.names = F, quote = T)
 
 #### Identification of biotic drivers ####
 
 #Import benthic composition data
-benthic <- read.csv(file = 'Data//Benthic composition.csv') %>%
+benthic <- read.csv(file = 'Data/Benthic composition.csv') %>%
   column_to_rownames(var = 'Transect') %>%
   #Remove substrate type, other, other life as they are not biotic factors
   select(-boulss, -limess, -rockss, -rubbus, -sandus, -siltus, -other_life, -Other) %>%
@@ -1017,7 +1037,7 @@ ggarrange(biom.biotic.em.plot, prod.biotic.em.plot, turn.biotic.em.plot,
 #### Identification of abiotic drivers #####
 
 #Import abiotic data
-abiotic <- read.csv(file = 'Data//Abiotic variable.csv')
+abiotic <- read.csv(file = 'Data/Abiotic variable.csv')
 
 ### structural complexity PCA ###
 #Select structural complexity variables
@@ -1281,6 +1301,7 @@ plotResiduals(simulateResiduals(turn.m.abiotic))
 abiotic.glmm.vif <- bind_rows(check_collinearity(biom.m.abiotic), check_collinearity(prod.m.abiotic), check_collinearity(turn.m.abiotic)) %>%
   mutate(Independent = rep(c('Biomass', 'Productivity', 'Turnover'), each = 8),
          across(where(is.numeric), ~ sprintf("%.2f", .x))) %>%
+  as.data.frame() %>%
   select(Independent, Term, VIF, VIF_CI_low, VIF_CI_high) %>%
   rename(`Fix effect` = Term, `Lower limit` = VIF_CI_low , `Upper limit` = VIF_CI_high)
 #write.table(abiotic.glmm.vif, file = 'Table S9.txt', row.names = F, quote = T)
