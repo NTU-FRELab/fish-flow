@@ -5,16 +5,24 @@
 This README file was generated on 2025/07/31 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code. (Latest update on 2025/07/31)
 
 1. **Author Information**
-
-First author name: Mr. Chia-Hung Eric Liu. Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan.
-
-Second author name: Dr. Lauriane Ribas-Deulofeu. Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan; Ocean Center, National Taiwan University, Taipei 10617, Taiwan.
-
-Third author name: Mr. Meng-Hsin Morris Wu. Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan
-
-Four author name: Prof. Yi-Jay Chang. Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan
-
-Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan; Ocean Center, National Taiwan University, Taipei 10617, Taiwan. Email: vianneydenis@ntu.edu.tw
+   * First author
+      * Name: Chia-Hung Eric Liu
+      * Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan
+   * Second author
+      * Name: Lauriane Ribas-Deulofeu
+      * Affiliation 1: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan
+      * Affiliation 2: Ocean Center, National Taiwan University, Taipei 10617, Taiwan
+   * Third author
+      * Name: Meng-Hsin Morris Wu
+      * Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan
+   * Fourth author 
+      * Name: Yi-Jay Chang
+      * Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan
+   * Fifth & corresponding author
+      * Name: Vianney Denis
+      * Affiliation 1: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan
+      * Affiliation 2: Ocean Center, National Taiwan University, Taipei 10617, Taiwan. Email: vianneydenis@ntu.edu.tw
+      * Email: [vianneydenis@ntu.edu.tw](mailto:vianneydenis@ntu.edu.tw)
 
 2. **Date of data collection:** 2023
 
@@ -23,6 +31,8 @@ Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of
 4. **Funding sources that supported the collection of the data:** Ocean Conservation Administration of Taiwan, Ministry of Science and Technology of Taiwan
 
 5. **Recommended citation for this dataset:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Data from: Contrasting energy flow associated with tropical and subtropical reef fish assemblages [Dataset]. Dryad. https://doi.org/10.5061/dryad.bvq83bkk5
+
+[Dataset is available in [Dryad](https://doi.org/10.5061/dryad.bvq83bkk5). The data set and the R script are also available through the GitHub repository https://github.com/NTU-FRELab/fish-flow.git in order to replicate our analyses]
    
 ***
 
