@@ -4,7 +4,7 @@
 
 This README file was generated on 2025/07/31 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code. (Latest update on 2025/07/31)
 
-### Author Information
+1. **Author Information**
 
 First author name: Mr. Chia-Hung Eric Liu. Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan.
 
@@ -16,7 +16,14 @@ Four author name: Prof. Yi-Jay Chang. Affiliation: Institute of Oceanography, Na
 
 Fifth & corresponding author name: Prof. Vianney Denis Affiliation: Institute of Oceanography, National Taiwan University, Taipei 10617, Taiwan; Ocean Center, National Taiwan University, Taipei 10617, Taiwan. Email: vianneydenis@ntu.edu.tw
 
-[UNDER REVIEW]
+2. **Date of data collection:** 2023
+
+3. **Geographic location of data collection:** southern, eastern, and northern Taiwan, West Pacific
+
+4. **Funding sources that supported the collection of the data:** Ocean Conservation Administration of Taiwan, Ministry of Science and Technology of Taiwan
+
+5. **Recommended citation for this dataset:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Data from: Contrasting energy flow associated with tropical and subtropical reef fish assemblages [Dataset]. Dryad. https://doi.org/10.5061/dryad.bvq83bkk5
+   
 ***
 
 ### File List
