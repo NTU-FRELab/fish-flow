@@ -59,9 +59,9 @@ A detailed description of data acquisition and processing can be found in the pu
 
 **File 1: *Abiotic variable.csv***
 
-1. Number of variables/columns: XX
+1. Number of variables/columns: 13
 
-2. Number of cases/rows: XX
+2. Number of cases/rows: 26
 
 3. Missing data codes: None
 
@@ -69,7 +69,7 @@ A detailed description of data acquisition and processing can be found in the pu
 
   * Site: Survey sites. XXXX.
   * Human_pop: Human population. XXXX Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
-  * PP: Primary production.  Data from XXX.
+  * PP: Primary production. Unit: mg m^-2 day^-1. Data from *European Union-Copernicus Marine Service (2022)*.
   * SST: Sea surface temperature. Data from XXX.
   * SS: Stable substrate
   * US: Unstable substrate
