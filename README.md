@@ -34,8 +34,6 @@ This README file was generated on 2025/07/31 by Chia-Hung Eric Liu (ericchiahung
 
 \[The data set and the R script are available through Zenodo (https://doi.org/XXXXXX.XXXX) and the GitHub repository (https://github.com/NTU-FRELab/fish-flow.git) in order to replicate our analyses]
    
--------------------------------------------------------------
-
 ## DESCRIPTION OF THE DATA AND FILE STRUCTURE
 
 ### DATA AND FILE OVERVIEW
