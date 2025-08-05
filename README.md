@@ -70,7 +70,7 @@ A detailed description of data acquisition and processing can be found in the pu
   * Site: Survey sites. XXXX.
   * Human_pop: Human population. XXXX Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
   * PP: Primary production. Unit: mg m<sup>-2</sup>day<sup>-1</sup>. Data from *European Union-Copernicus Marine Service (2022)*.
-  * SST: Sea surface temperature. Unit: deg;C. Data from *Liu et al. (2014)*.
+  * SST: Sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
   * SS: Stable substrate
   * US: Unstable substrate
   * S4: Fine-scale slope
