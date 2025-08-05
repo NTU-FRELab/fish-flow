@@ -93,7 +93,7 @@ A detailed description of data acquisition and processing can be found in the pu
 
 4. Variable List
   * Transect: survey transects. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites.
-    Abbreviations of sites:
+    \n Abbreviations of sites:
     | Abbreviation | Full name |
     |--------------|-----------|
     | Fenn         | Fenniaolin|
