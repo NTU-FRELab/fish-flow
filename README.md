@@ -69,7 +69,7 @@ A detailed description of data acquisition and processing can be found in the pu
 
   * Site: Survey sites. XXXX.
   * Human_pop: Human population. XXXX Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
-  * PP: Primary production. Unit: mg m^-2 day^-1. Data from *European Union-Copernicus Marine Service (2022)*.
+  * PP: Primary production. Unit: mg m<sup>-2</sup>day-1. Data from *European Union-Copernicus Marine Service (2022)*.
   * SST: Sea surface temperature. Data from XXX.
   * SS: Stable substrate
   * US: Unstable substrate
