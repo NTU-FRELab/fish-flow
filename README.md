@@ -1,6 +1,6 @@
  # :tropical_fish: Data from: Patterns of reef fish energy flow in a transitional zone 
 
-This README file was generated on 2025/07/31 by Chia-Hung Eric Liu(ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code (Latest update on 2025/08/5)
+This README file was generated on 2025/07/31 by Chia-Hung Eric Liu (ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code (Latest update on 2025/08/5)
 
 1. **Author Information**
    * First author
@@ -48,14 +48,46 @@ This dataset is used to characterize fish energy flow in Taiwan.
 
 There are four spreadsheets in the folder **Data**.
 
-- File 1: Abiotic variable.csv; Description: Environmental conditions at each site.
-- File 2: Benthic composition.csv; Description: Benthic composition at each study site
-
+- File 1: *Abiotic variable.csv*; Description: Environmental conditions at each site.
+- File 2: *Benthic composition.csv*; Description: Benthic composition at each study transect.
+- File 3: *Global fish metric.csv*; Description: Global reef fish data from Reef Life Survey (site level). 
+- File 4: *Taiwan fish metric.csv*; Description: Taiwan reef fish data from our survey (transect level).
+- 
 ### METHODOLOGICAL INFORMATION
 
 A detailed description of data acquisition and processing can be found in the published manuscript in Coral Reefs (https://doi.org/XXXX.XXXX).
 
 ### DATA-FILE SPECIFIC INFORMATION
+
+**File 1: *Abiotic variable.csv***
+
+1. Number of variables/columns: XX
+
+2. Number of cases/rows: XX
+
+3. Missing data codes: None
+
+4. Variable List
+
+The data of `Human_pop`, `PP`, and `SST` were from  online databases (see data sources), while the data of other variables were obtained from field survey.** 
+
+  * Site: Survey sites. XXXX.
+  * Human_pop: Human population. XXXX Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
+  * PP: Primary production
+  * SST: Sea surface temperature
+  * SS: Stable substrate
+  * US: Unstable substrate
+  * S4: Fine-scale slope
+  * S32: Coarse-scale slope
+  * PROC4: Fine-scale profile curvature
+  * PLC4: Fine-scale planform curvature
+  * PROC32: Coarse-scale profile curvature
+  * PLC32: Coarse-scale planform curvature
+  * SC: Surface complexity
+
+**File 2: *Abiotic variable.csv***
+
+
 
 
 
@@ -63,25 +95,6 @@ A detailed description of data acquisition and processing can be found in the pu
 
 ---------------------------------
 
-
-#### File: Abiotic variable.csv
-
-##### Variables
-The data of `Human_pop`, `PP`, and `SST` were from  online databases (see data sources), while the data of other variables were obtained from field survey.** 
-
-* Site: Survey sites
-* Human_pop: Human population
-* PP: Primary production
-* SST: Sea surface temperature
-* SS: Stable substrate
-* US: Unstable substrate
-* S4: Fine-scale slope
-* S32: Coarse-scale slope
-* PROC4: Fine-scale profile curvature
-* PLC4: Fine-scale planform curvature
-* PROC32: Coarse-scale profile curvature
-* PLC32: Coarse-scale planform curvature
-* SC: Surface complexity
 
 #### File: Benthic composition.csv
 
