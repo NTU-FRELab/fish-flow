@@ -52,7 +52,7 @@ There are four spreadsheets in the folder **Data**.
 - File 2: *Benthic composition.csv*; Description: Benthic composition at each study transect.
 - File 3: *Global fish metric.csv*; Description: Global reef fish data from Reef Life Survey (site level). 
 - File 4: *Taiwan fish metric.csv*; Description: Taiwan reef fish data from our survey (transect level).
-- 
+  
 ### METHODOLOGICAL INFORMATION
 
 A detailed description of data acquisition and processing can be found in the published manuscript in Coral Reefs (https://doi.org/XXXX.XXXX).
@@ -69,12 +69,10 @@ A detailed description of data acquisition and processing can be found in the pu
 
 4. Variable List
 
-The data of `Human_pop`, `PP`, and `SST` were from  online databases (see data sources), while the data of other variables were obtained from field survey.** 
-
   * Site: Survey sites. XXXX.
   * Human_pop: Human population. XXXX Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
-  * PP: Primary production
-  * SST: Sea surface temperature
+  * PP: Primary production.  Data from XXX.
+  * SST: Sea surface temperature. Data from XXX.
   * SS: Stable substrate
   * US: Unstable substrate
   * S4: Fine-scale slope
