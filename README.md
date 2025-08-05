@@ -1,4 +1,4 @@
-# Data from: Patterns of reef fish energy flow in a transitional zone
+# Data from: Patterns of reef fish energy flow in a transitional zone :tropical_fish:
 
 ---
 
@@ -30,11 +30,11 @@ This README file was generated on 2025/07/31 by Chia-Hung Eric Liu(ericchiahungl
 
 4. **Funding sources that supported the collection of the data:** Ocean Conservation Administration of Taiwan, Ministry of Science and Technology of Taiwan
 
-5. **Recommended citation for this dataset:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Data from: Patterns of reef fish energy flow in a transitional zone [Dataset]. Dryad. https://doi.org/10.5061/dryad.bvq83bkk5
+5. **Recommended citation for this dataset:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Data from: Patterns of reef fish energy flow in a transitional zone [Dataset]. Zenodo. https://doi.org/XXXXXX.XXXX
    
-6. **Associated manuscript:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Data from: Contrasting energy flow associated with tropical and subtropical reef fish assemblages [Dataset]. Dryad. https://doi.org/10.5061/dryad.bvq83bkk5
+6. **Associated manuscript:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Patterns of reef fish energy flow in a transitional zone. Coral Reefs. https://doi.org/XXXXXX.XXXX
 
-\[The data set and the R script are available through the GitHub repository https://github.com/NTU-FRELab/fish-flow.git in order to replicate our analyses]
+\[The data set and the R script are available through Zenodo (https://doi.org/XXXXXX.XXXX) and the GitHub repository (https://github.com/NTU-FRELab/fish-flow.git) in order to replicate our analyses]
    
 -------------------------------------------------------------
 
@@ -42,14 +42,13 @@ This README file was generated on 2025/07/31 by Chia-Hung Eric Liu(ericchiahungl
 
 1. **Description of the dataset**
 
-This dataset is used to describe fish energy flow in Taiwan. 
-
+This dataset is used to characterize fish energy flow in Taiwan. 
 
 ### File List
 
 #### File: Abiotic variable.csv
 
-**Description: The data were used to present the environmental conditions of each research site and analyze the abiotic drivers of fish energy flows. The data of `Human_pop`, `PP`, and `SST` were from different online database (see data sources), while the data of remained variables were obtained from field survey.** 
+**Description: The data were used to present the environmental conditions of each research site and analyze the abiotic drivers of fish energy flows. The data of `Human_pop`, `PP`, and `SST` were from  online databases (see data sources), while the data of other variables were obtained from field survey.** 
 
 ##### Variables
 
