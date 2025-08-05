@@ -68,31 +68,22 @@ A detailed description of data acquisition and processing can be found in the pu
 4. Variable List
 
   * Site: Survey sites. XXXX.
-  * Human_pop: Human population. XXXX Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
+  * Human_pop: Human population. Unit: inhabitants km<sup>-2</sup>. Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
   * PP: Primary production. Unit: mg m<sup>-2</sup>day<sup>-1</sup>. Data from *European Union-Copernicus Marine Service (2022)*.
   * SST: Sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
-  * SS: Stable substrate
-  * US: Unstable substrate
-  * S4: Fine-scale slope
-  * S32: Coarse-scale slope
-  * PROC4: Fine-scale profile curvature
-  * PLC4: Fine-scale planform curvature
-  * PROC32: Coarse-scale profile curvature
-  * PLC32: Coarse-scale planform curvature
-  * SC: Surface complexity
-
-**File 2: *Abiotic variable.csv***
-
-
-
-
-
-
+  * SS: Stable substrate. Unit: mean proportion of stable substrate at each site. Data from our survey using photo-qurat methods.
+  * US: Unstable substrate. Unit: mean proportion of unstable substrate at each site. Data from our survey using photo-qurat methods.
+  * S4: Fine-scale slope. Value of slope at a 4 cm resolution at each site. Data from our survey using photogrammetry methods.
+  * S32: Coarse-scale slope. Value of slope at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
+  * PROC4: Fine-scale profile curvature. Value of profile curvature at a 4 cm resolution at each site. Data from our survey using photogrammetry methods.
+  * PLC4: Fine-scale planform curvature. Value of planform curvature at a 4 cm resolution at each site. Data from our survey using photogrammetry methods.
+  * PROC32: Coarse-scale profile curvature. Value of profile curvature at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
+  * PLC32: Coarse-scale planform curvature. Value of profile curvature at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
+  * SC: Surface complexity. Value of surface complexity at a 1 cm resolution at each site. Data from our survey using photogrammetry methods.
 
 ---------------------------------
 
-
-#### File: Benthic composition.csv
+**File 2: *Benthic composition.csv***
 
 **Description: The data were used to analyze the biotic drivers of fish energy flows. All the data were obtained from field surveys using photo-quadrat methods.** 
 
