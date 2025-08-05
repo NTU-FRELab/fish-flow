@@ -85,46 +85,52 @@ A detailed description of data acquisition and processing can be found in the pu
 
 **File 2: *Benthic composition.csv***
 
-**Description: The data were used to analyze the biotic drivers of fish energy flows. All the data were obtained from field surveys using photo-quadrat methods.** 
+1. Number of variables/columns: 36
 
-##### Variables
+2. Number of cases/rows: 126
 
-* Transect: survey transects
-* AL_artcal: Articulated calcareous algae
-* AL_corfol: Corticated foliose algae
-* AL_cormac: Corticated macrophyte algae
-* AN_encrusting: Encrusting anemone
-* AS_eresin: Erect single ascidian
-* CB_filamentous: Filamentous cyanobacteria
-* CCA: Crustose coralline algae
-* HC_arborescent: Arborescent hard coral
-* HC_bushy: Bushy hard coral
-* HC_column: Column hard coral
-* HC_encrusting: Encrusting hard coral
-* HC_foliose: Foliose hard coral
-* HC_massive: Massive hard coral
-* HC_tabular: Tabular hard coral
-* OC_arborescent: Arborescent octocoral
-* OC_bushy: Bushy octocoral
-* OC_clustered: Clustered octocoral
-* OC_digitate: Digitate octocoral
-* OC_encrusting: Encrusting octocoral
-* OC_lobate: Lobate octocoral
-* OC_massive: Massive octocoral
-* SG: Seagrass
-* SP_encrusting: Encrusting sponge
-* SP_massive: Massive sponge
-* SP_branching: branching sponge
-* Turf: Turf algae
-* ZO_encrusting: Encrusting zoantharian
-* boulss: Boulder (stable substrate)
-* limess: Limestone (stable substrate)
-* rockss: Rock (stable substrate)
-* rubbus: Rubble (unstable substrate)
-* sandus: Sand (unstable substrate)
-* siltus: Silt (unstable substrate)
-* other_life: Other life
-* other: Other non-living things
+3. Missing data codes: None
+
+4. Variable List
+  * Transect: survey transects. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites. Abbreviations of sites:
+    | Abbreviation | Full name |
+    |--------------|-----------|
+    |   Fenn       | Fennialin | 
+  * AL_artcal: Articulated calcareous algae
+  * AL_corfol: Corticated foliose algae
+  * AL_cormac: Corticated macrophyte algae
+  * AN_encrusting: Encrusting anemone
+  * AS_eresin: Erect single ascidian
+  * CB_filamentous: Filamentous cyanobacteria
+  * CCA: Crustose coralline algae
+  * HC_arborescent: Arborescent hard coral
+  * HC_bushy: Bushy hard coral
+  * HC_column: Column hard coral
+  * HC_encrusting: Encrusting hard coral
+  * HC_foliose: Foliose hard coral
+  * HC_massive: Massive hard coral
+  * HC_tabular: Tabular hard coral
+  * OC_arborescent: Arborescent octocoral
+  * OC_bushy: Bushy octocoral
+  * OC_clustered: Clustered octocoral
+  * OC_digitate: Digitate octocoral
+  * OC_encrusting: Encrusting octocoral
+  * OC_lobate: Lobate octocoral
+  * OC_massive: Massive octocoral
+  * SG: Seagrass
+  * SP_encrusting: Encrusting sponge
+  * SP_massive: Massive sponge
+  * SP_branching: branching sponge
+  * Turf: Turf algae
+  * ZO_encrusting: Encrusting zoantharian
+  * boulss: Boulder (stable substrate)
+  * limess: Limestone (stable substrate)
+  * rockss: Rock (stable substrate)
+  * rubbus: Rubble (unstable substrate)
+  * sandus: Sand (unstable substrate)
+  * siltus: Silt (unstable substrate)
+  * other_life: Other life
+  * other: Other non-living things
 
 #### File: Global fish metric.csv
 
