@@ -67,7 +67,12 @@ A detailed description of data acquisition and processing can be found in the pu
 
 4. Variable List
 
-  * Site: Survey sites. XXXX.
+  * Site: Survey sites. Some sites are abbreviated as follows:
+    | Abbreviation | Full name     |
+    |--------------|---------------|
+    | LionRock     | Two Lion Rock |
+    | HenRock      | Hen Rock      |
+    | 825K         | 82.5K         | 
   * Human_pop: Human population. Unit: inhabitants km<sup>-2</sup>. Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
   * PP: Primary production. Unit: mg m<sup>-2</sup>day<sup>-1</sup>. Data from *European Union-Copernicus Marine Service (2022)*.
   * SST: Sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
@@ -92,35 +97,34 @@ A detailed description of data acquisition and processing can be found in the pu
 3. Missing data codes: None
 
 4. Variable List
-  * Transect: survey transects. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites.
-    Abbreviations of sites:
-    | Abbreviation | Full name     |
-    |--------------|---------------|
-    | Fenn         | Fenniaolin    |
-    | Jiam         | Jiamuzi       |
-    | Jihu         | Jihui         |
-    | Jiqi         | Jiqi          |
-    | Xins         | Xinshe        |
-    | Chai         | Chaikou       |
-    | Daba         | Dabaisha      |
-    | Gong         | Gongguan      |
-    | Guiw         | Guiwan        |
-    | Shil         | Shilang       |
-    | Ding         | Dingbaisha    |
-    | Houb         | Houbihu       |
-    | Jial         | Jialeshui     |
-    | Leid         | Leidashih     |
-    | Tiao         | Tiaoshi       |
-    | 825K         | 825K          |
-    | Bito         | Bitou         |
-    | Chao         | Chaojing      |
-    | Long         | Longdong      |
-    | Meiy         | Meiyanshan    |
-    | Dong         | Dongchin      |
-    | HenR         | HenRock       |
-    | Gree         | GreenGrassland|
-    | Lion         | LionRock      |
-    | Yayo         | Yayo          |
+  * Transect: survey transects at each site. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites. Abbreviations of sites:
+    | Abbreviation | Full name       |
+    |--------------|-----------------|
+    | Fenn         | Fenniaolin      |
+    | Jiam         | Jiamuzi         |
+    | Jihu         | Jihui           |
+    | Jiqi         | Jiqi            |
+    | Xins         | Xinshe          |
+    | Chai         | Chaikou         |
+    | Daba         | Dabaisha        |
+    | Gong         | Gongguan        |
+    | Guiw         | Guiwan          |
+    | Shil         | Shilang         |
+    | Ding         | Dingbaisha      |
+    | Houb         | Houbihu         |
+    | Jial         | Jialeshui       |
+    | Leid         | Leidashih       |
+    | Tiao         | Tiaoshi         |
+    | 825K         | 82.5 K          |
+    | Bito         | Bitou           |
+    | Chao         | Chaojing        |
+    | Long         | Longdong        |
+    | Meiy         | Meiyanshan      |
+    | Dong         | Dongchin        |
+    | HenR         | Hen Rock        |
+    | Gree         | Green Grass Land|
+    | Lion         | Two Lion Rock   |
+    | Yayo         | Yayo            |
     
   * AL_artcal: Articulated calcareous algae
   * AL_corfol: Corticated foliose algae
