@@ -85,9 +85,9 @@ A detailed description of data acquisition and processing can be found in the pu
     * S32: Coarse-scale slope. Value of slope at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
     * PROC4: Fine-scale profile curvature. Value of profile curvature at a 4 cm resolution at each site. Data from our survey using photogrammetry methods.
     * PLC4: Fine-scale planform curvature. Value of planform curvature at a 4 cm resolution at each site. Data from our survey using photogrammetry methods.
-  * PROC32: Coarse-scale profile curvature. Value of profile curvature at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
-  * PLC32: Coarse-scale planform curvature. Value of profile curvature at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
-  * SC: Surface complexity. Value of surface complexity at a 1 cm resolution at each site. Data from our survey using photogrammetry methods.
+    * PROC32: Coarse-scale profile curvature. Value of profile curvature at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
+    * PLC32: Coarse-scale planform curvature. Value of profile curvature at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
+    * SC: Surface complexity. Value of surface complexity at a 1 cm resolution at each site. Data from our survey using photogrammetry methods.
 
 
 **File 2: *Benthic composition.csv***
@@ -99,7 +99,8 @@ A detailed description of data acquisition and processing can be found in the pu
 3. Missing data codes: None
 
 4. Variable List
-  * Transect: Survey transects at each site. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites. The abbreviations of sites:
+    * Transect: Survey transects at each site. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites. The abbreviations of sites:
+      
     | Abbreviation | Full name       |
     |--------------|-----------------|
     | Fenn         | Fenniaolin      |
@@ -128,41 +129,41 @@ A detailed description of data acquisition and processing can be found in the pu
     | Lion         | Two Lion Rock   |
     | Yayo         | Yayo            |
     
-  * AL_artcal: Proportion of articulated calcareous algae at each transect.
-  * AL_corfol: Proportion of corticated foliose algae at each transect.
-  * AL_cormac: Proportion of corticated macrophyte algae at each transect.
-  * AN_encrusting: Proportion of encrusting anemone at each transect.
-  * AS_eresin: Proportion of erect single ascidian at each transect.
-  * CB_filamentous: Proportion of filamentous cyanobacteria at each transect.
-  * CCA: Proportion of crustose coralline algae at each transect.
-  * HC_arborescent: Proportion of arborescent hard coral at each transect.
-  * HC_bushy: Proportion of bushy hard coral at each transect.
-  * HC_column: Proportion of column hard coral at each transect.
-  * HC_encrusting: Proportion of encrusting hard coral at each transect.
-  * HC_foliose: Proportion of foliose hard coral at each transect.
-  * HC_massive: Proportion of massive hard coral at each transect.
-  * HC_tabular: Proportion of tabular hard coral at each transect.
-  * OC_arborescent: Proportion of arborescent octocoral at each transect.
-  * OC_bushy: Proportion of bushy octocoral at each transect.
-  * OC_clustered: Proportion of clustered octocoral at each transect.
-  * OC_digitate: Proportion of digitate octocoral at each transect.
-  * OC_encrusting: Proportion of encrusting octocoral at each transect.
-  * OC_lobate: Proportion of lobate octocoral at each transect.
-  * OC_massive: Proportion of massive octocoral at each transect.
-  * SG: Proportion of seagrass at each transect.
-  * SP_encrusting: Proportion of encrusting sponge at each transect.
-  * SP_massive: Proportion of massive sponge at each transect.
-  * SP_branching: Proportion of branching sponge at each transect.
-  * Turf: Proportion of turf algae at each transect.
-  * ZO_encrusting: Proportion of encrusting zoantharian at each transect.
-  * boulss: Proportion of boulder (stable substrate) at each transect.
-  * limess: Proportion of limestone (stable substrate) at each transect.
-  * rockss: Proportion of rock (stable substrate) at each transect.
-  * rubbus: Proportion of rubble (unstable substrate) at each transect.
-  * sandus: Proportion of sand (unstable substrate) at each transect.
-  * siltus: Proportion of silt (unstable substrate) at each transect.
-  * other_life: Proportion of other life (e.g., sea urchin and sea star) at each transect.
-  * other: Proportion of other non-living things (e.g., shadow and trash) at each transect.
+    * AL_artcal: Proportion of articulated calcareous algae at each transect.
+    * AL_corfol: Proportion of corticated foliose algae at each transect.
+    * AL_cormac: Proportion of corticated macrophyte algae at each transect.
+    * AN_encrusting: Proportion of encrusting anemone at each transect.
+    * AS_eresin: Proportion of erect single ascidian at each transect.
+    * CB_filamentous: Proportion of filamentous cyanobacteria at each transect.
+    * CCA: Proportion of crustose coralline algae at each transect.
+    * HC_arborescent: Proportion of arborescent hard coral at each transect.
+    * HC_bushy: Proportion of bushy hard coral at each transect.
+    * HC_column: Proportion of column hard coral at each transect.
+    * HC_encrusting: Proportion of encrusting hard coral at each transect.
+    * HC_foliose: Proportion of foliose hard coral at each transect.
+    * HC_massive: Proportion of massive hard coral at each transect.
+    * HC_tabular: Proportion of tabular hard coral at each transect.
+    * OC_arborescent: Proportion of arborescent octocoral at each transect.
+    * OC_bushy: Proportion of bushy octocoral at each transect.
+    * OC_clustered: Proportion of clustered octocoral at each transect.
+    * OC_digitate: Proportion of digitate octocoral at each transect.
+    * OC_encrusting: Proportion of encrusting octocoral at each transect.
+    * OC_lobate: Proportion of lobate octocoral at each transect.
+    * OC_massive: Proportion of massive octocoral at each transect.
+    * SG: Proportion of seagrass at each transect.
+    * SP_encrusting: Proportion of encrusting sponge at each transect.
+    * SP_massive: Proportion of massive sponge at each transect.
+    * SP_branching: Proportion of branching sponge at each transect.
+    * Turf: Proportion of turf algae at each transect.
+    * ZO_encrusting: Proportion of encrusting zoantharian at each transect.
+    * boulss: Proportion of boulder (stable substrate) at each transect.
+    * limess: Proportion of limestone (stable substrate) at each transect.
+    * rockss: Proportion of rock (stable substrate) at each transect.
+    * rubbus: Proportion of rubble (unstable substrate) at each transect.
+    * sandus: Proportion of sand (unstable substrate) at each transect.
+    * siltus: Proportion of silt (unstable substrate) at each transect.
+    * other_life: Proportion of other life (e.g., sea urchin and sea star) at each transect.
+    * other: Proportion of other non-living things (e.g., shadow and trash) at each transect.
 
 **File 3: *Global fish metric.csv***
 
@@ -174,24 +175,24 @@ A detailed description of data acquisition and processing can be found in the pu
 
 4. Variable List
     * SurveyID: Transect ID in Reef Life Survey
-* SiteCode: Site code in Reef Life Survey
-* Country: Survey countries
-* Depth: Survey depths. Unit: meter.
-* Family: Fish family
-* Genus: Fish genus
-* Species: Fish species
-* Size: Observed fish total length. Unit: Centimeter.
-* Num: The number of observed fish
-* sstmean: Mean sea surface temperature: Unit: &deg;C.
-* a: Fish bayesian length-weight growth coefficient
-* b: Fish bayesian length-weight growth coefficient
-* MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
-* Area: Surveyed area of each transect. Unit: m<sup>2</sup>.
-* Biomass: Fish biomass of one corresponding individual 
-* Kmax: The standardized fish growth coefficient
-* somatic_G: The somatic biomass growth of one corresponding individual. Unit: Gram.
-* Md: The predicted fish mortality rates
-* Growth_iter: The average somatic growth of one corresponding individual across 100 iterations following survival simulations. Unit: Gram.
+    * SiteCode: Site code in Reef Life Survey
+    * Country: Survey countries
+    * Depth: Survey depths. Unit: meter.
+    * Family: Fish family
+    * Genus: Fish genus
+    * Species: Fish species
+    * Size: Observed fish total length. Unit: Centimeter.
+    * Num: The number of observed fish
+    * sstmean: Mean sea surface temperature: Unit: &deg;C.
+    * a: Fish bayesian length-weight growth coefficient
+    * b: Fish bayesian length-weight growth coefficient
+    * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
+    * Area: Surveyed area of each transect. Unit: m<sup>2</sup>.
+    * Biomass: Fish biomass of one corresponding individual 
+    * Kmax: The standardized fish growth coefficient
+    * somatic_G: The somatic biomass growth of one corresponding individual. Unit: Gram.
+    * Md: The predicted fish mortality rates
+    * Growth_iter: The average somatic growth of one corresponding individual across 100 iterations following survival simulations. Unit: Gram.
 
 **File 4: *Taiwan fish metric.csv***
 
@@ -202,25 +203,25 @@ A detailed description of data acquisition and processing can be found in the pu
 3. Missing data codes: None
    
 4. Variable List
-* Region: Survey regions
-* Site: Survey sites
-* Transect: Survey transects
-* Family: Fish family
-* Genus: Fish genus
-* Species: Fish species
-* Length: Observed fish total length. Unit: Centimeter.
-* Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
-* a: Fish bayesian length-weight growth coefficient
-* b: Fish bayesian length-weight growth coefficient
-* MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
-* Diet: Fish diet. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
-* Position: Fish living position relative to reefs. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
-* sstmean: Mean sea surface temperature
-* Biomass: Fish biomass
-* Kmax: The standardized fish growth coefficient 
-* somatic_G: The somatic growth of fish biomass
-* Md: The predicted fish mortality rates
-* Growth_iter: The average somatic growth across 100 iterations following survival simulations
+    * Region: Survey regions
+    * Site: Survey sites
+    * Transect: Survey transects
+    * Family: Fish family
+    * Genus: Fish genus
+    * Species: Fish species
+    * Length: Observed fish total length. Unit: Centimeter.
+    * Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
+    * a: Fish bayesian length-weight growth coefficient
+    * b: Fish bayesian length-weight growth coefficient
+    * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
+    * Diet: Fish diet. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
+    * Position: Fish living position relative to reefs. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
+    * sstmean: Mean sea surface temperature
+    * Biomass: Fish biomass
+    * Kmax: The standardized fish growth coefficient 
+    * somatic_G: The somatic growth of fish biomass
+    * Md: The predicted fish mortality rates
+    * Growth_iter: The average somatic growth across 100 iterations following survival simulations
 
 ***
 
