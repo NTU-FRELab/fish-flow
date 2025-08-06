@@ -215,11 +215,11 @@ A detailed description of data acquisition and processing can be found in the pu
     * b: Fish bayesian length-weight growth coefficient
     * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
     * Diet: Fish diets were divided into seven categories based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
-    * Position: Relative position in the reef was categorized into six groups considering vertical (pelagic, benthopelagic, and benthic) and horizontal (reef dwelling and reef associated) components based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
+    * Position: Relative position in the reef was categorized into six groups considering vertical (pelagic, benthopelagic, and benthic) and horizontal (reef dwelling and reef associated) components based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. Bnth: Benthic; BtPl: Benthopelagic; Pelg: Pelagic; Dw: Reef-dewelling; As: Reef-associated
     * sstmean: Mean sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
     * Biomass: Fish biomass is calculated from the observed fish total length (i.e., `column: Length`) using bayesian length-weight regression formula: Biomass = a &times; (total length) <sup>b</sup> Unit: Gram.
-    * Kmax: The standardized fish growth coefficient 
-    * somatic_G: The somatic growth of fish biomass
+    * Kmax: The standardized fish growth coefficient, which is a theoretical K when the asymptotic length of the population equals the maximum length of the species. It was estimated based on `sea surface temperature`, `fish total length`, `diet`, and `living position relative to reefs` and calculated using `rfishprod` packages *(Morais and Bellwood 2018)*.
+    * somatic_G: The growing biomass of the fish individual within one day interval, which was estimated based on von Bertalanffy growth model and calculated using `rfishprod` packages *(Morais and Bellwood 2018)*. Unit: Gram.
     * Md: The predicted fish mortality rates
     * Growth_iter: The average somatic growth across 100 iterations following survival simulations
 
