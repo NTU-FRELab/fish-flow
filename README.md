@@ -69,12 +69,12 @@ A detailed description of data acquisition and processing can be found in the pu
 
     * Site: Survey sites. Some sites are abbreviated as follows:
       
-    | Abbreviation   | Full name        |
-    |----------------|------------------|
-    | GreenGrassland | Green Grass Land |
-    | LionRock       | Two Lion Rock    |
-    | HenRock        | Hen Rock         |
-    | 825K           | 82.5K            |
+      | Abbreviation   | Full name        |
+      |----------------|------------------|
+      | GreenGrassland | Green Grass Land |
+      | LionRock       | Two Lion Rock    |
+      | HenRock        | Hen Rock         |
+      | 825K           | 82.5K            |
    
     * Human_pop: Human population. Unit: Inhabitants km<sup>-2</sup>. Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
     * PP: Primary production. Unit: mg m<sup>-2</sup>day<sup>-1</sup>. Data from *European Union-Copernicus Marine Service (2022)*.
