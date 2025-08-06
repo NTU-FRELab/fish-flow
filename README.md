@@ -98,7 +98,7 @@ A detailed description of data acquisition and processing can be found in the pu
 3. Missing data codes: None
 
 4. Variable List
-  * Transect: survey transects at each site. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites. The abbreviations of sites:
+  * Transect: Survey transects at each site. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites. The abbreviations of sites:
     | Abbreviation | Full name       |
     |--------------|-----------------|
     | Fenn         | Fenniaolin      |
@@ -127,41 +127,41 @@ A detailed description of data acquisition and processing can be found in the pu
     | Lion         | Two Lion Rock   |
     | Yayo         | Yayo            |
     
-  * AL_artcal: Articulated calcareous algae
-  * AL_corfol: Corticated foliose algae
-  * AL_cormac: Corticated macrophyte algae
-  * AN_encrusting: Encrusting anemone
-  * AS_eresin: Erect single ascidian
-  * CB_filamentous: Filamentous cyanobacteria
-  * CCA: Crustose coralline algae
-  * HC_arborescent: Arborescent hard coral
-  * HC_bushy: Bushy hard coral
-  * HC_column: Column hard coral
-  * HC_encrusting: Encrusting hard coral
-  * HC_foliose: Foliose hard coral
-  * HC_massive: Massive hard coral
-  * HC_tabular: Tabular hard coral
-  * OC_arborescent: Arborescent octocoral
-  * OC_bushy: Bushy octocoral
-  * OC_clustered: Clustered octocoral
-  * OC_digitate: Digitate octocoral
-  * OC_encrusting: Encrusting octocoral
-  * OC_lobate: Lobate octocoral
-  * OC_massive: Massive octocoral
-  * SG: Seagrass
-  * SP_encrusting: Encrusting sponge
-  * SP_massive: Massive sponge
-  * SP_branching: branching sponge
-  * Turf: Turf algae
-  * ZO_encrusting: Encrusting zoantharian
-  * boulss: Boulder (stable substrate)
-  * limess: Limestone (stable substrate)
-  * rockss: Rock (stable substrate)
-  * rubbus: Rubble (unstable substrate)
-  * sandus: Sand (unstable substrate)
-  * siltus: Silt (unstable substrate)
-  * other_life: Other life
-  * other: Other non-living things
+  * AL_artcal: Proportion of articulated calcareous algae at each transect.
+  * AL_corfol: Proportion of corticated foliose algae at each transect.
+  * AL_cormac: Proportion of corticated macrophyte algae at each transect.
+  * AN_encrusting: Proportion of encrusting anemone at each transect.
+  * AS_eresin: Proportion of erect single ascidian at each transect.
+  * CB_filamentous: Proportion of filamentous cyanobacteria at each transect.
+  * CCA: Proportion of crustose coralline algae at each transect.
+  * HC_arborescent: Proportion of arborescent hard coral at each transect.
+  * HC_bushy: Proportion of bushy hard coral at each transect.
+  * HC_column: Proportion of column hard coral at each transect.
+  * HC_encrusting: Proportion of encrusting hard coral at each transect.
+  * HC_foliose: Proportion of foliose hard coral at each transect.
+  * HC_massive: Proportion of massive hard coral at each transect.
+  * HC_tabular: Proportion of tabular hard coral at each transect.
+  * OC_arborescent: Proportion of arborescent octocoral at each transect.
+  * OC_bushy: Proportion of bushy octocoral at each transect.
+  * OC_clustered: Proportion of clustered octocoral at each transect.
+  * OC_digitate: Proportion of digitate octocoral at each transect.
+  * OC_encrusting: Proportion of encrusting octocoral at each transect.
+  * OC_lobate: Proportion of lobate octocoral at each transect.
+  * OC_massive: Proportion of massive octocoral at each transect.
+  * SG: Proportion of seagrass at each transect.
+  * SP_encrusting: Proportion of encrusting sponge at each transect.
+  * SP_massive: Proportion of massive sponge at each transect.
+  * SP_branching: Proportion of branching sponge at each transect.
+  * Turf: Proportion of turf algae at each transect.
+  * ZO_encrusting: Proportion of encrusting zoantharian at each transect.
+  * boulss: Proportion of boulder (stable substrate) at each transect.
+  * limess: Proportion of limestone (stable substrate) at each transect.
+  * rockss: Proportion of rock (stable substrate) at each transect.
+  * rubbus: Proportion of rubble (unstable substrate) at each transect.
+  * sandus: Proportion of sand (unstable substrate) at each transect.
+  * siltus: Proportion of silt (unstable substrate) at each transect.
+  * other_life: Proportion of other life (e.g., sea urchin and sea star) at each transect.
+  * other: Proportion of other non-living things (e.g., shadow and trash) at each transect.
 
 #### File: Global fish metric.csv
 
