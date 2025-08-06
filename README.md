@@ -104,7 +104,7 @@ A detailed description of data acquisition and processing can be found in the pu
       | Abbreviation | Full name       |
       |--------------|-----------------|
       | Fenn         | Fenniaolin      |
-        | Jiam         | Jiamuzi         |
+      | Jiam         | Jiamuzi         |
       | Jihu         | Jihui           |
       | Jiqi         | Jiqi            |
       | Xins         | Xinshe          |
@@ -211,17 +211,17 @@ A detailed description of data acquisition and processing can be found in the pu
     * Species: Fish species
     * Length: Observed fish total length. Unit: Centimeter.
     * Comment: Comments were written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
-    * a: Fish bayesian length-weight growth coefficient
-    * b: Fish bayesian length-weight growth coefficient
-    * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
+    * a: Fish bayesian length-weight growth coefficient. Data from curated FishBase *(Froese and Pauly 2025)*.
+    * b: Fish bayesian length-weight growth coefficient. Data from curated FishBase *(Froese and Pauly 2025)*.
+    * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter. Data from curated FishBase *(Froese and Pauly 2025)* and National .
     * Diet: Fish diets were divided into seven categories based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
     * Position: Relative position in the reef was categorized into six groups considering vertical (pelagic, benthopelagic, and benthic) and horizontal (reef dwelling and reef associated) components based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. Bnth: Benthic; BtPl: Benthopelagic; Pelg: Pelagic; Dw: Reef-dewelling; As: Reef-associated
     * sstmean: Mean sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
-    * Biomass: Fish biomass is calculated from the observed fish total length (i.e., `column: Length`) using bayesian length-weight regression formula: Biomass = a &times; (total length) <sup>b</sup> Unit: Gram.
+    * Biomass: Fish biomass is calculated from the observed fish total length (i.e., `column: Length`) using bayesian length-weight regression model: Biomass = a &times; TL<sup>b</sup>. TL: Fish total length (i.e., column: `Length`). Unit: Gram.
     * Kmax: The standardized fish growth coefficient, which is a theoretical K when the asymptotic length of the population equals the maximum length of the species. It was estimated based on `sea surface temperature`, `fish total length`, `diet`, and `living position relative to reefs` and calculated using `rfishprod` packages *(Morais and Bellwood 2018)*.
     * somatic_G: The growing biomass of the fish individual within one day interval, which was estimated based on von Bertalanffy growth model and calculated using `rfishprod` packages *(Morais and Bellwood 2018)*. Unit: Gram.
-    * Md: The predicted fish mortality rates
-    * Growth_iter: The average somatic growth across 100 iterations following survival simulations
+    * Md: The predicted fish mortality rates were predicted using the natural mortality model proposed by *Gislason et al. (2010)*, which used `fish total length`, `population asymptotic length`, and `growth coefficient K` for estimation.
+    * Growth_iter: The average somatic growth across 100 iterations following survival simulations. The survival simulation used the predicted natural mortality rate (i.e., column: `Md`) as the probability in a bernouli distribution, which subsequently generating a binary outcomes of 0 (death) or 1 (survival). The fate of each individual was simulated across 100 iterations, and the somatic growth times (i.e., column: `somatic_G`) iterated fate matrix was subsequently averaged over all iterations.
 
 ***
 
@@ -236,6 +236,8 @@ Center for International Earth Science Information Network - CIESIN - Columbia U
 European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
 
 Froese R, Pauly D (2025) FishBase. www.fishbase.org. Accessed 14 February 2025
+
+Gislason H, Daan N, Rice JC, Pope JG (2010) Size, growth, temperature and the natural mortality of marine fish. *Fish and Fisheries*, *11*(2), 149–158. https://doi.org/10.1111/j.1467-2979.2009.00350.x 
 
 Liu G, Heron SF, Eakin CM, Muller-Karger FE, Vega-Rodriguez M, Guild LS, De La Cour JL, Geiger EF, Skirving WJ, Burgess TF (2014) Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. *Remote Sensing*, *6*(11), 11579–11606. https://doi.org/10.3390/rs61111579
 
