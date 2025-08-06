@@ -87,7 +87,6 @@ A detailed description of data acquisition and processing can be found in the pu
   * PLC32: Coarse-scale planform curvature. Value of profile curvature at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
   * SC: Surface complexity. Value of surface complexity at a 1 cm resolution at each site. Data from our survey using photogrammetry methods.
 
----------------------------------
 
 **File 2: *Benthic composition.csv***
 
@@ -163,14 +162,17 @@ A detailed description of data acquisition and processing can be found in the pu
   * other_life: Proportion of other life (e.g., sea urchin and sea star) at each transect.
   * other: Proportion of other non-living things (e.g., shadow and trash) at each transect.
 
-#### File: Global fish metric.csv
+**File 3: *Global fish metric.csv***
 
-**Description: The data were obtained from Reef Life Survey database in Seguin R. et al. (2022) and used as a global standard for comparison with our data. The variables were extracted from the `RLS_transect_info.text` and evaluated using the `raw_data.Rdata`, `traits.RData` and `calc_prod_rfishprod.R script`.** 
+1. Number of variables/columns: 19
 
-##### Variables
+2. Number of cases/rows: 278863
 
-* SurveyID: Transect ID in Reef Life Survey
-* SiteCode: Site code in Reef Life Survey
+3. Missing data codes: None
+
+4. Variable List
++ SurveyID: Transect ID in Reef Life Survey
++ SiteCode: Site code in Reef Life Survey
 * Country: Survey countries
 * Depth: Survey depths
 * Family: Fish family
