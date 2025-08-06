@@ -183,7 +183,7 @@ A detailed description of data acquisition and processing can be found in the pu
     * Species: Fish species
     * Size: Observed fish total length. Unit: Centimeter.
     * Num: The number of observed fish
-    * sstmean: Mean sea surface temperature: Unit: &deg;C.
+    * sstmean: Mean sea surface temperature. Unit: &deg;C.
     * a: Fish bayesian length-weight growth coefficient
     * b: Fish bayesian length-weight growth coefficient
     * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
@@ -210,14 +210,14 @@ A detailed description of data acquisition and processing can be found in the pu
     * Genus: Fish genus
     * Species: Fish species
     * Length: Observed fish total length. Unit: Centimeter.
-    * Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
+    * Comment: Comments were written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
     * a: Fish bayesian length-weight growth coefficient
     * b: Fish bayesian length-weight growth coefficient
     * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
-    * Diet: Fish diet. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
-    * Position: Fish living position relative to reefs. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
-    * sstmean: Mean sea surface temperature
-    * Biomass: Fish biomass
+    * Diet: Fish diets were divided into seven categories based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
+    * Position: Relative position in the reef was categorized into six groups considering vertical (pelagic, benthopelagic, and benthic) and horizontal (reef dwelling and reef associated) components based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
+    * sstmean: Mean sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
+    * Biomass: Fish biomass. Unit: Gram. It is calculated from the oberserved fish total length using bayesian length-weight transformation formula: `Biomass = a &times; (total length) <sup>b</sup>`
     * Kmax: The standardized fish growth coefficient 
     * somatic_G: The somatic growth of fish biomass
     * Md: The predicted fish mortality rates
@@ -235,7 +235,11 @@ Center for International Earth Science Information Network - CIESIN - Columbia U
 
 European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
 
+Froese R, Pauly D (2025) FishBase. www.fishbase.org. Accessed 14 February 2025
+
 Liu G, Heron SF, Eakin CM, Muller-Karger FE, Vega-Rodriguez M, Guild LS, De La Cour JL, Geiger EF, Skirving WJ, Burgess TF (2014) Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. *Remote Sensing*, *6*(11), 11579–11606. https://doi.org/10.3390/rs61111579
+
+Morais RA, Bellwood DR (2018) Global drivers of reef fish growth. *Fish and Fisheries*, *19*(5), 874–889. https://doi.org/10.1111/faf.12297 
 
 Seguin R, Mouillot D, Cinner JE, Stuart Smith RD, Maire E, Graham NA, McLean M, Vigliola L, Loiseau N (2022) Towards process-oriented management of tropical reefs in the anthropocene. *Nature Sustainability*, *6*(2), 148–1571. https://doi.org/10.1038/s41893-022-00981-x
 
