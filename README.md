@@ -74,11 +74,11 @@ A detailed description of data acquisition and processing can be found in the pu
     | LionRock       | Two Lion Rock    |
     | HenRock        | Hen Rock         |
     | 825K           | 82.5K            | 
-  * Human_pop: Human population. Unit: inhabitants km<sup>-2</sup>. Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
+  * Human_pop: Human population. Unit: Inhabitants km<sup>-2</sup>. Data from *Center for International Earth Science Information Network - CIESIN - Columbia University (2018)*.
   * PP: Primary production. Unit: mg m<sup>-2</sup>day<sup>-1</sup>. Data from *European Union-Copernicus Marine Service (2022)*.
   * SST: Sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
-  * SS: Stable substrate. Unit: mean proportion of stable substrate at each site. Data from our survey using photo-qurat methods.
-  * US: Unstable substrate. Unit: mean proportion of unstable substrate at each site. Data from our survey using photo-qurat methods.
+  * SS: Stable substrate. Unit: Mean proportion of stable substrate at each site. Data from our survey using photo-qurat methods.
+  * US: Unstable substrate. Unit: Mean proportion of unstable substrate at each site. Data from our survey using photo-qurat methods.
   * S4: Fine-scale slope. Value of slope at a 4 cm resolution at each site. Data from our survey using photogrammetry methods.
   * S32: Coarse-scale slope. Value of slope at a 32 cm resolution at each site. Data from our survey using photogrammetry methods.
   * PROC4: Fine-scale profile curvature. Value of profile curvature at a 4 cm resolution at each site. Data from our survey using photogrammetry methods.
@@ -171,44 +171,47 @@ A detailed description of data acquisition and processing can be found in the pu
 3. Missing data codes: None
 
 4. Variable List
-+ SurveyID: Transect ID in Reef Life Survey
-+ SiteCode: Site code in Reef Life Survey
+* SurveyID: Transect ID in Reef Life Survey
+* SiteCode: Site code in Reef Life Survey
 * Country: Survey countries
-* Depth: Survey depths
+* Depth: Survey depths. Unit: meter.
 * Family: Fish family
 * Genus: Fish genus
 * Species: Fish species
-* Size: Observed fish total length
-* Num: The number of fish
-* sstmean: Mean sea surface temperature
+* Size: Observed fish total length. Unit: Centimeter.
+* Num: The number of observed fish
+* sstmean: Mean sea surface temperature: Unit: &deg;C.
 * a: Fish bayesian length-weight growth coefficient
 * b: Fish bayesian length-weight growth coefficient
-* MaxSizeTL: Maximum recorded fish total length
-* Area: Surveyed area of each transect (500 m^2)
+* MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
+* Area: Surveyed area of each transect. Unit: m<sup>2</sup>.
 * Biomass: Fish biomass of one corresponding individual 
 * Kmax: The standardized fish growth coefficient
-* somatic_G: The somatic biomass growth of one corresponding individual
+* somatic_G: The somatic biomass growth of one corresponding individual. Unit: Gram.
 * Md: The predicted fish mortality rates
-* Growth_iter: The average somatic growth of one corresponding individual across 100 iterations following survival simulations
+* Growth_iter: The average somatic growth of one corresponding individual across 100 iterations following survival simulations. Unit: Gram.
 
-#### File: Taiwan fish metric.csv
+**File 4: *Taiwan fish metric.csv***
 
-**Description: The data were used to evaluate fish energy flow metrics.** 
+1. Number of variables/columns: 19
 
-##### Variables
+2. Number of cases/rows: 14497
 
+3. Missing data codes: None
+   
+4. Variable List
 * Region: Survey regions
 * Site: Survey sites
 * Transect: Survey transects
 * Family: Fish family
 * Genus: Fish genus
 * Species: Fish species
-* Length: Observed fish total length
+* Length: Observed fish total length. Unit: Centimeter.
 * Comment: Comments written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
 * a: Fish bayesian length-weight growth coefficient
 * b: Fish bayesian length-weight growth coefficient
-* MaxSizeTL: Maximum recorded fish total length
-* Diet: Fish diet. HerDet: herbivorous detritivore; HerMac: macroalgae feeder; Plktiv: planktivore; Omnivr: omnivore; InvSes: sessile invertebrate feeder; InvMob: mobile invertebrate feeder; FisCep: piscivore. 
+* MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter.
+* Diet: Fish diet. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
 * Position: Fish living position relative to reefs. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
 * sstmean: Mean sea surface temperature
 * Biomass: Fish biomass
@@ -225,10 +228,11 @@ The R software is required, along with the following packages to run the script:
 
 **Data sources and references**
 
-+ Seguin R, Mouillot D, Cinner JE, Stuart Smith RD, Maire E, Graham NA, McLean M, Vigliola L, Loiseau N (2022) Towards process-oriented management of tropical reefs in the anthropocene. *Nature Sustainability*, *6*(2), 148–1571. https://doi.org/10.1038/s41893-022-00981-x
+Center for International Earth Science Information Network - CIESIN - Columbia University (2018) Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 *NASA Socioeconomic Data and Applications Center (SEDAC)*. https://doi.org/10.7927/H4PN93PB
 
-+ Center for International Earth Science Information Network - CIESIN - Columbia University (2018) Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 *NASA Socioeconomic Data and Applications Center (SEDAC)*. https://doi.org/10.7927/H4PN93PB
+European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
 
-+ European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
+Liu G, Heron SF, Eakin CM, Muller-Karger FE, Vega-Rodriguez M, Guild LS, De La Cour JL, Geiger EF, Skirving WJ, Burgess TF (2014) Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. *Remote Sensing*, *6*(11), 11579–11606. https://doi.org/10.3390/rs61111579
 
-+ Liu G, Heron SF, Eakin CM, Muller-Karger FE, Vega-Rodriguez M, Guild LS, De La Cour JL, Geiger EF, Skirving WJ, Burgess TF (2014) Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. *Remote Sensing*, *6*(11), 11579–11606. https://doi.org/10.3390/rs61111579
+Seguin R, Mouillot D, Cinner JE, Stuart Smith RD, Maire E, Graham NA, McLean M, Vigliola L, Loiseau N (2022) Towards process-oriented management of tropical reefs in the anthropocene. *Nature Sustainability*, *6*(2), 148–1571. https://doi.org/10.1038/s41893-022-00981-x
+
