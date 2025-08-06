@@ -213,17 +213,36 @@ A detailed description of data acquisition and processing can be found in the pu
       | OI           | Otchid Island |
       | KT           | Kenting       |
       
-    * Site: Survey sites
-    * Transect: Survey transects
+    * Site: Survey sites. Some sites are abbreviated as follows:
+      
+      | Abbreviation   | Full name        |
+      |----------------|------------------|
+      | GreenGrassland | Green Grass Land |
+      | LionRock       | Two Lion Rock    |
+      | HenRock        | Hen Rock         |
+      | 825K           | 82.5K            |
+   
+    * Transect: Survey transects. T1 to T5 represent the five transects deployed at each site.
     * Family: Fish family
     * Genus: Fish genus
     * Species: Fish species
-    * Length: Observed fish total length. Unit: Centimeter.
+    * Length: Observed fish total length, which is measured using stereo video systems. Unit: Centimeter.
     * Comment: Comments were written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
     * a: Fish bayesian length-weight growth coefficient. Data from curated FishBase data *(Froese and Pauly 2025)*.
     * b: Fish bayesian length-weight growth coefficient. Data from curated FishBase data *(Froese and Pauly 2025)*.
     * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter. Data from curated FishBase data *(Froese and Pauly 2025)* and National Taiwan University Museum speciments.
-    * Diet: Fish diets were divided into seven categories based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
+    * Diet: Fish diets were divided into seven categories based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. The abbreviations of the dietary groups are as follows: 
+      
+      | Abbreviation | Full name                   |
+      |--------------|-----------------------------|
+      | HerDet       | Herbivorous detritivore     |
+      | HerMac       | Macroalgae feeder           |
+      | Plktiv       | Planktivore                 |
+      | Omnivr       | Omnivore                    |
+      | InvSes       | Sessile invertebrate feeder |
+      | InvMob       | Mobile invertebrate feeder  |
+      | FisCep       | Piscivore                   |
+       
     * Position: Relative position in the reef was categorized into six groups considering vertical (pelagic, benthopelagic, and benthic) and horizontal (reef dwelling and reef associated) components based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. Bnth: Benthic; BtPl: Benthopelagic; Pelg: Pelagic; Dw: Reef-dewelling; As: Reef-associated
     * sstmean: Mean sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
     * Biomass: Fish biomass is calculated from the observed fish total length (i.e., `column: Length`) using bayesian length-weight regression model: Biomass = a &times; TL<sup>b</sup>. TL: Fish total length (i.e., column: `Length`). Unit: Gram.
