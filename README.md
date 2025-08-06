@@ -217,7 +217,7 @@ A detailed description of data acquisition and processing can be found in the pu
     * Diet: Fish diets were divided into seven categories based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. HerDet: Herbivorous detritivore; HerMac: Macroalgae feeder; Plktiv: Planktivore; Omnivr: Omnivore; InvSes: Sessile invertebrate feeder; InvMob: Mobile invertebrate feeder; FisCep: Piscivore. 
     * Position: Relative position in the reef was categorized into six groups considering vertical (pelagic, benthopelagic, and benthic) and horizontal (reef dwelling and reef associated) components based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. Bnth: benthic; BtPl: benthopelagic; Pelg: pelagic; Dw: reef-dewelling; As: reef-associated
     * sstmean: Mean sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
-    * Biomass: Fish biomass. Unit: Gram. It is calculated from the oberserved fish total length using bayesian length-weight transformation formula: Biomass = a &times; (total length) <sup>b</sup>
+    * Biomass: Fish biomass is calculated from the observed fish total length (i.e., `column: Length`) using bayesian length-weight regression formula: Biomass = a &times; (total length) <sup>b</sup> Unit: Gram.
     * Kmax: The standardized fish growth coefficient 
     * somatic_G: The somatic growth of fish biomass
     * Md: The predicted fish mortality rates
