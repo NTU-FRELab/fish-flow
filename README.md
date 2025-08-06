@@ -171,7 +171,7 @@ A detailed description of data acquisition and processing can be found in the pu
 3. Missing data codes: None
 
 4. Variable List
-* SurveyID: Transect ID in Reef Life Survey
+    * SurveyID: Transect ID in Reef Life Survey
 * SiteCode: Site code in Reef Life Survey
 * Country: Survey countries
 * Depth: Survey depths. Unit: meter.
