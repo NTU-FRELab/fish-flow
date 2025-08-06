@@ -178,9 +178,9 @@ A detailed description of data acquisition and processing can be found in the pu
     * SiteCode: Site code in Reef Life Survey. Data from *Seguin et al. (2022)*.
     * Country: Survey countries in Reef Life Survey. Data from *Seguin et al. (2022)*.
     * Depth: Survey depths. Unit: meter. Data from *Seguin et al. (2022)*.
-    * Family: Fish family
-    * Genus: Fish genus
-    * Species: Fish species
+    * Family: Fish family identified in Reef Life Survey. Data from *Seguin et al. (2022)*.
+    * Genus: Fish genus identified in Reef Life Survey. Data from *Seguin et al. (2022)*.
+    * Species: Fish species identified in Reef Life Survey. Data from *Seguin et al. (2022)*.
     * Size: Observed fish total length in Reef Life Survey. Unit: Centimeter. Data from *Seguin et al. (2022)*.
     * Num: The number of observed fish in Reef Life Survey. Data from *Seguin et al. (2022)*.
     * sstmean: Mean sea surface temperature. Unit: &deg;C.
@@ -223,9 +223,9 @@ A detailed description of data acquisition and processing can be found in the pu
       | 825K           | 82.5K            |
    
     * Transect: Survey transects. T1 to T5 represent the five transects deployed at each site.
-    * Family: Fish family
-    * Genus: Fish genus
-    * Species: Fish species
+    * Family: Fish family identified in our survey.
+    * Genus: Fish genus identified in our survey.
+    * Species: Fish species identified in our survey.
     * Length: Observed fish total length, which is measured using stereo video systems. Unit: Centimeter.
     * Comment: Comments were written while labeling fish in stereo videos. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
     * a: Fish bayesian length-weight growth coefficient. Data from curated FishBase data *(Froese and Pauly 2025)*.
