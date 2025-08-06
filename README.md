@@ -101,33 +101,33 @@ A detailed description of data acquisition and processing can be found in the pu
 4. Variable List
     * Transect: Survey transects at each site. The first four characters represented the survey sites, while the last two characters represented the transect 1 to 5 at the corresponding sites. The abbreviations of sites:
       
-    | Abbreviation | Full name       |
-    |--------------|-----------------|
-    | Fenn         | Fenniaolin      |
-    | Jiam         | Jiamuzi         |
-    | Jihu         | Jihui           |
-    | Jiqi         | Jiqi            |
-    | Xins         | Xinshe          |
-    | Chai         | Chaikou         |
-    | Daba         | Dabaisha        |
-    | Gong         | Gongguan        |
-    | Guiw         | Guiwan          |
-    | Shil         | Shilang         |
-    | Ding         | Dingbaisha      |
-    | Houb         | Houbihu         |
-    | Jial         | Jialeshui       |
-    | Leid         | Leidashih       |
-    | Tiao         | Tiaoshi         |
-    | 825K         | 82.5 K          |
-    | Bito         | Bitou           |
-    | Chao         | Chaojing        |
-    | Long         | Longdong        |
-    | Meiy         | Meiyanshan      |
-    | Dong         | Dongchin        |
-    | HenR         | Hen Rock        |
-    | Gree         | Green Grass Land|
-    | Lion         | Two Lion Rock   |
-    | Yayo         | Yayo            |
+      | Abbreviation | Full name       |
+      |--------------|-----------------|
+      | Fenn         | Fenniaolin      |
+        | Jiam         | Jiamuzi         |
+      | Jihu         | Jihui           |
+      | Jiqi         | Jiqi            |
+      | Xins         | Xinshe          |
+      | Chai         | Chaikou         |
+      | Daba         | Dabaisha        |
+      | Gong         | Gongguan        |
+      | Guiw         | Guiwan          |
+      | Shil         | Shilang         |
+      | Ding         | Dingbaisha      |
+      | Houb         | Houbihu         |
+      | Jial         | Jialeshui       |
+      | Leid         | Leidashih       |
+      | Tiao         | Tiaoshi         |
+      | 825K         | 82.5 K          |
+      | Bito         | Bitou           |
+      | Chao         | Chaojing        |
+      | Long         | Longdong        |
+      | Meiy         | Meiyanshan      |
+      | Dong         | Dongchin        |
+      | HenR         | Hen Rock        |
+      | Gree         | Green Grass Land|
+      | Lion         | Two Lion Rock   |
+      | Yayo         | Yayo            |
     
     * AL_artcal: Proportion of articulated calcareous algae at each transect.
     * AL_corfol: Proportion of corticated foliose algae at each transect.
