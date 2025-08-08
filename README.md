@@ -226,9 +226,12 @@ A detailed description of data acquisition and processing can be found in the pu
     * Family: Fish family identified in our survey.
     * Genus: Fish genus identified in our survey.
     * Species: Fish species identified in our survey. Due to limitations in identification from blurred images, some individuals were only identified to the genus level and labeled as *sp*. These individuals may share similar body structure, life history traits, and feeding behavior, leading to comparable energy flows when analyzed under an individual age framework. Their Bayesian length-weight growth coefficients and maximum total length were averaged to estimate the energy flows for the fish genera.
-        *  *Stegastes sp.*: Average parameters of *S. nigricans*, *S. albifasciatus*, and *Plectroglyphidodon fasciolatus*. *Acanthurus sp.*: Average parameters of *A. nigrofuscus*, *Ctenochaetus binotus*, and *C. striatus*.
+        *  *Stegastes sp.*: Average parameters of *S. nigricans*, *S. albifasciatus*, and *Plectroglyphidodon fasciolatus*.
+        *  *Acanthurus sp.*: Average parameters of *A. nigrofuscus*, *Ctenochaetus binotus*, and *C. striatus*.
     * Length: Observed fish total length, measured using stereo video systems. Unit: Centimeter.
-    * Comment: Notes recorded during fish labeling in stereo-video footage. Cf: fish species that is hard to be correctly identified to species level. S: fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
+    * Comment: Notes recorded during fish labeling in stereo-video footage.
+        * Cf: Fish species that is hard to be correctly identified to species level.
+        * S: Fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
     * a: Fish bayesian length-weight growth coefficient. Data from curated FishBase data *(Froese and Pauly 2025)*.
     * b: Fish bayesian length-weight growth coefficient. Data from curated FishBase data *(Froese and Pauly 2025)*.
     * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter. Data from curated FishBase data *(Froese and Pauly 2025)* and National Taiwan University Museum specimens.
