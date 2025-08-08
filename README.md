@@ -272,9 +272,9 @@ The R software is required, along with the following packages to run the script:
 
 **Data sources and references**
 
-Center for International Earth Science Information Network - CIESIN - Columbia University (2018) Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 *NASA Socioeconomic Data and Applications Center (SEDAC)*. https://doi.org/10.7927/H4PN93PB
+Center for International Earth Science Information Network - CIESIN - Columbia University (2018) Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 NASA Socioeconomic Data and Applications Center (SEDAC). https://doi.org/10.7927/H4PN93PB
 
-European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. *Mercator Ocean International*. https://doi.org/10.48670/MOI-00281
+European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. Mercator Ocean International. https://doi.org/10.48670/MOI-00281
 
 Froese R, Pauly D (2025) FishBase. www.fishbase.org. Accessed 14 February 2025
 
