@@ -1,6 +1,6 @@
  # :tropical_fish: Data from: Patterns of reef fish energy flow in a transitional zone 
 
-This README file was generated on 2025/07/31 by Chia-Hung Eric Liu (ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code (Latest update on 2025/08/06)
+This README file was generated on 2025/07/31 by Chia-Hung Eric Liu (ericchiahungliu@gmail.com). Knit the fish_flow.Rmd to generate html and extract R code (Latest update on 2025/08/08)
 
 1. **Author Information**
    * First author
@@ -184,11 +184,11 @@ A detailed description of data acquisition and processing can be found in the pu
     * Size: Observed fish total length in Reef Life Survey. Unit: Centimeter. Data from *Seguin et al. (2022)*.
     * Num: The number of observed fish in Reef Life Survey. Data from *Seguin et al. (2022)*.
     * sstmean: Mean sea surface temperature. Unit: &deg;C.
-    * a: Fish bayesian length-weight growth coefficient obtained from FishBase *(Froese and Pauly 2025)*.
-    * b: Fish bayesian length-weight growth coefficient obtained from FishBase *(Froese and Pauly 2025)*.
+    * a: Bayesian length-weight growth coefficient obtained from FishBase (a) *(Froese and Pauly 2025)*.
+    * b: Bayesian length-weight growth coefficient obtained from FishBase (b) *(Froese and Pauly 2025)*.
     * MaxSizeTL: Maximum recorded fish total length at which observation was made in Reef Life Survey. Unit: Centimeter. Data from *Seguin et al. (2022)*.
     * Area: Surveyed area of each transect. Unit: meter<sup>2</sup>. Data from *Seguin et al. (2022)*.
-    * Biomass: Biomass of an fish individual, calculated from its observed fish total length (i.e., `column: Size`) using bayesian length-weight regression model: Biomass = a &times; TL<sup>b</sup>. TL: Fish total length. Unit: Gram.
+    * Biomass: Biomass of an fish individual, calculated from its observed fish total length (i.e., `column: Size`) using Bayesian length-weight regression model: Biomass = a &times; TL<sup>b</sup>. TL: Fish total length. Unit: Gram.
     * Kmax: The standardized fish growth coefficient represents a theoretical growth coefficient (K) when the asymptotic length of the population equals the maximum length of the species. It was caculated using the `calc_prod_rfishprod` function developed by *Seguin et al. (2022)*, based on the `rfishprod` package *(Morais and Bellwood 2018)*.
     * somatic_G: The daily growing biomass of a fish individual, which was estimated using the von Bertalanffy growth model. Calculations were conducted using the `calc_prod_rfishprod` function developed by *Seguin et al. (2022)*, based on the `rfishprod` package *(Morais and Bellwood 2018)*. Unit: Gram.
     * Md: The predicted natural mortality rate, estimated using the model proposed by *Gislason et al. (2010)*. This model incorporateds the `observed fish total length` (i.e., column: `Size`), `maximum recorded total legnth` (i.e., column: `MaxSizeTL`), and `Kmax` (i.e., column: `Kmax`). Calculations were conducted using the `calc_prod_rfishprod` function developed by *Seguin et al. (2022)*, based on the `rfishprod` package *(Morais and Bellwood 2018)*.
@@ -229,12 +229,12 @@ A detailed description of data acquisition and processing can be found in the pu
         *  *Stegastes sp.*: Average parameters of *S. nigricans*, *S. albifasciatus*, and *Plectroglyphidodon fasciolatus*.
         *  *Acanthurus sp.*: Average parameters of *A. nigrofuscus*, *Ctenochaetus binotus*, and *C. striatus*.
     * Length: Observed fish total length, measured using stereo video systems. Unit: Centimeter.
-    * Comment: Notes recorded during fish labeling in stereo-video footage.
+    * Comment: Notes recorded during fish labeling in stereo videos.
         * Cf: Fish species that is hard to be correctly identified to species level.
         * S: Fish schools. Five or six individuals were measured and averaged to represent the lengths of all individuals within the entire school. The number behind "S" denotes different fish schools in each transect, resetting to 1 at the start of each new transect.
-    * a: Fish bayesian length-weight growth coefficient. Data from curated FishBase data *(Froese and Pauly 2025)*.
-    * b: Fish bayesian length-weight growth coefficient. Data from curated FishBase data *(Froese and Pauly 2025)*.
-    * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter. Data from curated FishBase data *(Froese and Pauly 2025)* and National Taiwan University Museum specimens.
+    * a: Bayesian length-weight growth coefficient (a). Data from curated FishBase data *(Froese and Pauly 2025)*.
+    * b: Bayesian length-weight growth coefficient (b). Data from curated FishBase data *(Froese and Pauly 2025)*.
+    * MaxSizeTL: Maximum recorded fish total length. Unit: Centimeter. Data from curated FishBase data *(Froese and Pauly 2025)* and the National Taiwan University Museum specimens.
     * Diet: Fish diets were divided into seven categories based on FishBase *(Froese and Pauly 2025)* and the dataset compiled by *Morais and Bellwood (2018)*. The dietary groups are abbreviated as follows: 
       
       | Abbreviation | Full name                   |
@@ -258,11 +258,11 @@ A detailed description of data acquisition and processing can be found in the pu
       | As           | Reef-associated |
       
     * sstmean: Mean sea surface temperature. Unit: &deg;C. Data from *Liu et al. (2014)*.
-    * Biomass: Fish biomass is calculated from the observed fish total length (i.e., `column: Length`) using bayesian length-weight regression model: Biomass = a &times; TL<sup>b</sup>. TL: Fish total length. Unit: Gram.
-    * Kmax: The standardized fish growth coefficient, which is a theoretical K when the asymptotic length of the population equals the maximum length of the species. It was estimated based on `sea surface temperature`, `fish total length`, `diet`, and `living position relative to reefs` and calculated using `rfishprod` packages *(Morais and Bellwood 2018)*.
-    * somatic_G: The growing biomass of the fish individual within one day interval, which was estimated based on von Bertalanffy growth model and calculated using `rfishprod` packages *(Morais and Bellwood 2018)*. Unit: Gram.
+    * Biomass: Biomass of an fish individual, calculated from its observed fish total length (i.e., `column: Length`) using Bayesian length-weight regression model: Biomass = a &times; TL<sup>b</sup>. TL: Fish total length. Unit: Gram.
+    * Kmax: The standardized fish growth coefficient represents a theoretical growth coefficient (K) when the asymptotic length of the population equals the maximum length of the species. It was estimated from `sea surface temperature`, `fish total length`, `diet`, and `living position relative to reefs` and calculated using `rfishprod` packages *(Morais and Bellwood 2018)*.
+    * somatic_G: The daily growing biomass of a fish individual, which was estimated using the von Bertalanffy growth model. Calculations were conducted using the `calc_prod_rfishprod` function developed by *Seguin et al. (2022)*, based on the `rfishprod` package *(Morais and Bellwood 2018)*. Unit: Gram.
     * Md: The predicted fish mortality rates were predicted using the natural mortality model proposed by *Gislason et al. (2010)*, which used `observed fish total length` (i.e., column: `Length`), `maximum recorded total legnth` (i.e., column: `MaxSizeTL`), and `Kmax` (i.e., column: `Kmax`) for estimation.
-    * Growth_iter: The average somatic growth across 100 iterations following survival simulations. The survival simulation used the predicted natural mortality rate (i.e., column: `Md`) as the probability in a bernouli distribution, which subsequently generating a binary outcomes of 0 (death) or 1 (survival). The fate of each individual was simulated across 100 iterations, and the somatic growth (i.e., column: `somatic_G`) times iterated fate matrix was subsequently averaged over all iterations. Unit: Gram.
+    * Growth_iter: The average somatic growth across 100 iterations following survival simulations. The survival simulation used the predicted natural mortality rate (i.e., column: `Md`) as the probability in a Bernouli distribution, producing binary outcomes of 0 (death) or 1 (survival). The fate of each individual was simulated across 100 iterations, and the somatic growth (i.e., column: `somatic_G`) was multiplied by the fate matrix and averaged over all iterations. Unit: Gram.
 
 ***
 
