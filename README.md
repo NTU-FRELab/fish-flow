@@ -28,11 +28,11 @@ This README file was generated on 2025/07/31 by Chia-Hung Eric Liu (ericchiahung
 
 4. **Funding sources that supported the collection of the data:** Ocean Conservation Administration of Taiwan, Ministry of Science and Technology of Taiwan
 
-5. **Recommended citation for this dataset:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Data from: Patterns of reef fish energy flow in a transitional zone [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.16791380
+5. **Recommended citation for this dataset:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (2025). Data from: Patterns of reef fish energy flow in a transitional zone [Dataset]. Zenodo. https://doi.org/10.5281/zenodo.16791379
    
-6. **Associated manuscript:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (Forthcoming 2025). Patterns of reef fish energy flow in a transitional zone. Coral Reefs. https://doi.org/10.1007/s00338-025-02725-7
+6. **Associated manuscript:** Liu CHE, Ribas-Deulofeu L, Wu MHM, Chang YJ, Denis V (2025). Patterns of reef fish energy flow in a transitional zone. Coral Reefs. https://doi.org/10.1007/s00338-025-02725-7
 
-\[The data set and the R script are available through Zenodo (https://doi.org/10.5281/zenodo.16791380) and the GitHub repository (https://github.com/NTU-FRELab/fish-flow.git) in order to replicate our analyses]
+\[The data set and the R script are available through Zenodo (https://doi.org/10.5281/zenodo.16791379) and the GitHub repository (https://github.com/NTU-FRELab/fish-flow.git) in order to replicate our analyses]
    
 ## DESCRIPTION OF THE DATA AND FILE STRUCTURE
 
