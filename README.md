@@ -53,7 +53,7 @@ There are four spreadsheets in the folder **Data**.
   
 ### METHODOLOGICAL INFORMATION
 
-A detailed description of data acquisition and processing can be found in the published manuscript in Coral Reefs (https://doi.org/XXXX.XXXX).
+A detailed description of data acquisition and processing can be found in the published manuscript in Coral Reefs (https://doi.org/10.1007/s00338-025-02725-7).
 
 ### DATA-FILE SPECIFIC INFORMATION
 
