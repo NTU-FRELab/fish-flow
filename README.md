@@ -272,17 +272,17 @@ The R software is required, along with the following packages to run the script:
 
 **Data sources and references**
 
-Center for International Earth Science Information Network - CIESIN - Columbia University (2018) Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 NASA Socioeconomic Data and Applications Center (SEDAC). https://doi.org/10.7927/H4PN93PB
+Center for International Earth Science Information Network - CIESIN - Columbia University (2018) Gridded Population of the World, Version 4 (GPWv4): Population Count Adjusted to Match 2015 Revision of UN WPP Country Totals, Revision 11 NASA Socioeconomic Data and Applications Center (SEDAC). https://doi.org/10.7927/H4PN9 3PB
 
-European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing) [dataset]. Mercator Ocean International. https://doi.org/10.48670/MOI-00281
+European Union-Copernicus Marine Service (2022) Global Ocean Colour (Copernicus-GlobColour), Bio-Geo-Chemical, L4 (monthly and interpolated) from Satellite Observations (1997-ongoing). Mercator Ocean International. https://doi.org/10.48670/MOI-00281
 
-Froese R, Pauly D (2025) FishBase. www.fishbase.org. Accessed 14 February 2025
+Froese R, Pauly D (2025) FishBase. www.fishbase. org. Accessed 14 February 2025
 
 Gislason H, Daan N, Rice JC, Pope JG (2010) Size, growth, temperature and the natural mortality of marine fish. Fish Fish 11:149–158. https://doi.org/10.1111/j.1467-2979.2009.00350.x 
 
-Liu G, Heron SF, Eakin CM, Muller-Karger FE, Vega-Rodriguez M, Guild LS, De La Cour JL, Geiger EF, Skirving WJ, Burgess TF (2014) Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. Remote Sen 6:11579–11606. https://doi.org/10.3390/rs61111579
+Liu G, Heron SF, Eakin CM, Muller-Karger FE, Vega-Rodriguez M, Guild LS, De La Cour JL, Geiger EF, Skirving WJ, Burgess TF (2014) Reef-scale thermal stress monitoring of coral ecosystems: new 5-km global products from NOAA Coral Reef Watch. Remote Sens 6:11579–11606.https://doi.org/10.3390/rs61111579
 
 Morais RA, Bellwood DR (2018) Global drivers of reef fish growth. Fish Fish 19:874–889. https://doi.org/10.1111/faf.12297 
 
-Seguin R, Mouillot D, Cinner JE, Stuart Smith RD, Maire E, Graham NA, McLean M, Vigliola L, Loiseau N (2022) Towards process-oriented management of tropical reefs in the anthropocene. Nat Sustain 6:148–1571. https://doi.org/10.1038/s41893-022-00981-x
+Seguin R, Mouillot D, Cinner JE, Stuart Smith RD, Maire E, Graham NA, McLean M, Vigliola L, Loiseau N (2022) Towards process-oriented management of tropical reefs in the anthropocene. Nat Sustain 6:148–157. https://doi.org/10.1038/s41893-022-00981-x
 
