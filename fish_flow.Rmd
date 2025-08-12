@@ -12,10 +12,15 @@ knitr::opts_chunk$set(
 
 ```
 
-```{r}
-#Set working directory to the code source
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+### Generate R Script
 
+```{r eval = TRUE,  message=F, warning=F, purl=F, results="hide"}
+knitr::purl("fish_flow.Rmd", documentation = 2)
+```
+
+### Packages
+
+```{r}
 library(tidyverse)
 library(vegan)
 library(glmmTMB)
