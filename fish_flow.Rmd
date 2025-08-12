@@ -841,7 +841,9 @@ benthic.pcoa.per.exp <- round(100 * benthic.cap$CA$eig / sum(benthic.cap$CA$eig)
 benthic.score <- scores(benthic.cap, 1:3, 'sites') %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Transect') %>%
-  rename(Benthic_PCoA1 = MDS1, Benthic_PCoA2 = MDS2, Benthic_PCoA3 = MDS3)
+  rename(Benthic_PCoA1 = MDS1, Benthic_PCoA2 = MDS2, Benthic_PCoA3 = MDS3) %>%
+  # reverse PCoA3 direction for better interpretation
+  mutate(Benthic_PCoA3 = -Benthic_PCoA3)
 
 #PCoA1-PCoA2 biplot
 benthic.cap.arrow12 <- wascores(scores(benthic.cap, 1:2, 'sites'), benthic, expand = TRUE) %>%
@@ -876,10 +878,10 @@ benthic.pcoa23.plot <- benthic.score %>%
   geom_jitter(aes(col = Region), size = 3, alpha = 0.7) +
   scale_color_brewer(palette = "Set2", direction = -1) +
   geom_segment(data = benthic.cap.arrow23,
-               aes(x = 0, xend = MDS2, y = 0, yend = MDS3),
+               aes(x = 0, xend = MDS2, y = 0, yend = -MDS3),
                arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
   ggrepel::geom_text_repel(data = benthic.cap.arrow23, 
-                           aes(x = MDS2, y = MDS3, label = Species),
+                           aes(x = MDS2, y = -MDS3, label = Species),
                            size = 3, max.overlaps = 15) +
   labs(x = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)'),
        y = paste0('PCoA3 (', benthic.pcoa.per.exp[3], '%)')) +
