@@ -1,9 +1,8 @@
-#Patterns of reef fish energy flow in a transitional zone
-#Liu et al. 2025
+# Title: Patterns of reef fish energy flow in a transitional zone
+# Author: Liu et al. 2025
+# Date: 2025-08-13
 
-#Set working directory to the code source
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
-
+### Packages
 library(tidyverse)
 library(vegan)
 library(glmmTMB)
@@ -12,12 +11,11 @@ library(ggpubr)
 library(DHARMa)
 library(performance)
 
-#### Taiwan fish metric ####
-
-#Import fish energy flow metric
+#### Fish data manipulation ####
+#Import fish energy metrics previously evaluated
 fish.metric <- read.csv('Data/Taiwan fish metric.csv')
 
-#Summarize the fish metric
+#Manipulate the fish metric
 fish.metric <- fish.metric %>%
   #Removed 5 percent of fish that is too small for identification
   filter(Length >= 2.5) %>% 
@@ -33,7 +31,8 @@ fish.metric <- fish.metric %>%
   unite('Transect', c(Abr, Transect), sep = '', remove = T) %>%
   mutate(Transect = factor(Transect, levels = unique(Transect)))
 
-### Species count
+head(fish.metric, 3)
+
 #Total species richness
 fish.metric %>%
   distinct(Species) %>%
@@ -63,7 +62,7 @@ fish.metric %>%
   distinct(Species) %>%
   count()
 
-#Calculate transect-level energy metrics
+#Calculate transect-level energy flow metrics
 transect.energy <- fish.metric %>%
   group_by(Region, Site, Transect) %>%
   #100 is the detecting area of each transect
@@ -74,8 +73,9 @@ transect.energy <- fish.metric %>%
             Turn = Prod/Biom * 100,
             .groups = 'drop')
 
-### Global comparison of energy flows ####
+head(transect.energy, 3)
 
+#### Global comparison of energy flows ####
 #Data from 'Seguin et al. (2022) Towards process-oriented management of tropical reefs in the anthropocene'
 global.energy <- read.csv(file = 'Data/Global fish metric.csv')
 
@@ -190,12 +190,12 @@ global.taiwan %>%
         legend.title = element_text(size = 14))
 #ggsave(filename = 'Fig 2.svg', width = 8, height = 5, dpi = 1200)
 
-#Check which country were removed from the plot
+#Check which countries with extremely high turnover were removed from the plot
 global.taiwan %>%
   filter(Turn > 1)
 
-### QQ-plots and histograms of fish energy flows at transect level ###
-
+#### Regional comparison of energy flows ####
+### QQ-plot & histogram of transect-level energy flow metrics
 #Biomass
 trans.biom.qq <- transect.energy %>%
   ggplot(aes(sample = Biom)) +
@@ -250,14 +250,11 @@ trans.turn.density <- transect.energy %>%
   theme_bw() +
   theme(panel.grid = element_blank())
 
-ggarrange(trans.biom.qq, trans.biom.density, trans.prod.qq, trans.prod.density, trans.turn.qq, trans.turn.density,
-          nrow = 3, ncol = 2, align = 'hv')
+ggarrange(trans.biom.qq, trans.biom.density, trans.prod.qq, trans.prod.density, trans.turn.qq, trans.turn.density, nrow = 3, ncol = 2, align = 'hv')
 #ggsave(filename = 'Fig S1.svg', height = 8, width = 7, units = 'in', dpi = 1200)
 
-#### Regional comparison of energy flows ####
-
-###Biomass
-#GLMM
+### Generalized Linear Mixed Models (GLMMs)
+#Biomass GLMM
 biom.m.reg <- glmmTMB(Biom ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
 
 #Save the GLMM output
@@ -276,8 +273,7 @@ biom.glmm.reg <- coef(summary(biom.m.reg))$cond %>%
   left_join(., biom.reg.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-### Productivity
-#GLMM
+#Productivity GLMM
 prod.m.reg <- glmmTMB(Prod ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
 
 #Save the GLMM output
@@ -296,8 +292,7 @@ prod.glmm.reg <- coef(summary(prod.m.reg))$cond %>%
   left_join(., prod.reg.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-### Turnover
-#GLMM
+#Turnover GLMM
 turn.m.reg <- glmmTMB(Turn ~ Region + (1|Site) - 1, data = transect.energy, family = ziGamma(link = 'log'))
 
 #Combine the GLMM output
@@ -325,10 +320,11 @@ energy.reg.glmm <- bind_rows(biom.glmm.reg, prod.glmm.reg, turn.glmm.reg) %>%
                              ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
   relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
 
+head(energy.reg.glmm, 3)
 #write.table(energy.reg.glmm, file = 'Table S3.txt', row.names = F, quote = T)
 
-### Estimated Marginal Means (EMMs) ###
-#Biomass
+### Estimated Marginal Means (EMMs)
+#Biomass EMM
 biom.reg.em <- emmeans(biom.m.reg, pairwise ~ Region, type = 'response')
 
 #EMMs contrast
@@ -336,7 +332,7 @@ biom.reg.contrast <- biom.reg.em$contrasts %>%
   as.data.frame() %>%
   mutate(Type = 'Biomass')
 
-#Productivity
+#Productivity EMM
 prod.reg.em <- emmeans(prod.m.reg, pairwise ~ Region, type = 'response')
 
 #EMMs contrast
@@ -344,7 +340,7 @@ prod.reg.contrast <- prod.reg.em$contrasts %>%
   as.data.frame() %>%
   mutate(Type = 'Productivity')
 
-#Turnover
+#Turnover EMM
 turn.reg.em <- emmeans(turn.m.reg, pairwise ~ Region, type = 'response')
 
 #EMMs contrast
@@ -361,10 +357,11 @@ energy.reg.em <- bind_rows(biom.reg.contrast, prod.reg.contrast, turn.reg.contra
                           ifelse(p.value >= 0.05, sprintf("%.3f", p.value), paste0(p.value, '*')))) %>%
   relocate(Type) %>%
   rename(Dependent = Type, Contrast = contrast, Ratio = ratio, `z-ratio` = z.ratio, `p-value` = p.value)
+
+head(energy.reg.em, 3)
 #write.table(energy.reg.em, file = 'Table S4.txt', row.names = F, quote = T)
 
-### Region comparison boxplot ###
-
+### Regional comparison boxplots
 #Position of group labels
 position.reg <- transect.energy %>%
   group_by(Region) %>%
@@ -372,7 +369,7 @@ position.reg <- transect.energy %>%
             y.prod = max(Prod) + 0.01,
             y.turn = max(Turn) + 0.1)
 
-### Biomass
+#Biomass
 #Formulate group labels for the boxplot
 biom.reg.grp <- multcomp::cld(biom.reg.em, Letters = letters, decreasing = T) %>%
   as.data.frame() %>%
@@ -395,7 +392,7 @@ region.biom <- transect.energy %>%
         plot.subtitle = element_text(size = 20),
         legend.position = 'none')
 
-### Productivity
+#Productivity
 #Formulate group labels for the boxplot
 prod.reg.grp <- multcomp::cld(prod.reg.em, Letters = letters, decreasing = T) %>%
   as.data.frame() %>%
@@ -418,7 +415,7 @@ region.prod <- transect.energy %>%
         plot.subtitle = element_text(size = 20),
         legend.position = 'none')
 
-### Turnover
+#Turnover
 #Formulate group labels for the boxplot
 turn.reg.grp <- multcomp::cld(turn.reg.em, Letters = letters, decreasing = T) %>%
   as.data.frame() %>%
@@ -444,8 +441,7 @@ region.turn <- transect.energy %>%
 ggarrange(region.biom, region.prod, region.turn, nrow = 2, ncol = 2, align = 'hv')
 #ggsave(filename = 'Fig 3.svg', width = 10, height = 8, dpi = 1200)
 
-### Residual diagnostics for GLMMs of region comparison ###
-
+### Residual diagnostics for region GLMMs
 #svg(filename = 'Fig S3.svg', width = 8, height = 9)
 layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
        heights = c(1, 6, 1, 6, 1, 6), widths = c(2, 3))
@@ -472,8 +468,10 @@ par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(turn.m.reg), form = transect.energy$Region)
 #dev.off()
 
-#### Compare energy flows among dietary groups ####
+#This plot was subsequently edited in `Inkscape` to adjust font size, text positioning, label names and the number of decimal digits.
 
+#### Energy flow by dietary groups ####
+### Summarize transect-level energy flow metrics of each dietary group
 #Diet Wide table
 diet.energy <- fish.metric %>%
   #Categorize 7 dietary groups into 5 groups
@@ -497,7 +495,11 @@ diet.energy <- fish.metric %>%
   ) %>%
   relocate(Region, Site)
 
-#The function takes a region as input and performs dietary GLMM, estimated marginal means (EMMs), and generate boxplots for the given region.
+head(diet.energy, 3)
+
+### A function for calculating dietary GLMMs, EMMs, and generating boxplots
+#The function takes a region as input and performs dietary GLMMs, EMMs, and generate boxplots for the given region.
+
 Diet_glmm <- function(region_name) {
   
   #Select energy flow of the given region
@@ -534,7 +536,6 @@ Diet_glmm <- function(region_name) {
       as.data.frame() %>%
       select(Diet, .group) %>%
       rename(label = .group)
-    
     
     #Find the max value of energy flows
     global_max <- diet.energy %>%
@@ -641,21 +642,20 @@ Diet_glmm <- function(region_name) {
   ))
 }
 
-#Calculate the GLMMs, EMMs, and generate boxplots among the five regions using the function
+### Calculate the GLMMs, EMMs, and generate boxplots among the five regions using the function
 NT.glmm <- Diet_glmm('NT')
 ET.glmm <- Diet_glmm('ET')
 GI.glmm <- Diet_glmm('GI')
 OI.glmm <- Diet_glmm('OI')
 KT.glmm <- Diet_glmm('KT')
 
-### GLMM boxplot ###
-
+### Dietary boxplots
 #Biomass
 NT.biom.plot <- NT.glmm$results$Biom$plot +
-  #Add the arrow for the extreme outlier
+  #Add an arrow to label the extreme outlier
   annotate("segment", x = 2, xend = 2, y = 24, yend = 26,
            arrow = arrow(type = "closed", length = unit(0.1, 'cm'))) +
-  #Add the text for the extreme outlier
+  #Add a text to label the extreme outlier
   geom_text(aes(x = 2, y = 23, label = round(max(diet.energy$Biom), 2)), col = 'black', size = 3) +
   annotate("text", x = 2, y = 18, label = 'a', col = 'black', fontface = 'plain') 
 ET.biom.plot <- ET.glmm$results$Biom$plot +
@@ -690,15 +690,15 @@ KT.turn.plot <- KT.glmm$results$Turn$plot+
   labs(y = NULL)
 
 #Combine all the boxplots
-diet.plot <- ggarrange(NT.biom.plot, ET.biom.plot, GI.biom.plot, OI.biom.plot, KT.biom.plot,
-                       NT.prod.plot, ET.prod.plot, GI.prod.plot, OI.prod.plot, KT.prod.plot,
-                       NT.turn.plot, ET.turn.plot, GI.turn.plot, OI.turn.plot, KT.turn.plot,
-                       nrow = 3, ncol = 5, align = 'v')
+diet.plot <- ggarrange(NT.biom.plot, ET.biom.plot, GI.biom.plot, OI.biom.plot, KT.biom.plot, NT.prod.plot, ET.prod.plot, GI.prod.plot, OI.prod.plot, KT.prod.plot, NT.turn.plot, ET.turn.plot, GI.turn.plot, OI.turn.plot, KT.turn.plot, nrow = 3, ncol = 5, align = 'v')
+
 #Add a general x-label
 annotate_figure(diet.plot, bottom = text_grob("Dietary group", size = 16))
 #ggsave('Fig 4.svg', height = 9.5, width = 14, dpi = 1200)
 
-### GLMM output ###
+#This plot was subsequently edited in `Inkscape` to adjust font size and plot positioning, and to add figure numbers and grey dashed lines to differentiate between energy flows.
+
+### Dietary GLMMs
 #Combine the results from the five regions
 diet.glmm <- bind_rows(NT.glmm$glmm_summary,
                        ET.glmm$glmm_summary,
@@ -709,9 +709,11 @@ diet.glmm <- bind_rows(NT.glmm$glmm_summary,
   mutate(Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT'))) %>%
   #Reorder the table following energy flows
   arrange(Dependent)
+
+head(diet.glmm, 3)
 #write.table(diet.glmm, file = 'Table S5.txt', row.names = F, quote = T)
 
-### Post-hoc test by EMMs ###
+### Dietary EMMs
 #Combine the results from the five regions
 diet.compare <- bind_rows(NT.glmm$emm_contrast_summary,
                           ET.glmm$emm_contrast_summary,
@@ -722,10 +724,11 @@ diet.compare <- bind_rows(NT.glmm$emm_contrast_summary,
   mutate(Region = factor(Region, levels = c('NT', 'ET', 'GI', 'OI', 'KT'))) %>%
   #Reorder the table following energy flows
   arrange(Dependent)
+
+head(diet.compare, 3)
 #write.table(diet.compare, file = 'Table S6.txt', row.names = F, quote = T)
 
 #### Identification of biotic drivers ####
-
 #Import benthic composition data
 benthic <- read.csv(file = 'Data/Benthic composition.csv') %>%
   column_to_rownames(var = 'Transect') %>%
@@ -734,8 +737,7 @@ benthic <- read.csv(file = 'Data/Benthic composition.csv') %>%
   #Remove rare species (defined as covers lower than 5% in all transect)
   select(-which(colSums(. > 0.05) == 0))
 
-### Benthic composition PCoA ###
-
+### Benthic composition PCoA
 #Bray-Curtis dissimilarity
 benthic.cap <- capscale(benthic ~ 1, distance = 'bray')
 
@@ -748,7 +750,7 @@ benthic.score <- scores(benthic.cap, 1:3, 'sites') %>%
   as.data.frame() %>%
   rownames_to_column(var = 'Transect') %>%
   rename(Benthic_PCoA1 = MDS1, Benthic_PCoA2 = MDS2, Benthic_PCoA3 = MDS3) %>%
-  # Reverse PCoA3 direction for better interpretation
+  #reverse PCoA3 direction for better interpretation
   mutate(Benthic_PCoA3 = -Benthic_PCoA3)
 
 #PCoA1-PCoA2 biplot
@@ -765,7 +767,9 @@ benthic.pcoa12.plot <- benthic.score %>%
   geom_segment(data = benthic.cap.arrow12,
                aes(x = 0, xend = MDS1, y = 0, yend = MDS2),
                arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
-  ggrepel::geom_text_repel(data = benthic.cap.arrow12, aes(x = MDS1, y = MDS2, label = Species), size = 3, max.overlaps = 15) +
+  ggrepel::geom_text_repel(data = benthic.cap.arrow12, 
+                           aes(x = MDS1, y = MDS2, label = Species),
+                           size = 3, max.overlaps = 15) +
   labs(x = paste0('PCoA1 (', benthic.pcoa.per.exp[1], '%)'),
        y = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)')) +
   theme_bw()
@@ -784,7 +788,9 @@ benthic.pcoa23.plot <- benthic.score %>%
   geom_segment(data = benthic.cap.arrow23,
                aes(x = 0, xend = MDS2, y = 0, yend = -MDS3),
                arrow = arrow(length = unit(0.3, "cm")), colour = "grey") +
-  ggrepel::geom_text_repel(data = benthic.cap.arrow23, aes(x = MDS2, y = -MDS3, label = Species), size = 3, max.overlaps = 15) +
+  ggrepel::geom_text_repel(data = benthic.cap.arrow23, 
+                           aes(x = MDS2, y = -MDS3, label = Species),
+                           size = 3, max.overlaps = 15) +
   labs(x = paste0('PCoA2 (', benthic.pcoa.per.exp[2], '%)'),
        y = paste0('PCoA3 (', benthic.pcoa.per.exp[3], '%)')) +
   theme_bw()
@@ -793,14 +799,13 @@ benthic.pcoa23.plot <- benthic.score %>%
 ggarrange(benthic.pcoa12.plot, benthic.pcoa23.plot, nrow = 2, ncol = 1, align = 'hv')
 #ggsave(filename = 'Fig S6.svg', width = 8, height = 10, dpi = 1200)
 
-### Biotic GLMM ###
-
+### Biotic GLMMs
 #Add region and site information to each transect
 biotic.energy <- transect.energy %>%
   left_join(., benthic.score, by = 'Transect') %>%
   relocate(Region, Site) 
 
-### Biomass
+#Biomass
 #GLMM formula
 biom.f.biotic <- Biom ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
@@ -823,7 +828,7 @@ biom.biotic.glmm <- coef(summary(biom.m.biotic))$cond %>%
   left_join(., biom.biotic.ci, by = 'Independent') %>%
   relocate(Dependent) 
 
-### Productivity
+#Productivity
 #GLMM formula
 prod.f.biotic <- Prod ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
@@ -846,7 +851,7 @@ prod.biotic.glmm <- coef(summary(prod.m.biotic))$cond %>%
   left_join(., prod.biotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-### Turnover
+#Turnover
 #GLMM formula
 turn.f.biotic <- Turn ~ Benthic_PCoA1 + Benthic_PCoA2 + Benthic_PCoA3 + (1|Region/Site)
 
@@ -899,10 +904,11 @@ energy.biotic.glmm <- energy.biotic.glmm %>%
   mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*',
                              ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
   relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
+
+head(energy.biotic.glmm, 3)
 #write.table(energy.biotic.glmm, file = 'Table S7.txt', row.names = F, quote = T)
 
-### Residual diagnostics for biotic GLMMs ###
-
+### Residual diagnostics for biotic GLMMs
 #svg(file = 'Fig S4.svg', width = 6, height = 8)
 layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
        heights = c(1, 6, 1, 6, 1, 6))
@@ -929,8 +935,9 @@ par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(turn.m.biotic))
 #dev.off()
 
-### Relationships between energy flows and significant variables in GLMMs ###
+#This plot was subsequently edited in `Inkscape` to adjust font size, text positioning, and the number of decimal digits.
 
+### Relationships between energy flows and significant variables in biotic GLMMs
 #Biomass EMMs - PCoA2 scores
 biom.biotic.em.pcoa2 <- emmeans(biom.m.biotic, ~ Benthic_PCoA2, type = 'response',
                                 at = list(Benthic_PCoA2 = seq(min(biotic.energy$Benthic_PCoA2, na.rm = TRUE),
@@ -1036,12 +1043,11 @@ ggarrange(biom.biotic.em.plot, prod.biotic.em.plot, turn.biotic.em.plot,
           nrow = 3, ncol = 1, align = 'hv')
 #ggsave(filename = 'Fig S7.svg', width = 6, height = 8, dpi = 1200)
 
-#### Identification of abiotic drivers #####
-
+#### Identification of abiotic drivers ####
 #Import abiotic data
 abiotic <- read.csv(file = 'Data/Abiotic variable.csv')
 
-### structural complexity PCA ###
+### Structural complexity PCA
 #Select structural complexity variables
 complexity <- abiotic %>%
   select(Site, S4:SC) %>%
@@ -1081,7 +1087,8 @@ complexity.score %>%
   theme_bw()
 #ggsave(filename = 'Fig S8.svg', width = 8, height = 6, dpi = 1200)
 
-### Site-level energy flow metric ###
+### QQ-plots and histograms of fish energy flows at site-level
+#Site-level energy flow metric
 abiotic.energy <- fish.metric %>%
   #Energy flows in each transect
   group_by(Region, Site, Transect) %>%
@@ -1106,7 +1113,7 @@ abiotic.energy <- fish.metric %>%
          across(.cols = Complexity_PCA1:SC, ~ decostand(.x, 2, method = 'stand'))
   )
 
-### QQ-plots and histograms of fish energy flows at site level ###
+#QQ-plots and histograms of fish energy flows
 #Biomass
 site.biom.qq <- abiotic.energy %>%
   ggplot(aes(sample = Biom)) +
@@ -1167,9 +1174,8 @@ ggarrange(site.biom.qq, site.biom.density, site.prod.qq, site.prod.density, site
           nrow = 3, ncol = 2, align = 'hv')
 #ggsave(filename = 'Fig S2.svg', height = 8, width = 7, units = 'in', dpi = 1200)
 
-### Abiotic GLMMs ###
-
-### Biomass 
+### Abiotic GLMMs
+#Biomass 
 #GLMM formula
 biom.f.abiotic <- Biom ~ Human_pop + PP + SST + SS + US + Complexity_PCA1 + Complexity_PCA2 + Complexity_PCA3 + (1|Region)
 
@@ -1192,7 +1198,7 @@ biom.abiotic.glmm <- coef(summary(biom.m.abiotic))$cond %>%
   left_join(., biom.abiotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-### Productivity 
+#Productivity 
 #GLMM formula
 prod.f.abiotic <- Prod ~ Human_pop + PP + SST + SS + US + Complexity_PCA1 + Complexity_PCA2 + Complexity_PCA3 + (1|Region)
 
@@ -1215,7 +1221,7 @@ prod.abiotic.glmm <- coef(summary(prod.m.abiotic))$cond %>%
   left_join(., prod.abiotic.ci, by = 'Independent') %>%
   relocate(Dependent)
 
-### Turnover 
+#Turnover 
 #GLMM formula
 turn.f.abiotic <- Turn ~ Human_pop + PP + SST + SS + US + Complexity_PCA1 + Complexity_PCA2 + Complexity_PCA3 + (1|Region)
 
@@ -1268,10 +1274,11 @@ energy.abiotic.glmm <- energy.abiotic.glmm %>%
   mutate(`Pr(>|z|)` = ifelse(`Pr(>|z|)` == 0, '<0.001*', 
                              ifelse(`Pr(>|z|)` >= 0.05, `Pr(>|z|)`, paste0(`Pr(>|z|)`, '*')))) %>%
   relocate(Lower_limit, Upper_limit, .after = `Std. Error`)
+
+head(energy.abiotic.glmm, 3)
 #write.table(energy.abiotic.glmm, file = 'Table S8.txt', row.names = F, quote = T)
 
-### Residual diagnostics for abiotic GLMMs ###
-
+### Residual diagnostics for abiotic GLMMs
 #svg(file = 'Fig S5.svg', width = 6, height = 8)
 layout(matrix(c(1, 2, 3, 4, 5, 6, 1, 7, 3, 8, 5, 9), nrow = 6),
        heights = c(1, 6, 1, 6, 1, 6))
@@ -1298,18 +1305,20 @@ par(mar = c(5, 5, 2, 1))
 plotResiduals(simulateResiduals(turn.m.abiotic))
 #dev.off()
 
-### Check collinearity in abiotic GLMM ###
+#This plot was subsequently edited in `Inkscape` to adjust font size, text positioning, and the number of decimal digits.
 
+### Check collinearity in abiotic GLMMs
 abiotic.glmm.vif <- bind_rows(check_collinearity(biom.m.abiotic), check_collinearity(prod.m.abiotic), check_collinearity(turn.m.abiotic)) %>%
   mutate(Independent = rep(c('Biomass', 'Productivity', 'Turnover'), each = 8),
          across(where(is.numeric), ~ sprintf("%.2f", .x))) %>%
   as.data.frame() %>%
   select(Independent, Term, VIF, VIF_CI_low, VIF_CI_high) %>%
   rename(`Fix effect` = Term, `Lower limit` = VIF_CI_low , `Upper limit` = VIF_CI_high)
+
+head(abiotic.glmm.vif, 3)
 #write.table(abiotic.glmm.vif, file = 'Table S9.txt', row.names = F, quote = T)
 
-### Relationships between energy flows and significant variables in GLMMs ###
-
+### Relationships between energy flows and significant variables in abiotic GLMMs
 #Biomass - Stable Substrate
 biom.abiotic.em.ss <- emmeans(biom.m.abiotic, ~ SS, type = 'response',
                               at = list(SS = seq(min(abiotic.energy$SS, na.rm = TRUE),
@@ -1413,3 +1422,5 @@ turn.abiotic.em.plot <- abiotic.energy %>%
 ggarrange(biom.abiotic.em.plot, prod.abiotic.em.plot, turn.abiotic.em.plot,
           nrow = 3, ncol = 1, align = 'hv')
 #ggsave('Fig S9.svg', width = 6, height = 8, dpi = 1200)
+
+#This plot was subsequently edited in `Inkscape` to adjust legend positioning.
